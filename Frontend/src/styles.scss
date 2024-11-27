@@ -34,3 +34,58 @@
 .h-sidenav {
   height: calc(100vh - 300px);
 }
+
+
+html {
+  --mat-sys-background: #01212A;
+  --mat-sys-error: #f09494;
+  --mat-sys-error-container: #ffdad6;
+  --mat-sys-inverse-on-surface: #f2f0f4;
+  --mat-sys-inverse-primary: #a6cbd7;
+  --mat-sys-inverse-surface: #023747;
+  --mat-sys-on-background: #81b6c7;
+  --mat-sys-on-error: #ffffff;
+  --mat-sys-on-error-container: #410002;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-on-primary-container: #001b3f;
+  --mat-sys-on-primary-fixed: #001b3f;
+  --mat-sys-on-primary-fixed-variant: #00458f;
+  --mat-sys-on-secondary: #ffffff;
+  --mat-sys-on-secondary-container: #131c2b;
+  --mat-sys-on-secondary-fixed: #131c2b;
+  --mat-sys-on-secondary-fixed-variant: #3e4759;
+  --mat-sys-on-surface: #1a1b1f;
+  --mat-sys-on-surface-variant: #44474e;
+  --mat-sys-on-tertiary: #ffffff;
+  --mat-sys-on-tertiary-container: #00006e;
+  --mat-sys-on-tertiary-fixed: #00006e;
+  --mat-sys-on-tertiary-fixed-variant: #0000ef;
+  --mat-sys-outline: #74777f;
+  --mat-sys-outline-variant: #c4c6d0;
+  --mat-sys-primary: #06A7D9;
+  --mat-sys-primary-container: #023747;
+  --mat-sys-primary-fixed: #a6cbd7;
+  --mat-sys-primary-fixed-dim: #81b6c7;
+  --mat-sys-scrim: #000000;
+  --mat-sys-secondary: #565e71;
+  --mat-sys-secondary-container: #dae2f9;
+  --mat-sys-secondary-fixed: #dae2f9;
+  --mat-sys-secondary-fixed-dim: #bec6dc;
+  --mat-sys-shadow: #000000;
+  --mat-sys-surface: #01212A;
+  --mat-sys-surface-bright: #01212A;
+  --mat-sys-surface-container: #efedf0;
+  --mat-sys-surface-container-high: #e9e7eb;
+  --mat-sys-surface-container-highest: #e3e2e6;
+  --mat-sys-surface-container-low: #f4f3f6;
+  --mat-sys-surface-container-lowest: #ffffff;
+  --mat-sys-surface-dim: #dbd9dd;
+  --mat-sys-surface-tint: #06A7D9;
+  --mat-sys-surface-variant: #e0e2ec;
+  --mat-sys-tertiary: #343dff;
+  --mat-sys-tertiary-container: #e0e0ff;
+  --mat-sys-tertiary-fixed: #e0e0ff;
+  --mat-sys-tertiary-fixed-dim: #bec2ff;
+  --mat-sys-neutral-variant20: #2d3038;
+  --mat-sys-neutral10: #1a1b1f;
+}
