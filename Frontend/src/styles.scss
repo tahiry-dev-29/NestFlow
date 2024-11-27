@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-gradient-bg {
+    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] text-transparent bg-clip-text font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out;
+  }
+
+  .btn-gradient-bg:hover {
+    @apply scale-105;
+  }
+
+  .btn-gradient:hover {
+    @apply text-white scale-105; 
+  }
+
+  .text-gradient, .bg-gradient {
+    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] bg-clip-text text-transparent;
+  }
+
+  .error-badge {
+    @apply bg-[#FF6A3D] px-2 text-sm rounded rotate-12 absolute;
+  }
+}
+
+.select2-dropdown {
+  @apply rounded-b-lg shadow-md;
+}
+.h-sidenav {
+  height: calc(100vh - 300px);
+}
