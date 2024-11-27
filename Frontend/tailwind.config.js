@@ -3,10 +3,17 @@ module.exports = {
   content: ["./src/**/*.{html,ts, scss}"],
   theme: {
     extend: {
-      colors: {
+      borderColor: {
+        DEFAULT: "#d1d5db",
+      },
+    colors: {
+        primary: "#a855f7",
         "gradient-from": "#a855f7",
         "gradient-to": "#ec4899",
       },
+      boxShadow: {
+        'primary-outline': '0 0 0 2px rgba(255, 255, 255, 0.5)', // Exemple de définition d'une ombre personnalisée
+      }
     },
     screens: {
       sm: "576px",
@@ -29,5 +36,14 @@ module.exports = {
       "fade-up": "fade-up 1.5s both",
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addComponents }) {
+      addComponents({
+        ".input-theme": {
+          "@apply placeholder:text-gray-500 text-sm focus:ring-2 ring-offset-2 focus:ring-primary focus:border-primary outline-none leading-5 block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:bg-white focus:text-gray-700":
+            {},
+        },
+      });
+    },
+  ],
 };
