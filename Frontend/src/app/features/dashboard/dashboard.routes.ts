@@ -4,8 +4,9 @@ import { DashboardOverviewComponent } from './components/dashboard-overview/dash
 
 export const DashboardRouter: Routes = [
   {
-    path: 'dashboard',
+    path: '',
     title: 'Dashboard',
     component: DashboardOverviewComponent,
+    children: []
   },
 ];

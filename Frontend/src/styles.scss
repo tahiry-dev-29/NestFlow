@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import './custome';
 @layer components {
   .btn-gradient-bg {
     @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:-translate-y-px leading-normal text-sm ease-in  shadow-md hover:border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-2 ring-offset-2;
@@ -25,14 +25,15 @@
     @apply text-white scale-105; 
   }
 
-  .text-gradient, .bg-gradient {
+  .text-gradient {
     @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] bg-clip-text text-transparent;
   }
-
+  
   .error-badge {
     @apply bg-[#FF6A3D] px-2 text-sm rounded rotate-12 absolute;
   }
 }
+
 
 .select2-dropdown {
   @apply rounded-b-lg shadow-md;
@@ -41,9 +42,32 @@
   height: calc(100vh - 300px);
 }
 
+.bg-custom {
+  width: 100%;
+  height: 100%;
+
+  background: $bg-gradient;
+  --gap: 5em;
+  --line: 1px;
+  --color: rgba(255, 255, 255, 0.2);
+
+  background-image: linear-gradient(
+      -90deg,
+      transparent calc(var(--gap) - var(--line)),
+      var(--color) calc(var(--gap) - var(--line) + 1px),
+      var(--color) var(--gap)
+    ),
+    linear-gradient(
+      0deg,
+      transparent calc(var(--gap) - var(--line)),
+      var(--color) calc(var(--gap) - var(--line) + 1px),
+      var(--color) var(--gap)
+    ) !important;
+  background-size: var(--gap) var(--gap) !important;
+}
 
 html {
-  --mat-sys-background: #01212A;
+  --mat-sys-background: linear-gradient(to right, #a855f7, #ec4899);
   --mat-sys-error: #f09494;
   --mat-sys-error-container: #ffdad6;
   --mat-sys-inverse-on-surface: #f2f0f4;
@@ -62,10 +86,6 @@ html {
   --mat-sys-on-secondary-fixed-variant: #3e4759;
   --mat-sys-on-surface: #1a1b1f;
   --mat-sys-on-surface-variant: #44474e;
-  --mat-sys-on-tertiary: #ffffff;
-  --mat-sys-on-tertiary-container: #00006e;
-  --mat-sys-on-tertiary-fixed: #00006e;
-  --mat-sys-on-tertiary-fixed-variant: #0000ef;
   --mat-sys-outline: #74777f;
   --mat-sys-outline-variant: #c4c6d0;
   --mat-sys-primary: #06A7D9;
@@ -94,4 +114,42 @@ html {
   --mat-sys-tertiary-fixed-dim: #bec2ff;
   --mat-sys-neutral-variant20: #2d3038;
   --mat-sys-neutral10: #1a1b1f;
+
+  /* Gradient for widget backgrounds */
+  --mat-widget-background: #01212A, $bg-gradient;
+
+  /* Gradient for inputs */
+  --mat-input-background: $bg-gradient;
+}
+
+.mat-widget {
+  background: var(--mat-widget-background, $bg-gradient);
+  color: var(--mat-sys-on-background);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.mat-input {
+  background: var(--mat-input-background, $bg-gradient);
+  border: none;
+  color: var(--mat-sys-on-surface);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+
+  &:focus {
+    outline: 2px solid var(--mat-sys-primary);
+  }
+}
+
+/* Generic styles for all inputs */
+input, textarea, select {
+  background: var(--mat-input-background, $bg-gradient);
+  color: var(--mat-sys-on-surface);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+
+  &:focus {
+    outline: 2px solid var(--mat-sys-primary);
+  }
 }
