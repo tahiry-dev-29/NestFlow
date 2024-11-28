@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { sidebarState } from '../../store/signal.store';
 
 @Component({
   selector: 'app-side-bar',
@@ -14,4 +15,6 @@ showFiller= signal(false);
 toggleFiller(): void {
   this.showFiller.set(!this.showFiller());
 }
+
+sidebarState = sidebarState;
 }

@@ -1,6 +1,11 @@
 <mat-drawer-container class="h-screen flex" autosize>
     <!-- Sidebar -->
-    <mat-drawer #drawer class="text-white flex flex-col p-4 space-y-6"  mode="side" [opened]="true">
+    <mat-drawer 
+    #drawer 
+    class="text-white flex flex-col p-4 space-y-6" 
+    mode="side" 
+    [opened]="sidebarState()"
+  >
         <!-- Sidebar Header -->
         <div class="flex items-center space-x-3">
             <h2 class="text-xl font-bold">Navigation</h2>
@@ -19,13 +24,7 @@
             </a>
         </nav>
 
-        <!-- Toggle Button -->
-        <div class="mt-auto">
-            <button class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-                mat-raised-button (click)="toggleFiller()">
-                Toggle Extra Content
-            </button>
-        </div>
+        
 
         <!-- Conditional Content -->
         @if (showFiller()) {
@@ -45,3 +44,4 @@
         </button>
     </div>
 </mat-drawer-container>
+

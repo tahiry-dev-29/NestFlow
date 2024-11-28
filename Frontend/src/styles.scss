@@ -63,11 +63,11 @@
       var(--color) calc(var(--gap) - var(--line) + 1px),
       var(--color) var(--gap)
     ) !important;
-  background-size: var(--gap) var(--gap) !important;
+  background-size: var(--gap) var(--gap);
 }
 
 html {
-  --mat-sys-background: linear-gradient(to right, #a855f7, #ec4899);
+  --mat-sys-background: #01212A;
   --mat-sys-error: #f09494;
   --mat-sys-error-container: #ffdad6;
   --mat-sys-inverse-on-surface: #f2f0f4;
@@ -86,6 +86,10 @@ html {
   --mat-sys-on-secondary-fixed-variant: #3e4759;
   --mat-sys-on-surface: #1a1b1f;
   --mat-sys-on-surface-variant: #44474e;
+  --mat-sys-on-tertiary: #ffffff;
+  --mat-sys-on-tertiary-container: #00006e;
+  --mat-sys-on-tertiary-fixed: #00006e;
+  --mat-sys-on-tertiary-fixed-variant: #0000ef;
   --mat-sys-outline: #74777f;
   --mat-sys-outline-variant: #c4c6d0;
   --mat-sys-primary: #06A7D9;
