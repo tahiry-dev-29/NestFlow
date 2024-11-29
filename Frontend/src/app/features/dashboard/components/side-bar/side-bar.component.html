@@ -1,39 +1,7 @@
-<mat-drawer-container class="h-screen flex" autosize>
-    <!-- Sidebar -->
-    <mat-drawer 
-    #drawer 
-    class="text-white flex flex-col p-4 space-y-6" 
-    mode="side" 
-    [opened]="sidebarState()"
-  >
-        <!-- Sidebar Header -->
+<mat-drawer-container class="" autosize>
+    <mat-drawer #drawer class="text-white flex flex-col p-4 space-y-6" mode="side" [opened]="sidebarState()">
         <div class="flex items-center space-x-3">
             <h2 class="text-xl font-bold">Navigation</h2>
         </div>
-
-        <!-- Navigation Links -->
-        <nav class="flex flex-col space-y-3">
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition-colors">
-                <span>Home</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition-colors">
-                <span>About</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition-colors">
-                <span>Settings</span>
-            </a>
-        </nav>
-
-        
-
-        <!-- Conditional Content -->
-        @if (showFiller()) {
-        <div class="mt-4 bg-gray-700 p-3 rounded">
-            <p class="text-sm text-gray-300">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            </p>
-        </div>
-        }
     </mat-drawer>
 </mat-drawer-container>
-

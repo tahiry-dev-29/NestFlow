@@ -6,14 +6,27 @@ module.exports = {
       borderColor: {
         DEFAULT: "#d1d5db",
       },
-    colors: {
+
+      utility: {
+        'bg-custom': {
+          width: '100%',
+          height: '100%',
+          background: 'black !important',
+          '--gap': '5em',
+          '--line': '1px',
+          '--color': 'rgba(255, 255, 255, 0.2)',
+          backgroundImage: 'linear-gradient(-90deg, transparent calc(var(--gap) - var(--line)), var(--color) calc(var(--gap) - var(--line) + 1px), var(--color) var(--gap)), linear-gradient(0deg, transparent calc(var(--gap) - var(--line)), var(--color) calc(var(--gap) - var(--line) + 1px), var(--color) var(--gap)))',
+          backgroundSize: 'var(--gap) var(--gap)',
+        }
+      },
+      colors: {
         primary: "#a855f7",
         "gradient-from": "#a855f7",
         "gradient-to": "#ec4899",
       },
       boxShadow: {
-        'primary-outline': '0 0 0 2px rgba(255, 255, 255, 0.5)', // Exemple de définition d'une ombre personnalisée
-      }
+        "primary-outline": "0 0 0 2px rgba(255, 255, 255, 0.5)", // Exemple de définition d'une ombre personnalisée
+      },
     },
     screens: {
       sm: "576px",
