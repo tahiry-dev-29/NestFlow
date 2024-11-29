@@ -14,6 +14,6 @@ export class HeaderComponent {
   sidebarState = sidebarState;
 
   toggleSidebar(): void {
-    this.sidebarState.update(state => !state); // Inverse l'état du signal
+    this.sidebarState.update(state => !state);
   }
 }

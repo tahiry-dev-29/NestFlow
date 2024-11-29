@@ -1,20 +1,9 @@
 <div class="flex h-screen">
-    <!-- Sidebar -->
-    <app-side-bar 
-      class="bg-gray-800 text-white w-64 flex flex-col p-4"
-    ></app-side-bar>
-  
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col">
-      <!-- Header -->
-      <app-header 
-        class="bg-blue-500 text-white py-4 px-6 shadow-md"
-      ></app-header>
-  
-      <!-- Page Content -->
-      <main class="flex-1 bg-gray-100 p-6 overflow-y-auto">
-        <router-outlet></router-outlet>
-      </main>
-    </div>
+  <app-side-bar></app-side-bar>
+  <div class="flex flex-1 flex-col">
+    <app-header></app-header>
+    <main class="flex-1 bg-gray-100 p-6 overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
   </div>
-  
+</div>

@@ -1,7 +1,13 @@
+// @import "custome";
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import './custome';
+
+$bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
+
+
 @layer components {
   .btn-gradient-bg {
     @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:-translate-y-px leading-normal text-sm ease-in  shadow-md hover:border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-2 ring-offset-2;
@@ -67,7 +73,7 @@
 }
 
 html {
-  --mat-sys-background: #01212A;
+  --mat-sys-background: linear-gradient(to right, #a855f7, #ec4899);
   --mat-sys-error: #f09494;
   --mat-sys-error-container: #ffdad6;
   --mat-sys-inverse-on-surface: #f2f0f4;
@@ -81,7 +87,7 @@ html {
   --mat-sys-on-primary-fixed: #001b3f;
   --mat-sys-on-primary-fixed-variant: #00458f;
   --mat-sys-on-secondary: #ffffff;
-  --mat-sys-on-secondary-container: #131c2b;
+  --mat-sys-on-secondary-container: #f2f0f4;
   --mat-sys-on-secondary-fixed: #131c2b;
   --mat-sys-on-secondary-fixed-variant: #3e4759;
   --mat-sys-on-surface: #1a1b1f;

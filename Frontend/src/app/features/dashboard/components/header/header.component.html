@@ -1,12 +1,6 @@
-<mat-toolbar class="bg-blue-500 text-white">
-    <button 
-      mat-icon-button 
-      class="example-icon" 
-      aria-label="Toggle sidebar" 
-      (click)="toggleSidebar()"
-    >
-     menu
-    </button>
-    <span class="ml-4 text-xl font-bold">My App</span>
-  </mat-toolbar>
-  
+<mat-toolbar class="flex justify-between">
+  <button mat-icon-button class="example-icon" aria-label="Toggle sidebar" (click)="toggleSidebar()">
+    menu
+  </button>
+  <span>My App</span>
+</mat-toolbar>
