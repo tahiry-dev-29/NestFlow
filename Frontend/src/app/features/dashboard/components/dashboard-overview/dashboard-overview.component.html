@@ -1,7 +1,8 @@
 <div class="flex h-screen">
-  <app-side-bar class="h-screen flex"></app-side-bar>
-  <div class="flex flex-1 flex-col">
-    <app-header></app-header>
+  <app-side-bar class="h-screen flex ml-4 "></app-side-bar>
+  <div class="flex flex-1 flex-col w-full">
+    <app-header
+      class="items-center w-full justify-between px-0 py-2 transition-all ease-in duration-250 rounded-2xl lg:flex-nowrap sticky top-[1%] backdrop-saturate-200 backdrop-blur-2xl bg-slate-850/80 shadow-dark-blur"></app-header>
     <main class=" overflow-y-auto">
       <router-outlet></router-outlet>
     </main>

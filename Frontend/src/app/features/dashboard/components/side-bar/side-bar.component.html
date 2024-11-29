@@ -1,7 +1,12 @@
-<mat-drawer-container class="" autosize>
-    <mat-drawer #drawer class="text-white flex flex-col p-4 space-y-6" mode="side" [opened]="sidebarState()">
-        <div class="flex items-center space-x-3">
-            <h2 class="text-xl font-bold">Navigation</h2>
+<aside class="rounder rounded-2xl ">
+    <section class="marker !important flex flex-col p-4 space-y-6" [opened]="sidebarState()">
+        <div class="flex justify-center items-center space-x-3">
+            <div class="h-19">
+                <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-white "> 
+                    <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand">Argon Dashboard 2</span>
+                </a>
+                <hr class="h-px mt-0 bg-transparent bg-gradient-to-r from-transparent dark:bg-gradient-to-r dark:from-transparent via-white to-transparent">
+            </div>
         </div>
-    </mat-drawer>
-</mat-drawer-container>
+    </section>
+</aside>
