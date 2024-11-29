@@ -38,3 +38,28 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
     @apply bg-[#FF6A3D] px-2 text-sm rounded rotate-12 absolute;
   }
 }
+
+
+.bg-custom {
+  width: 100%;
+  height: 100%;
+
+  background: #0b122cfa ;
+  --gap: 5em;
+  --line: 1px;
+  --color: rgba(255, 255, 255, 0.2);
+
+  background-image: linear-gradient(
+      -90deg,
+      transparent calc(var(--gap) - var(--line)),
+      var(--color) calc(var(--gap) - var(--line) + 1px),
+      var(--color) var(--gap)
+    ),
+    linear-gradient(
+      0deg,
+      transparent calc(var(--gap) - var(--line)),
+      var(--color) calc(var(--gap) - var(--line) + 1px),
+      var(--color) var(--gap)
+    );
+  background-size: var(--gap) var(--gap);
+}
