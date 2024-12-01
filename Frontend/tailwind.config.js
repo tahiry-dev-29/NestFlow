@@ -3,10 +3,6 @@ module.exports = {
   content: ["./src/**/*.{html,ts, scss}"],
   theme: {
     extend: {
-      borderColor: {
-        DEFAULT: "#d1d5db",
-      },
-
       utility: {
         'bg-custom': {
           width: '100%',
@@ -20,12 +16,30 @@ module.exports = {
         }
       },
       colors: {
-        primary: "#a855f7",
+        'primary': "blue-400",
         "gradient-from": "#a855f7",
         "gradient-to": "#ec4899",
+        'secondary': '#ec4899',
+        'text-gradient-start': '#a855f7',
+        'text-gradient-end': '#ec4899',
+        'text-color': '#4b5563',
+        'bg-slate': '#1e293b',
+        'focus-ring': '#a855f7',
+      },
+      ringColor: {
+        'primary': '#a855f7',
+      },
+      borderColor: {
+        'text-gradient': 'transparent',
+      },
+      backgroundImage: {
+        'text-gradient': 'linear-gradient(to right, #a855f7, #ec4899)',
+      },
+      ringOffsetWidth: {
+        2: '2px',
       },
       boxShadow: {
-        "primary-outline": "0 0 0 2px rgba(255, 255, 255, 0.5)", // Exemple de définition d'une ombre personnalisée
+        "primary-outline": "0 0 0 2px rgba(255, 255, 255, 0.5)",
       },
     },
     screens: {
@@ -1359,13 +1373,17 @@ module.exports = {
     },
   },
   plugins: [
-    function ({ addComponents }) {
-      addComponents({
-        ".input-theme": {
-          "@apply placeholder:text-gray-500 text-sm focus:ring-2 ring-offset-2 focus:ring-primary focus:border-primary outline-none leading-5 block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:bg-white focus:text-gray-700":
-            {},
-        },
-      });
-    },
-  ],
+  function ({ addComponents }) {
+    addComponents({
+      '.input-theme': {
+        '@apply placeholder:text-gray-500 text-sm focus:ring-2 ring-offset-2 focus:ring-primary focus:border-primary outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:bg-text-gradient focus:text-white text-white items-center flex': {},
+        'border-image': 'linear-gradient(to right, #a855f7, #ec4899) 1',
+        borderRadius: '1rem', // Equivalent to rounded-lg (or use @apply rounded-lg)
+      },
+    });
+  },
+],
 };
+
+
+

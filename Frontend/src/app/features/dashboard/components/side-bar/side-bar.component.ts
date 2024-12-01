@@ -1,18 +1,33 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { sidebarState } from '../../store/signal.store';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-side-bar',
-  imports: [],
+  imports: [CommonModule, RouterLinkActive, RouterLink],
   templateUrl: './side-bar.component.html',
-  styleUrl: './side-bar.component.scss'
+  styleUrl: './side-bar.component.scss',
 })
 export class SideBarComponent {
-showFiller= signal(false);
+  showFiller = signal(false);
 
-toggleFiller(): void {
-  this.showFiller.set(!this.showFiller());
+  private readonly router =inject(Router);
+
+  toggleFiller(): void {
+    this.showFiller.set(!this.showFiller());
+  }
+
+  sidebarState = sidebarState;
+
+  isActive(route: string): boolean {
+    return this.router.url.includes(route);
+  }
+  navigate(params: string[]){
+    console.log("go dashboard");
+    
+    this.router.navigate(params);
+  }
 }
 
-sidebarState = sidebarState;
-}
+

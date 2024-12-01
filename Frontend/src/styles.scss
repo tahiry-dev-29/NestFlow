@@ -1,21 +1,77 @@
+// Main style
+@import "../node_modules/material-icons/iconfont/material-icons.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 
+@layer components {
+  .material-icons-outlined {
+    font-family: "Material Icons Outlined";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "liga";
+  }
+  .material-icons {
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "liga";
+  }
+  .menu-icon {
+    @apply w-8 h-8  transition duration-300;
+  }
+
+  .menu-icon-outline {
+    @apply material-icons-outlined flex items-center;
+  }
+
+  .menu-icon-solid {
+    @apply material-icons text flex items-center;
+  }
+
+  .hover-lists {
+    @apply px-4 py-2 hover:bg-slate-700/13 hover:shadow-dark-xl cursor-pointer rounded-24;
+  }
+  .active-lists {
+    @apply bg-slate-400/10 shadow-dark-blur rounded-24;
+  }
+}
 
 @layer components {
   .btn-gradient-bg {
     @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:-translate-y-px leading-normal text-sm ease-in shadow-md hover:border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-2 ring-offset-2;
   }
-
-  .btn-gradient {
-    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] text-lg text-transparent bg-clip-text font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out;
+  
+  .custom-gradient {
+    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] transition-all duration-300 ease-in-out;
   }
 
   .text {
-    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] text-transparent bg-clip-text font-semibold text-sm;
+    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] text-transparent bg-clip-text;
   }
 
   .title {
@@ -39,6 +95,11 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   }
 }
 
+@layer components {
+  .header-menu {
+    @apply sticky top-0 flex flex-wrap items-center h-20 justify-between mx-6 py-2 rounded-2xl lg:flex-nowrap px-5 backdrop-saturate-200 bg-slate-850/80 shadow-dark-blur z-110;
+  }
+}
 
 .bg-custom {
   width: 100%;
