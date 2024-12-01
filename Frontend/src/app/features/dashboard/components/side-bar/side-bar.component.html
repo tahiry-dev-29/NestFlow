@@ -1,5 +1,5 @@
 <aside
-  class="rounder rounded-2xl transition-opacity duration-300 ease-in-out bg-slate-850 text-white shadow-lg p-4 h-full"
+  class="rounder rounded-2xl transition-opacity duration-300 ease-in-out bg-slate-850 text-white shadow-lg p-4 h-screen ml-4 mt-4"
   [class.w-64]="sidebarState()"
   [class.hidden]="!sidebarState()"
 >
@@ -18,7 +18,7 @@
         <!-- Dashboard -->
         <li
           class="flex items-center hover-lists"
-          routerLink="/dashboard"
+          routerLink="/dashboard/overview"
           routerLinkActive="active-lists"
           [routerLinkActiveOptions]="{ exact: true }"
         >
@@ -26,16 +26,16 @@
             <span
               class="menu-icon"
               [ngClass]="{
-                'menu-icon-solid': isActive('dashboard'),
-                'menu-icon-outline': !isActive('dashboard')
+                'menu-icon-solid': isActive('overview'),
+                'menu-icon-outline': !isActive('overview')
               }"
             >
               dashboard
             </span>
             <span class="font-semibold" 
             [ngClass]="{
-              text: isActive('dashboard'),
-              'text-white': !isActive('dashboard')
+              text: isActive('overview'),
+              'text-white': !isActive('overview')
             }"
             >Dashboard</span>
           </a>

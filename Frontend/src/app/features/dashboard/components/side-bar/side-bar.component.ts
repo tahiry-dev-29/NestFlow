@@ -23,6 +23,7 @@ export class SideBarComponent {
   isActive(route: string): boolean {
     return this.router.url.includes(route);
   }
+  
   navigate(params: string[]){
     console.log("go dashboard");
     

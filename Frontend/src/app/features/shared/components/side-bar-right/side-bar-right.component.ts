@@ -8,13 +8,13 @@ import { sideRightbarState } from '../../../dashboard/store/signal.store';
   styleUrl: './side-bar-right.component.scss'
 })
 export class SideBarRightComponent {
-  showFiller= signal(false);
+  showFiller = signal(false);
 
   loggle(): void {
-  this.showFiller.set(!this.showFiller());
-}
+    this.showFiller.set(!this.showFiller());
+  }
 
-sidebarState = sideRightbarState;
+  sidebarState = sideRightbarState;
 
 
 }

@@ -1,20 +1,21 @@
 import { Routes } from '@angular/router';
-import { DashboardOverviewComponent } from './components/dashboard-overview/dashboard-overview.component';
 import { NotFoundComponent } from '../shared/pages/not-found/not-found.component';
 
 export const DashboardRouter: Routes = [
   {
     path: '',
     title: 'Dashboard',
-    component: DashboardOverviewComponent,
+    loadComponent: () => import('../dashboard/components/dashboard-overview/dashboard-overview.component').then((m) => m.DashboardOverviewComponent),
     children: [
       {
         path: '',
+        redirectTo: 'overview',
+        pathMatch: 'full',
+      },
+      {
+        path: 'overview',
         title: 'Dashboard',
-        loadComponent: () =>
-          import('../dashboard/components/content-dashboard/content-dashboard.component').then(
-            (m) => m.ContentDashboardComponent
-          ),
+        loadComponent: () =>import('../dashboard/components/content-dashboard/content-dashboard.component').then((m) => m.ContentDashboardComponent),
       },
       {
         path: 'users',
