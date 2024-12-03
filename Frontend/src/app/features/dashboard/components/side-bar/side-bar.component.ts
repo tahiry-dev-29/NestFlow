@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
-import { sidebarState } from '../../store/signal.store';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { sideLeftBarState } from '../../store/signal.store';
 
 @Component({
   selector: 'app-side-bar',
@@ -10,25 +10,14 @@ import { CommonModule } from '@angular/common';
   styleUrl: './side-bar.component.scss',
 })
 export class SideBarComponent {
-  showFiller = signal(false);
+  private readonly router = inject(Router);
 
-  private readonly router =inject(Router);
-
-  toggleFiller(): void {
-    this.showFiller.set(!this.showFiller());
-  }
-
-  sidebarState = sidebarState;
-
+  sideLeftBarState = sideLeftBarState;
+  
   isActive(route: string): boolean {
     return this.router.url.includes(route);
   }
-  
-  navigate(params: string[]){
-    console.log("go dashboard");
-    
-    this.router.navigate(params);
-  }
+
 }
 
 

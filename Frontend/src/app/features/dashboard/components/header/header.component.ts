@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { sidebarState } from '../../store/signal.store';
+import { sideLeftBarState } from '../../store/signal.store';
 
 @Component({
   selector: 'app-header',
@@ -8,10 +8,9 @@ import { sidebarState } from '../../store/signal.store';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  sidebarState = sidebarState;
+  sidebarState = sideLeftBarState;
 
   toggleSidebar(): void {
     this.sidebarState.update(state => !state);
   }
-
 }

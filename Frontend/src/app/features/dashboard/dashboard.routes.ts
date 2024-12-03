@@ -14,15 +14,31 @@ export const DashboardRouter: Routes = [
       },
       {
         path: 'overview',
-        title: 'Dashboard',
+        title: 'Dashboard Overview',
         loadComponent: () =>import('../dashboard/components/content-dashboard/content-dashboard.component').then((m) => m.ContentDashboardComponent),
       },
       {
         path: 'users',
-        title: 'Users',
+        title: 'Dashboard / Users',
         loadComponent: () =>
           import('../users/components/users/users.component').then(
             (m) => m.UsersComponent
+          ),
+      },
+      {
+        path: 'subscriptions',
+        title: 'Dashboard / Subscriptions',
+        loadComponent: () =>
+          import('../subscription/components/subscription/subscription.component').then(
+            (m) => m.SubscriptionComponent
+          ),
+      },
+      {
+        path: 'settings',
+        title: 'Dashboard / Settings',
+        loadComponent: () =>
+          import('../shared/components/settings/settings.component').then(
+            (m) => m.SettingsComponent
           ),
       },
       {

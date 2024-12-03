@@ -10,10 +10,6 @@ import { sideRightbarState } from '../../../dashboard/store/signal.store';
 export class SideBarRightComponent {
   showFiller = signal(false);
 
-  loggle(): void {
-    this.showFiller.set(!this.showFiller());
-  }
-
   sidebarState = sideRightbarState;
 
 
