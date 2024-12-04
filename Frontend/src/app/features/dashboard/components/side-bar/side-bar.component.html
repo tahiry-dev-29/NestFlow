@@ -1,5 +1,6 @@
 <aside
-  class="rounded-2xl transition-opacity duration-300 ease-in-out bg-slate-850/85 text-white min-h-[96vh] overflow-y-auto shadow-lg p-4 pb-0 mt-5 ml-5">
+  class="rounded-2xl transition-opacity duration-300 ease-in-out bg-slate-850/85 text-white min-h-[96vh] overflow-y-auto shadow-lg p-4 pb-0 mt-5 ml-5"
+>
   <div class="flex flex-col space-y-6 min-h-[95vh] overflow-hidden flex-wrap">
     <div class="flex items-center justify-center py-4">
       <!-- Logo -->
@@ -7,12 +8,16 @@
     </div>
     <hr class="border-gray-700" />
 
-    <section class="items-center block max-h-screen overflow-auto grow basis-full h-full">
-      <!-- Navigation Menu -->
-      <ul class="flex flex-col pl-0 mb-0 mt-4 space-y-2 h-full">
+    <section class="flex flex-col grow">
+      <!-- Navigation Menu Principal -->
+      <ul class="flex flex-col pl-0 mb-0 mt-4 space-y-2">
         <!-- Dashboard -->
-        <li class="flex items-center hover-lists" routerLink="overview" routerLinkActive="active-lists"
-          [routerLinkActiveOptions]="{ exact: true }">
+        <li
+          class="flex items-center hover-lists"
+          routerLink="overview"
+          routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           <a class="flex items-center space-x-3">
             <span class="menu-icon" [ngClass]="classes().menuIconClass('overview')">
               dashboard
@@ -24,8 +29,12 @@
         </li>
 
         <!-- Users -->
-        <li class="hover-lists" routerLink="users" routerLinkActive="active-lists"
-          [routerLinkActiveOptions]="{ exact: true }">
+        <li
+          class="hover-lists"
+          routerLink="users"
+          routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           <a class="flex items-center space-x-3">
             <span class="menu-icon flex items-center" [ngClass]="classes().menuIconClass('users')">
               person
@@ -37,8 +46,12 @@
         </li>
 
         <!-- Subscriptions -->
-        <li class="flex items-center hover-lists" routerLink="subscriptions" routerLinkActive="active-lists"
-          [routerLinkActiveOptions]="{ exact: true }">
+        <li
+          class="flex items-center hover-lists"
+          routerLink="subscriptions"
+          routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           <a class="flex items-center space-x-3">
             <span class="menu-icon menu-icon-red" [ngClass]="classes().menuIconClass('subscriptions')">
               subscriptions
@@ -48,12 +61,16 @@
             </span>
           </a>
         </li>
+      </ul>
 
-        <!-- Settings (Dropdown) -->
+      <!-- Dropdown Menu Positionné en Bas -->
+      <ul class="mt-auto mb-5">
         <li class="flex items-center hover-lists" [ngClass]="dropdownClasses().listClasses">
           <div class="group w-full">
-            <button class="flex items-center justify-between gap-2 p-2 font-medium cursor-pointer rounded-lg w-full"
-              (click)="toggleDropdown()">
+            <button
+              class="flex items-center justify-between gap-2 p-2 font-medium cursor-pointer rounded-lg w-full"
+              (click)="toggleDropdown()"
+            >
               <div class="flex items-center gap-5">
                 <!-- Icône "settings" -->
                 <span class="material-icons text-base" [ngClass]="dropdownClasses().iconClasses">
