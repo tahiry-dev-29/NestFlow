@@ -1,144 +1,143 @@
 <aside
-  class="rounder rounded-2xl transition-opacity duration-300 ease-in-out bg-slate-850/85 text-white min-h-[96vh] overflow-y-auto shadow-lg p-4 pb-0  mt-5 ml-5"
-  >
+  class="rounded-2xl transition-opacity duration-300 ease-in-out bg-slate-850/85 text-white min-h-[96vh] overflow-y-auto shadow-lg p-4 pb-0 mt-5 ml-5"
+>
   <div class="flex flex-col space-y-6 min-h-[95vh] overflow-hidden flex-wrap">
-      <div class="flex items-center justify-center py-4">
-        <!-- Logo -->
-        <img src="#" alt="Site Logo" class="h-10" />
-      </div>
-      <hr class="border-gray-700" />
-
-      <section class="items-center block max-h-screen overflow-auto grow basis-full h-full">
-        <!-- Navigation Menu -->
-        <ul class="flex flex-col pl-0 mb-0 mt-4 space-y-2 h-full">
-          <!-- Dashboard -->
-          <li
-            class="flex items-center hover-lists"
-            routerLink="overview"
-            routerLinkActive="active-lists"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="flex items-center space-x-3">
-              <span
-                class="menu-icon"
-                [ngClass]="{
-                  'menu-icon-solid': isActive('overview'),
-                  'menu-icon-outline': !isActive('overview')
-                }"
-              >
-                dashboard
-              </span>
-              <span class="font-semibold" 
-              [ngClass]="{
-                text: isActive('overview'),
-                'text-white': !isActive('overview')
-              }"
-              >Dashboard</span>
-            </a>
-          </li>
-  
-          <!-- Assuming "dashboard" is the parent route -->
-          <li
-            class="hover-lists"
-            routerLink="users"
-            routerLinkActive="active-lists"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="flex items-center space-x-3">
-              <span
-                class="menu-icon flex items-center"
-                [ngClass]="{
-                  'menu-icon-solid': isActive('users'),
-                  'menu-icon-outline': !isActive('users')
-                }"
-              >
-                person
-              </span>
-              <span
-                class="font-semibold"
-                [ngClass]="{
-                  text: isActive('users'),
-                  'text-white': !isActive('users')
-                }"
-                >Users</span
-              >
-            </a>
-          </li>
-  
-          <!-- Subscriptions -->
-          <li
-            class="flex items-center hover-lists"
-            routerLink="subscriptions"
-            routerLinkActive="active-lists"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="flex items-center space-x-3">
-              <span
-                class="menu-icon menu-icon-red"
-                [ngClass]="{
-                  'menu-icon-solid': isActive('subscriptions'),
-                  'menu-icon-outline': !isActive('subscriptions')
-                }"
-              >
-                subscriptions
-              </span>
-              <span class="font-semibold" [ngClass]="{
-                text: isActive('subscriptions'),
-                'text-white': !isActive('subscriptions')
-              }">Subscriptions</span>
-            </a>
-          </li>
-  
-          <!-- Settings -->
-          <li
-            class="flex items-center hover-lists"
-            routerLink="settings"
-            routerLinkActive="active-lists"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="flex items-center space-x-3">
-              <span
-                class="menu-icon menu-icon-gray"
-                [ngClass]="{
-                  'menu-icon-solid': isActive('settings'),
-                  'menu-icon-outline': !isActive('settings')
-                }"
-              >
-                settings
-              </span>
-              <span class="font-semibold" [ngClass]="{
-                text: isActive('settings'),
-                'text-white': !isActive('settings')
-              }">Settings</span>
-            </a>
-          </li>
-        </ul>
-
-        <!-- loggout -->
-        <li
-        class="flex items-center hover-lists"
-        routerLink="overview"
-        routerLinkActive="active-lists"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        <a class="flex items-center space-x-3">
-          <span
-            class="menu-icon"
-            [ngClass]="{
-              'menu-icon-solid': isActive('overview'),
-              'menu-icon-outline': !isActive('overview')
-            }"
-          >
-            logout
-          </span>
-          <span class="font-semibold" 
-          [ngClass]="{
-            text: isActive('overview'),
-            'text-white': !isActive('overview')
-          }"
-          >Logout</span>
-        </a>
-      </li>
-      </section>
+    <div class="flex items-center justify-center py-4">
+      <!-- Logo -->
+      <img src="#" alt="Site Logo" class="h-10" />
     </div>
+    <hr class="border-gray-700" />
+
+    <section
+      class="items-center block max-h-screen overflow-auto grow basis-full h-full"
+    >
+      <!-- Navigation Menu -->
+      <ul class="flex flex-col pl-0 mb-0 mt-4 space-y-2 h-full">
+        <!-- Dashboard -->
+        <li
+          class="flex items-center hover-lists"
+          routerLink="overview"
+          routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a class="flex items-center space-x-3">
+            <span
+              class="menu-icon"
+              [ngClass]="classes().menuIconClass('overview')"
+            >
+              dashboard
+            </span>
+            <span
+              class="font-semibold"
+              [ngClass]="classes().textClassList('overview')"
+            >
+              Dashboard
+            </span>
+          </a>
+        </li>
+
+        <!-- Users -->
+        <li
+          class="hover-lists"
+          routerLink="users"
+          routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a class="flex items-center space-x-3">
+            <span
+              class="menu-icon flex items-center"
+              [ngClass]="classes().menuIconClass('users')"
+            >
+              person
+            </span>
+            <span
+              class="font-semibold"
+              [ngClass]="classes().textClassList('users')"
+            >
+              Users
+            </span>
+          </a>
+        </li>
+
+        <!-- Subscriptions -->
+        <li
+          class="flex items-center hover-lists"
+          routerLink="subscriptions"
+          routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a class="flex items-center space-x-3">
+            <span
+              class="menu-icon menu-icon-red"
+              [ngClass]="classes().menuIconClass('subscriptions')"
+            >
+              subscriptions
+            </span>
+            <span
+              class="font-semibold"
+              [ngClass]="classes().textClassList('subscriptions')"
+            >
+              Subscriptions
+            </span>
+          </a>
+        </li>
+
+        <!-- Settings (Dropdown) -->
+        <li
+          class="flex items-center hover-lists"
+          [ngClass]="dropdownClasses().listClasses"
+        >
+          <div class="group w-full">
+            <button
+              class="flex items-center justify-between gap-2 p-2 font-medium cursor-pointer rounded-lg w-full"
+              (click)="toggleDropdown()"
+            >
+              <div class="flex items-center gap-5">
+                <!-- Icône "settings" -->
+                <span
+                  class="material-icons text-base"
+                  [ngClass]="dropdownClasses().iconClasses"
+                >
+                  settings
+                </span>
+                <!-- Texte "Settings" -->
+                <span
+                  class="font-semibold"
+                  [ngClass]="dropdownClasses().textClasses"
+                >
+                  Settings
+                </span>
+              </div>
+              <!-- Flèche -->
+              <span
+                class="material-icons text-lg transition-transform"
+                [ngClass]="dropdownClasses().arrowClasses"
+              >
+                arrow_forward
+              </span>
+            </button>
+
+            <!-- Menu déroulant -->
+            <div
+              class="px-4 pb-2 transition-all duration-300"
+              [class.hidden]="!sideRightbarState()"
+            >
+              <ul class="flex flex-col gap-2 pl-2 text-white">
+                <li
+                  class="flex items-center group-hover:shadow-dark-blur p-2 group rounded-3 transition"
+                >
+                  <a routerLink="/logout" class="flex items-center space-x-3">
+                    <span class="material-icons text-base group-hover:text"
+                      >logout</span
+                    >
+                    <span class="font-semibold group-hover:text">Logout</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </div>
 </aside>
