@@ -1,15 +1,19 @@
 <aside
-  class="rounded-2xl transition-opacity duration-300 ease-in-out bg-slate-850/85 text-white min-h-[96vh] overflow-y-auto shadow-lg p-4 pb-0 mt-5 ml-5"
+  class="fixed top-0 left-0 lg:static z-50 bg-slate-850/85 text-white shadow-lg transition-all duration-300 ease-in-out rounded-2xl  min-h-[96vh] overflow-y-auto  p-4 pb-0 mt-5 ml-5"
+  [class.w-[18%].h-screen]="isMobile()"
+  [class.overflow-y-auto.min-h-[96vh].w-[18%]]="!isMobile()"
+  [class.hidden]="!sideLeftBarState() && isMobile()"
 >
-  <div class="flex flex-col space-y-6 min-h-[95vh] overflow-hidden flex-wrap">
+  <div class="flex flex-col space-y-6 min-h-[95vh] p-4 pb-0">
+    <!-- Logo -->
     <div class="flex items-center justify-center py-4">
-      <!-- Logo -->
       <img src="#" alt="Site Logo" class="h-10" />
     </div>
+
     <hr class="border-gray-700" />
 
+    <!-- Navigation -->
     <section class="flex flex-col grow">
-      <!-- Navigation Menu Principal -->
       <ul class="flex flex-col pl-0 mb-0 mt-4 space-y-2">
         <!-- Dashboard -->
         <li
@@ -18,7 +22,7 @@
           routerLinkActive="active-lists"
           [routerLinkActiveOptions]="{ exact: true }"
         >
-          <a class="flex items-center space-x-3">
+          <a class="flex items-center">
             <span class="menu-icon" [ngClass]="classes().menuIconClass('overview')">
               dashboard
             </span>
@@ -35,7 +39,7 @@
           routerLinkActive="active-lists"
           [routerLinkActiveOptions]="{ exact: true }"
         >
-          <a class="flex items-center space-x-3">
+          <a class="flex items-center">
             <span class="menu-icon flex items-center" [ngClass]="classes().menuIconClass('users')">
               person
             </span>
@@ -52,7 +56,7 @@
           routerLinkActive="active-lists"
           [routerLinkActiveOptions]="{ exact: true }"
         >
-          <a class="flex items-center space-x-3">
+          <a class="flex items-center">
             <span class="menu-icon menu-icon-red" [ngClass]="classes().menuIconClass('subscriptions')">
               subscriptions
             </span>
@@ -63,7 +67,7 @@
         </li>
       </ul>
 
-      <!-- Dropdown Menu Positionné en Bas -->
+      <!-- Settings Dropdown -->
       <ul class="mt-auto mb-5">
         <li class="flex items-center hover-lists" [ngClass]="dropdownClasses().listClasses">
           <div class="group w-full">
@@ -72,22 +76,18 @@
               (click)="toggleDropdown()"
             >
               <div class="flex items-center gap-5">
-                <!-- Icône "settings" -->
                 <span class="material-icons text-base" [ngClass]="dropdownClasses().iconClasses">
                   settings
                 </span>
-                <!-- Texte "Settings" -->
                 <span class="font-semibold" [ngClass]="dropdownClasses().textClasses">
                   Settings
                 </span>
               </div>
-              <!-- Flèche -->
               <span class="material-icons text-lg transition-transform" [ngClass]="dropdownClasses().arrowClasses">
                 arrow_forward
               </span>
             </button>
 
-            <!-- Menu déroulant -->
             <div class="px-4 pb-2 transition-all duration-300" [class.hidden]="!sideRightbarState()">
               <ul class="flex flex-col gap-2 pl-2 text-white">
                 <li class="flex items-center group-hover:shadow-dark-blur group rounded-3 transition">
