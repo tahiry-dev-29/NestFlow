@@ -1,10 +1,5 @@
-<section class="flex flex-wrap w-full justify-around">
-  <div class="overflow-x-auto  w-full  sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-    <div class="align-middle rounded-2xl shadow-dark-xl h-25 inline-block w-full py-4 bg-slate-850 px-6">
-
-
-    </div>
-
+<section class="flex flex-wrap w-full justify-center">
+  <div class="overflow-x-auto w-full">
     <div class="align-middle inline-block min-w-full shadow-dark-xl rounded-2xl overflow-hidden bg-slate-850 px-6 pt-3">
       <table class="min-w-full border-collapse text-white">
         <thead>
@@ -48,7 +43,7 @@
         </tbody>
       </table>
     </div>
-
+    
     <!-- Section qui s'affiche après le clic sur View Details -->
     <div *ngIf="selectedUser" class="w-full px-3 mt-6">
       <div class="relative flex flex-col p-4 bg-slate-850 shadow-dark-xl rounded-2xl">
@@ -60,16 +55,12 @@
             <li class="flex p-6 mb-2 bg-slate-850 rounded-xl">
               <div>
                 <h6 class="mb-4 text-sm text-white">{{ selectedUser.fullname }}</h6>
-                <span class="text-xs text-white/80">Company Name: <span class="font-semibold text-white">Fiber
-                    Notion</span></span><br />
-                <span class="text-xs text-white/80">Email Address: <span class="font-semibold text-white">{{
-                    selectedUser.email }}</span></span><br />
-                <span class="text-xs text-white/80">Phone: <span class="font-semibold text-white">{{
-                    selectedUser.phone }}</span></span>
+                <span class="text-xs text-white/80">Company Name: <span class="font-semibold text-white">Fiber Notion</span></span><br />
+                <span class="text-xs text-white/80">Email Address: <span class="font-semibold text-white">{{ selectedUser.email }}</span></span><br />
+                <span class="text-xs text-white/80">Phone: <span class="font-semibold text-white">{{ selectedUser.phone }}</span></span>
               </div>
               <div class="ml-auto text-right">
-                <a href="javascript:;" class="text-red-600 hover:text-orange-600 text-sm font-bold mr-4"><i
-                    class="far fa-trash-alt"></i> Delete</a>
+                <a href="javascript:;" class="text-red-600 hover:text-orange-600 text-sm font-bold mr-4"><i class="far fa-trash-alt"></i> Delete</a>
                 <a href="javascript:;" class="text-white text-sm font-bold"><i class="fas fa-pencil-alt"></i> Edit</a>
               </div>
             </li>

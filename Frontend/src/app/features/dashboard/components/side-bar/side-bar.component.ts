@@ -15,6 +15,9 @@ export class SideBarComponent {
   sideLeftBarState = sideLeftBarState;
   sideRightbarState = signal(false);
 
+  // Signal to detect if the screen size is mobile
+  readonly isMobile = signal(window.innerWidth < 1024);
+
   readonly classes = computed(() => {
     const isOpened = this.sideRightbarState();
 
@@ -26,9 +29,9 @@ export class SideBarComponent {
 
       menuIconClass: (route: string) => this.isActive(route) ? 'menu-icon-solid' : 'menu-icon-outline',
       textClassList: (route: string) => this.isActive(route) ? 'text' : 'text-white',
-      arrowClassDropDown: isOpened ? 'rotate-90 text' : 'text-white',
     };
   });
+
   readonly dropdownClasses = computed(() => {
     const isOpened = this.sideRightbarState();
     return {
@@ -51,6 +54,7 @@ export class SideBarComponent {
       },
     };
   });
+
   toggleDropdown() {
     this.sideRightbarState.set(!this.sideRightbarState());
   }

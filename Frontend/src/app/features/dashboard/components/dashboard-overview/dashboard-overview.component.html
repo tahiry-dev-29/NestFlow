@@ -1,34 +1,32 @@
-<section class="flex w-full justify-end max-h-full relative overflow-hidden">
+<div class="flex w-full justify-end max-h-full relative overflow-hidden">
   <!-- Sidebar gauche -->
   <app-side-bar
-    [class.w-[18%]]="sideLeftBarState()"
+    [class.hidden]="isSmallScreen && !sideLeftBarState()"
+    [class.w-full]="sideLeftBarState()"
     [class.-translate-x-0]="sideLeftBarState()"
     [class.-translate-x-full]="!sideLeftBarState()"
     [class.shadow-lg]="sideLeftBarState()"
-    class="transition-all duration-500 ease-[cubic-bezier(0.4, 0.0, 0.2, 1)] fixed left-0 top-0 h-full bg-transparent"
+    class="flex transition-all duration-500 ease-[cubic-bezier(0.4, 0.0, 0.2, 1)] fixed left-0 top-0 h-full bg-slate-850/10"
   ></app-side-bar>
 
   <!-- Section principale -->
   <section
     [class.w-[82%]]="sideLeftBarState()"
     [class.w-[100%]]="!sideLeftBarState()"
-    class="transition-all duration-500 ease-[cubic-bezier(0.4, 0.0, 0.5, 1)] flex justify-around gap-5"
+    class="transition-all duration-500 ease-[cubic-bezier(0.4, 0.0, 0.5, 1)] flex flex-col"
   >
-    <!-- Contenu principal -->
-    <div
-      class="flex-1 flex flex-col transition-all ease-[cubic-bezier(0.4, 0.0, 0.2, 1)] duration-500"
-    >
-      <!-- Header -->
-      <app-header class="header-menu"></app-header>
+    <!-- Header -->
+    <app-header class="header-menu"></app-header>
 
-      <!-- Content -->
-      <main class="flex-1 p-4">
-        <button (click)="toggleRight()" class="text">Show/Hide Sidebar</button>
-        <router-outlet></router-outlet>
-      </main>
-    </div>
+    <!-- Contenu principal -->
+    <main class="flex-1 p-4">
+      <router-outlet></router-outlet>
+    </main>
   </section>
 
   <!-- Sidebar droit -->
-  <app-side-bar-right></app-side-bar-right>
-</section>
+  <!-- <app-side-bar-right
+    class="transition-all duration-500 ease-[cubic-bezier(0.4, 0.0, 0.5, 1)] hidden lg:block w-[18%] shadow-lg fixed right-0 top-0 h-full"
+  ></app-side-bar-right> -->
+  
+</div>
