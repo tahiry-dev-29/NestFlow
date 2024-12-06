@@ -1,97 +1,79 @@
-<section class="p-6">
-  <div class="flex flex-wrap -mx-3">
-    <div class="overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-      <div class="align-middle rounded-2xl shadow-dark-xl inline-block w-full py-4 bg-slate-850 px-6">
-        <div class="flex justify-between">
-          <div class="inline-flex border shadow-dark-xl rounded-2xl w-full lg:w-7/12 px-2 lg:px-6 h-12 bg-slate-850">
-            <div class="flex flex-wrap items-stretch w-full h-full relative">
-              <div class="flex">
-                <span class="flex items-center leading-normal bg-transparent rounded-l border border-r-0 px-3 py-2 text-gray-300 text-sm">
-                  <span class="material-icons">search</span>
-                </span>
-              </div>
-              <input
-                type="text"
-                class="flex-grow flex-auto leading-normal tracking-wide border border-gray-300 rounded-r px-3 relative focus:outline-none text-sm text-gray-300 bg-slate-850"
-                placeholder="Search"
-              />
-            </div>
-          </div>
+<section class="flex flex-wrap w-full justify-around">
+  <div class="overflow-x-auto  w-full  sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+    <div class="align-middle rounded-2xl shadow-dark-xl h-25 inline-block w-full py-4 bg-slate-850 px-6">
+
+
+    </div>
+
+    <div class="align-middle inline-block min-w-full shadow-dark-xl rounded-2xl overflow-hidden bg-slate-850 px-6 pt-3">
+      <table class="min-w-full border-collapse text-white">
+        <thead>
+          <tr>
+            <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">ID</th>
+            <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Fullname</th>
+            <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Email</th>
+            <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Phone</th>
+            <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Status</th>
+            <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Created At</th>
+            <th class="px-6 py-3 border-b-2 border-gray-600"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">
+              <div class="text-sm">{{ user.id }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">
+              <div class="text-sm">{{ user.fullname }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">{{ user.email }}</td>
+            <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">{{ user.phone }}</td>
+            <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">
+              <span class="relative inline-block px-3 py-1 font-semibold leading-tight"
+                [ngClass]="{ 'text-green-500': user.status === 'active', 'text-red-500': user.status !== 'active' }">
+                <span class="absolute inset-0 opacity-50 rounded-full"
+                  [ngClass]="{ 'bg-green-200': user.status === 'active', 'bg-red-200': user.status !== 'active' }"></span>
+                <span class="relative text-xs">{{ user.status }}</span>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">{{ user.createdAt }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right border-b border-gray-600">
+              <button
+                class="px-5 py-2 border border-blue-500 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
+                (click)="toggleDetails(user)">
+                View Details
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section qui s'affiche après le clic sur View Details -->
+    <div *ngIf="selectedUser" class="w-full px-3 mt-6">
+      <div class="relative flex flex-col p-4 bg-slate-850 shadow-dark-xl rounded-2xl">
+        <div class="p-6 pb-0 border-b border-transparent rounded-t-2xl">
+          <h6 class="text-white">Billing Information</h6>
         </div>
-        
-      </div>
-
-      <div class="align-middle inline-block min-w-full shadow-dark-xl rounded-2xl overflow-hidden bg-slate-850 px-6 pt-3">
-        <table class="min-w-full border-collapse text-white">
-          <thead>
-            <tr>
-              <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">ID</th>
-              <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Fullname</th>
-              <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Email</th>
-              <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Phone</th>
-              <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Status</th>
-              <th class="px-6 py-3 border-b-2 border-gray-600 text-left text-sm font-medium">Created At</th>
-              <th class="px-6 py-3 border-b-2 border-gray-600"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let user of users">
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">
-                <div class="text-sm">{{ user.id }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">
-                <div class="text-sm">{{ user.fullname }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">{{ user.email }}</td>
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">{{ user.phone }}</td>
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">
-                <span
-                  class="relative inline-block px-3 py-1 font-semibold leading-tight"
-                  [ngClass]="{ 'text-green-500': user.status === 'active', 'text-red-500': user.status !== 'active' }"
-                >
-                  <span
-                    class="absolute inset-0 opacity-50 rounded-full"
-                    [ngClass]="{ 'bg-green-200': user.status === 'active', 'bg-red-200': user.status !== 'active' }"
-                  ></span>
-                  <span class="relative text-xs">{{ user.status }}</span>
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-600">{{ user.createdAt }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-right border-b border-gray-600">
-                <button
-                  class="px-5 py-2 border border-blue-500 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-                  (click)="toggleDetails(user)"
-                >
-                  View Details
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Section qui s'affiche après le clic sur View Details -->
-      <div *ngIf="selectedUser" class="w-full px-3 mt-6">
-        <div class="relative flex flex-col p-4 bg-slate-850 shadow-dark-xl rounded-2xl">
-          <div class="p-6 pb-0 border-b border-transparent rounded-t-2xl">
-            <h6 class="text-white">Billing Information</h6>
-          </div>
-          <div class="flex-auto p-4 pt-6">
-            <ul class="flex flex-col pl-0 mb-0">
-              <li class="flex p-6 mb-2 bg-slate-850 rounded-xl">
-                <div>
-                  <h6 class="mb-4 text-sm text-white">{{ selectedUser.fullname }}</h6>
-                  <span class="text-xs text-white/80">Company Name: <span class="font-semibold text-white">Fiber Notion</span></span><br />
-                  <span class="text-xs text-white/80">Email Address: <span class="font-semibold text-white">{{ selectedUser.email }}</span></span><br />
-                  <span class="text-xs text-white/80">Phone: <span class="font-semibold text-white">{{ selectedUser.phone }}</span></span>
-                </div>
-                <div class="ml-auto text-right">
-                  <a href="javascript:;" class="text-red-600 hover:text-orange-600 text-sm font-bold mr-4"><i class="far fa-trash-alt"></i> Delete</a>
-                  <a href="javascript:;" class="text-white text-sm font-bold"><i class="fas fa-pencil-alt"></i> Edit</a>
-                </div>
-              </li>
-            </ul>
-          </div>
+        <div class="flex-auto p-4 pt-6">
+          <ul class="flex flex-col pl-0 mb-0">
+            <li class="flex p-6 mb-2 bg-slate-850 rounded-xl">
+              <div>
+                <h6 class="mb-4 text-sm text-white">{{ selectedUser.fullname }}</h6>
+                <span class="text-xs text-white/80">Company Name: <span class="font-semibold text-white">Fiber
+                    Notion</span></span><br />
+                <span class="text-xs text-white/80">Email Address: <span class="font-semibold text-white">{{
+                    selectedUser.email }}</span></span><br />
+                <span class="text-xs text-white/80">Phone: <span class="font-semibold text-white">{{
+                    selectedUser.phone }}</span></span>
+              </div>
+              <div class="ml-auto text-right">
+                <a href="javascript:;" class="text-red-600 hover:text-orange-600 text-sm font-bold mr-4"><i
+                    class="far fa-trash-alt"></i> Delete</a>
+                <a href="javascript:;" class="text-white text-sm font-bold"><i class="fas fa-pencil-alt"></i> Edit</a>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

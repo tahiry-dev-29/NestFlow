@@ -3,40 +3,48 @@ module.exports = {
   content: ["./src/**/*.{html,ts, scss}"],
   theme: {
     extend: {
+      scrollbar: {
+        DEFAULT: {
+          thumb: "#A0AEC0",
+          track: "#EDF2F7",
+          "hover:thumb": "#4A5568",
+        },
+      },
       utility: {
-        'bg-custom': {
-          width: '100%',
-          height: '100%',
-          background: 'black !important',
-          '--gap': '5em',
-          '--line': '1px',
-          '--color': 'rgba(255, 255, 255, 0.2)',
-          backgroundImage: 'linear-gradient(-90deg, transparent calc(var(--gap) - var(--line)), var(--color) calc(var(--gap) - var(--line) + 1px), var(--color) var(--gap)), linear-gradient(0deg, transparent calc(var(--gap) - var(--line)), var(--color) calc(var(--gap) - var(--line) + 1px), var(--color) var(--gap)))',
-          backgroundSize: 'var(--gap) var(--gap)',
-        }
+        "bg-custom": {
+          width: "100%",
+          height: "100%",
+          background: "black !important",
+          "--gap": "5em",
+          "--line": "1px",
+          "--color": "rgba(255, 255, 255, 0.2)",
+          backgroundImage:
+            "linear-gradient(-90deg, transparent calc(var(--gap) - var(--line)), var(--color) calc(var(--gap) - var(--line) + 1px), var(--color) var(--gap)), linear-gradient(0deg, transparent calc(var(--gap) - var(--line)), var(--color) calc(var(--gap) - var(--line) + 1px), var(--color) var(--gap)))",
+          backgroundSize: "var(--gap) var(--gap)",
+        },
       },
       colors: {
-        'primary': "blue-400",
+        primary: "blue-400",
         "gradient-from": "#a855f7",
         "gradient-to": "#ec4899",
-        'secondary': '#ec4899',
-        'text-gradient-start': '#a855f7',
-        'text-gradient-end': '#ec4899',
-        'text-color': '#4b5563',
-        'bg-slate': '#1e293b',
-        'focus-ring': '#a855f7',
+        secondary: "#ec4899",
+        "text-gradient-start": "#a855f7",
+        "text-gradient-end": "#ec4899",
+        "text-color": "#4b5563",
+        "bg-slate": "#1e293b",
+        "focus-ring": "#a855f7",
       },
       ringColor: {
-        'primary': '#a855f7',
+        primary: "#a855f7",
       },
       borderColor: {
-        'text-gradient': 'transparent',
+        "text-gradient": "transparent",
       },
       backgroundImage: {
-        'text-gradient': 'linear-gradient(to right, #a855f7, #ec4899)',
+        "text-gradient": "linear-gradient(to right, #a855f7, #ec4899)",
       },
       ringOffsetWidth: {
-        2: '2px',
+        2: "2px",
       },
       boxShadow: {
         "primary-outline": "0 0 0 2px rgba(255, 255, 255, 0.5)",
@@ -147,7 +155,7 @@ module.exports = {
         800: "#991b1b",
         900: "#7f1d1d",
       },
-      
+
       orange: {
         DEFAULT: colors.orange,
         50: "#fff7ed",
@@ -491,6 +499,7 @@ module.exports = {
       "1/2": "50%",
     },
     animation: {
+      glowing: "glowing 20s linear infinite",
       none: "none",
       spin: "spin 1s linear infinite",
       ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
@@ -516,13 +525,17 @@ module.exports = {
     backgroundImage: ({ theme }) => ({
       none: "none",
       "gradient-to-t": "linear-gradient(to top, var(--tw-gradient-stops))",
-      "gradient-to-tr": "linear-gradient(to top right, var(--tw-gradient-stops))",
+      "gradient-to-tr":
+        "linear-gradient(to top right, var(--tw-gradient-stops))",
       "gradient-to-r": "linear-gradient(to right, var(--tw-gradient-stops))",
-      "gradient-to-br": "linear-gradient(to bottom right, var(--tw-gradient-stops))",
+      "gradient-to-br":
+        "linear-gradient(to bottom right, var(--tw-gradient-stops))",
       "gradient-to-b": "linear-gradient(to bottom, var(--tw-gradient-stops))",
-      "gradient-to-bl": "linear-gradient(to bottom left, var(--tw-gradient-stops))",
+      "gradient-to-bl":
+        "linear-gradient(to bottom left, var(--tw-gradient-stops))",
       "gradient-to-l": "linear-gradient(to left, var(--tw-gradient-stops))",
-      "gradient-to-tl": "linear-gradient(to top left, var(--tw-gradient-stops))",
+      "gradient-to-tl":
+        "linear-gradient(to top left, var(--tw-gradient-stops))",
     }),
     backgroundOpacity: ({ theme }) => theme("opacity"),
     backgroundPosition: {
@@ -598,18 +611,22 @@ module.exports = {
       8: "8px",
     },
     boxShadow: {
-      "xxs": "0 1px 5px 1px #ddd",
-      "xs": "0 7px 14px rgba(50,50,93,.1),0 3px 6px rgba(0,0,0,.08)",
-      "sm": "0 .25rem .375rem -.0625rem hsla(0,0%,8%,.12),0 .125rem .25rem -.0625rem hsla(0,0%,8%,.07)",
-      "md": "0 4px 6px rgba(50,50,93,.1),0 1px 3px rgba(0,0,0,.08)",
-      "lg": "0 2px 12px 0 rgba(0,0,0,.16)",
-      "xl": "0 0 2rem 0 rgba(136,152,170,.15)",
-      "dark-xl": "0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12)",
+      xxs: "0 1px 5px 1px #ddd",
+      xs: "0 7px 14px rgba(50,50,93,.1),0 3px 6px rgba(0,0,0,.08)",
+      sm: "0 .25rem .375rem -.0625rem hsla(0,0%,8%,.12),0 .125rem .25rem -.0625rem hsla(0,0%,8%,.07)",
+      md: "0 4px 6px rgba(50,50,93,.1),0 1px 3px rgba(0,0,0,.08)",
+      lg: "0 2px 12px 0 rgba(0,0,0,.16)",
+      xl: "0 0 2rem 0 rgba(136,152,170,.15)",
+      "dark-xl":
+        "0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12)",
       "2xl": "0 .3125rem .625rem 0 rgba(0,0,0,.12)",
-      "3xl": "0 8px 26px -4px hsla(0,0%,8%,.15),0 8px 9px -5px hsla(0,0%,8%,.06)",
-      "primary-outline": "0 3px 9px rgba(50,50,9,0),3px 4px 8px rgba(94,114,228,.1)",
+      "3xl":
+        "0 8px 26px -4px hsla(0,0%,8%,.15),0 8px 9px -5px hsla(0,0%,8%,.06)",
+      "primary-outline":
+        "0 3px 9px rgba(50,50,9,0),3px 4px 8px rgba(94,114,228,.1)",
       blur: "inset 0 0 1px 1px hsla(0,0%,100%,.9),0 20px 27px 0 rgba(0,0,0,.05)",
-      "dark-blur": "inset 0 0 1px 1px hsla(0,0%,100%,.4),0 20px 27px 0 rgba(0,0,0,.05)",
+      "dark-blur":
+        "inset 0 0 1px 1px hsla(0,0%,100%,.4),0 20px 27px 0 rgba(0,0,0,.05)",
       DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
       inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
       none: "none",
@@ -758,7 +775,10 @@ module.exports = {
     },
     fontFamily: {
       sans: ["Open Sans"],
-      serif: ['SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace', "serif"],
+      serif: [
+        'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+        "serif",
+      ],
       body: ["Roboto", "sans-serif"],
       awesome: ["FontAwesome"],
     },
@@ -948,6 +968,11 @@ module.exports = {
       full: "100%",
     }),
     keyframes: {
+      glowing: {
+        "0%": { backgroundPosition: "0% 0%" },
+        "50%": { backgroundPosition: "400% 0%" },
+        "100%": { backgroundPosition: "0% 0%" },
+      },
       "fade-up": {
         from: {
           opacity: "0",
@@ -1284,8 +1309,10 @@ module.exports = {
     transitionProperty: {
       none: "none",
       all: "all",
-      DEFAULT: "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter",
-      colors: "color, background-color, border-color, text-decoration-color, fill, stroke",
+      DEFAULT:
+        "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter",
+      colors:
+        "color, background-color, border-color, text-decoration-color, fill, stroke",
       color: "color",
       height: "height",
       "max-height": "max-height",
@@ -1373,17 +1400,16 @@ module.exports = {
     },
   },
   plugins: [
-  function ({ addComponents }) {
-    addComponents({
-      '.input-theme': {
-        '@apply placeholder:text-gray-500 text-sm focus:ring-2 ring-offset-2 focus:ring-primary focus:border-primary outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:bg-text-gradient focus:text-white text-white items-center flex': {},
-        'border-image': 'linear-gradient(to right, #a855f7, #ec4899) 1',
-        borderRadius: '1rem', // Equivalent to rounded-lg (or use @apply rounded-lg)
-      },
-    });
-  },
-],
+    require("tailwind-scrollbar"),
+    function ({ addComponents }) {
+      addComponents({
+        ".input-theme": {
+          "@apply placeholder:text-gray-500 text-sm focus:ring-2 ring-offset-2 focus:ring-primary focus:border-primary outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:bg-text-gradient focus:text-white text-white items-center flex":
+            {},
+          "border-image": "linear-gradient(to right, #a855f7, #ec4899) 1",
+          borderRadius: "1rem", // Equivalent to rounded-lg (or use @apply rounded-lg)
+        },
+      });
+    },
+  ],
 };
-
-
-
