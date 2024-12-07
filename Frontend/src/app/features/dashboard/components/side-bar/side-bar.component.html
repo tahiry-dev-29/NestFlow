@@ -1,10 +1,10 @@
+
+<!-- Sidebar mobile -->
 <aside
-  class="fixed top-0 left-0 lg:static z-50 bg-slate-850/85 text-white shadow-lg transition-all duration-300 ease-in-out rounded-2xl  min-h-[96vh] overflow-y-auto  p-4 pb-0 mt-5 ml-5"
-  [class.w-[18%].h-screen]="isMobile()"
-  [class.overflow-y-auto.min-h-[96vh].w-[18%]]="!isMobile()"
+  class="lg:static z-50 bg-slate-850/85 text-white shadow-lg transition-all duration-300 ease-in-out rounded-2xl overflow-y-auto p-4 custom-scrolbar h-full"
   [class.hidden]="!sideLeftBarState() && isMobile()"
 >
-  <div class="flex flex-col space-y-6 min-h-[95vh] p-4 pb-0">
+  <div class="flex flex-col space-y-6 m-4 pb-0">
     <!-- Logo -->
     <div class="flex items-center justify-center py-4">
       <img src="#" alt="Site Logo" class="h-10" />
@@ -13,15 +13,11 @@
     <hr class="border-gray-700" />
 
     <!-- Navigation -->
-    <section class="flex flex-col grow">
+    <section class="flex flex-col grow !mt-0">
       <ul class="flex flex-col pl-0 mb-0 mt-4 space-y-2">
         <!-- Dashboard -->
-        <li
-          class="flex items-center hover-lists"
-          routerLink="overview"
-          routerLinkActive="active-lists"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
+        <li class="flex items-center hover-lists" routerLink="overview" routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }">
           <a class="flex items-center">
             <span class="menu-icon" [ngClass]="classes().menuIconClass('overview')">
               dashboard
@@ -33,12 +29,8 @@
         </li>
 
         <!-- Users -->
-        <li
-          class="hover-lists"
-          routerLink="users"
-          routerLinkActive="active-lists"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
+        <li class="hover-lists" routerLink="users" routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }">
           <a class="flex items-center">
             <span class="menu-icon flex items-center" [ngClass]="classes().menuIconClass('users')">
               person
@@ -50,12 +42,8 @@
         </li>
 
         <!-- Subscriptions -->
-        <li
-          class="flex items-center hover-lists"
-          routerLink="subscriptions"
-          routerLinkActive="active-lists"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
+        <li class="flex items-center hover-lists" routerLink="subscriptions" routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }">
           <a class="flex items-center">
             <span class="menu-icon menu-icon-red" [ngClass]="classes().menuIconClass('subscriptions')">
               subscriptions
@@ -67,14 +55,24 @@
         </li>
       </ul>
 
-      <!-- Settings Dropdown -->
-      <ul class="mt-auto mb-5">
+      <div class="flex-grow"></div>
+
+      <!-- Settings -->
+      <ul class="mt-auto border-t border-gray-700 pt-4">
         <li class="flex items-center hover-lists" [ngClass]="dropdownClasses().listClasses">
           <div class="group w-full">
-            <button
-              class="flex items-center justify-between gap-2 p-2 font-medium cursor-pointer rounded-lg w-full"
-              (click)="toggleDropdown()"
-            >
+            <div class="transition-all duration-300" [class.hidden]="!sideRightbarState()">
+              <ul class="flex flex-col gap-2 text-white">
+                <li class="flex items-center group-hover:shadow-dark-blur group rounded-3 transition mb-3">
+                  <a routerLink="/logout" class="flex w-full justify-around gap-2 p-2 items-center space-x-3">
+                    <span class="font-semibold group-hover:text">Logout</span>
+                    <span class="material-icons text-base group-hover:text">logout</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <button class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
+              (click)="toggleDropdown()">
               <div class="flex items-center gap-5">
                 <span class="material-icons text-base" [ngClass]="dropdownClasses().iconClasses">
                   settings
@@ -84,20 +82,9 @@
                 </span>
               </div>
               <span class="material-icons text-lg transition-transform" [ngClass]="dropdownClasses().arrowClasses">
-                arrow_forward
+                arrow_forward_ios
               </span>
             </button>
-
-            <div class="px-4 pb-2 transition-all duration-300" [class.hidden]="!sideRightbarState()">
-              <ul class="flex flex-col gap-2 pl-2 text-white">
-                <li class="flex items-center group-hover:shadow-dark-blur group rounded-3 transition">
-                  <a routerLink="/logout" class="flex w-full justify-center gap-2 p-2 items-center space-x-3">
-                    <span class="font-semibold group-hover:text">Logout</span>
-                    <span class="material-icons text-base group-hover:text">logout</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
           </div>
         </li>
       </ul>

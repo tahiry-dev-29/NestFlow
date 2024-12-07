@@ -1,20 +1,20 @@
-<div class="flex w-full justify-end max-h-full relative overflow-hidden">
+<div
+  class="grid w-full h-full relative overflow-hidden transition-[grid-template-columns] duration-500 ease-[cubic-bezier(0.4, 0.0, 0.2, 1)]"
+  [class.grid-cols-[250px_1fr]]="sideLeftBarState()"
+  [class.grid-cols-[0px_1fr]]="!sideLeftBarState()"
+>
   <!-- Sidebar gauche -->
-  <app-side-bar
-    [class.hidden]="isSmallScreen && !sideLeftBarState()"
-    [class.w-full]="sideLeftBarState()"
-    [class.-translate-x-0]="sideLeftBarState()"
-    [class.-translate-x-full]="!sideLeftBarState()"
-    [class.shadow-lg]="sideLeftBarState()"
-    class="flex transition-all duration-500 ease-[cubic-bezier(0.4, 0.0, 0.2, 1)] fixed left-0 top-0 h-full bg-slate-850/10"
-  ></app-side-bar>
+  <div
+    class="transition-transform duration-500 ease-[cubic-bezier(0.4, 0.0, 0.2, 1)] bg-transparent min-h-screen py-5 pl-5"
+    [class.translate-x-0]="sideLeftBarState()"
+    [class.-translate-x-full.hidden]="!sideLeftBarState() && isSmallScreen"
+    [class.shadow-lg]="sideLeftBarState()   && !isSmallScreen"
+  >
+    <app-side-bar></app-side-bar>
+  </div>
 
   <!-- Section principale -->
-  <section
-    [class.w-[82%]]="sideLeftBarState()"
-    [class.w-[100%]]="!sideLeftBarState()"
-    class="transition-all duration-500 ease-[cubic-bezier(0.4, 0.0, 0.5, 1)] flex flex-col"
-  >
+  <section class="flex flex-col w-full">
     <!-- Header -->
     <app-header class="header-menu"></app-header>
 
@@ -23,10 +23,4 @@
       <router-outlet></router-outlet>
     </main>
   </section>
-
-  <!-- Sidebar droit -->
-  <!-- <app-side-bar-right
-    class="transition-all duration-500 ease-[cubic-bezier(0.4, 0.0, 0.5, 1)] hidden lg:block w-[18%] shadow-lg fixed right-0 top-0 h-full"
-  ></app-side-bar-right> -->
-  
 </div>

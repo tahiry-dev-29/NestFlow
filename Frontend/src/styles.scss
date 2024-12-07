@@ -124,19 +124,21 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   background-size: var(--gap) var(--gap);
 }
 
-body::-webkit-scrollbar {
-  width: 10px;
+.custom-scrolbar::-webkit-scrollbar {
+  // width: 8px;
+  height: 10em;
+  scrollbar-width: thin;
 }
 
-body::-webkit-scrollbar-thumb {
-  background: rgba(167, 166, 166, 0.877);
+.custom-scrolbar::-webkit-scrollbar-thumb {
+  background: #a7a6a6e0;
   border-radius: 10px;
 }
 
-body::-webkit-scrollbar-thumb:hover {
-  background: rgb(248, 248, 248);
+.custom-scrolbar::-webkit-scrollbar-thumb:hover {
+  background: #f8f8f8e5;
 }
 
-body::-webkit-scrollbar-track {
+.custom-scrolbar::-webkit-scrollbar-track {
   background: transparent;
 }

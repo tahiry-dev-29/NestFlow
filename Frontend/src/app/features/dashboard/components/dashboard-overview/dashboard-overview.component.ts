@@ -2,25 +2,21 @@ import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SideBarComponent } from '../side-bar/side-bar.component';
 import { HeaderComponent } from '../header/header.component';
-import { sideLeftBarState, sideRightbarState } from '../../store/signal.store';
+import { sideLeftBarState } from '../../store/signal.store';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-overview',
-  imports: [
-    RouterOutlet,
-    SideBarComponent,
-    HeaderComponent
-    ],
+  imports: [RouterOutlet, SideBarComponent, HeaderComponent, CommonModule],
   templateUrl: './dashboard-overview.component.html',
   styleUrls: ['./dashboard-overview.component.scss'],
 })
 export class DashboardOverviewComponent {
   sideLeftBarState = sideLeftBarState;
-  // sidebarState = sideRightbarState;
   isSmallScreen = false;
 
   constructor() {
-    this.checkScreenSize(); 
+    this.checkScreenSize();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -35,7 +31,7 @@ export class DashboardOverviewComponent {
     }
   }
 
-  // toggleRight() {
-  //   this.sidebarState.update((state) => !state);
-  // }
+  toggleSidebar() {
+    this.sideLeftBarState.update((state) => !state);
+  }
 }

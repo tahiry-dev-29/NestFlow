@@ -48,7 +48,7 @@ export class SideBarComponent {
         'text-white': !isOpened,
       },
       arrowClasses: {
-        'rotate-90': isOpened,
+        '-rotate-90': isOpened,
         text: isOpened,
         'text-white': !isOpened,
       },
