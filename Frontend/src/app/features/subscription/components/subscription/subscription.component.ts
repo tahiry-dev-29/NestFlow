@@ -1,6 +1,7 @@
+import { MenuComponent } from './../menu/menu.component';
+import { DetailListsComponent } from './../detail-lists/detail-lists.component';
 import { Component, signal } from '@angular/core';
-import { DetailListsComponent } from "../detail-lists/detail-lists.component";
-import { MenuComponent } from "../menu/menu.component";
+
 
 @Component({
   selector: 'app-subscription',
