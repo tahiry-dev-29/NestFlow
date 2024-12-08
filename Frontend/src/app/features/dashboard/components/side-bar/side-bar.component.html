@@ -1,25 +1,25 @@
-
 <!-- Sidebar mobile -->
 <aside
-  class="lg:static z-50 bg-slate-850/85 text-white shadow-lg transition-all duration-300 ease-in-out rounded-2xl overflow-y-auto p-4 custom-scrolbar h-full"
-  [class.hidden]="!sideLeftBarState() && isMobile()"
+  class="lg:static z-50 text-white transition-all duration-300 ease-in-out rounded-2xl overflow-y-auto p-4 h-full overflow-x-hidden bg-opacity-85"
+  [ngClass]="sideLeftBarState() ? 'custom-scrolbar' : 'no-custom-scrolbar'"
+  [class.bg-transparent]="!sideLeftBarState() && isMobile()"
+  [class.bg-slate-850]="sideLeftBarState()"
 >
-  <div class="flex flex-col space-y-6 m-4 pb-0">
+  <div class="flex flex-col space-y-6 m-4 pb-0 h-full ">
     <!-- Logo -->
-    <div class="flex items-center justify-center py-4">
+    <div class="flex items-center justify-center">
       <img src="#" alt="Site Logo" class="h-10" />
     </div>
-
 
     <hr class="border-gray-700" />
 
     <!-- Navigation -->
-    <section class="flex flex-col grow !mt-0">
-      <ul class="flex flex-col pl-0 mb-0 mt-4 space-y-2">
+    <section class="flex flex-col flex-grow mt-4 mb-0">
+      <ul class="flex flex-col pl-0 mb-0 space-y-2">
         <!-- Dashboard -->
         <li class="flex items-center hover-lists" routerLink="overview" routerLinkActive="active-lists"
           [routerLinkActiveOptions]="{ exact: true }">
-          <a class="flex items-center">
+          <a class="flex items-center text-blue-500/85">
             <span class="menu-icon" [ngClass]="classes().menuIconClass('overview')">
               dashboard
             </span>
@@ -32,7 +32,7 @@
         <!-- Users -->
         <li class="hover-lists" routerLink="users" routerLinkActive="active-lists"
           [routerLinkActiveOptions]="{ exact: true }">
-          <a class="flex items-center">
+          <a class="flex items-center text-green-500/85">
             <span class="menu-icon flex items-center" [ngClass]="classes().menuIconClass('users')">
               person
             </span>
@@ -45,7 +45,7 @@
         <!-- Subscriptions -->
         <li class="flex items-center hover-lists" routerLink="subscriptions" routerLinkActive="active-lists"
           [routerLinkActiveOptions]="{ exact: true }">
-          <a class="flex items-center">
+          <a class="flex items-center text-yellow-500/85">
             <span class="menu-icon menu-icon-red" [ngClass]="classes().menuIconClass('subscriptions')">
               subscriptions
             </span>
@@ -55,8 +55,6 @@
           </a>
         </li>
       </ul>
-
-      <div class="flex-grow"></div>
 
       <!-- Settings -->
       <ul class="mt-auto border-t border-gray-700 pt-4">
@@ -75,7 +73,7 @@
             <button class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
               (click)="toggleDropdown()">
               <div class="flex items-center gap-5">
-                <span class="material-icons text-base" [ngClass]="dropdownClasses().iconClasses">
+                <span class="material-icons text-base text-gray-500/85" [ngClass]="dropdownClasses().iconClasses">
                   settings
                 </span>
                 <span class="font-semibold" [ngClass]="dropdownClasses().textClasses">

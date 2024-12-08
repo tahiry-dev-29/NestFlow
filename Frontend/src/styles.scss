@@ -9,7 +9,8 @@
   src: url('../public/fonts/ShantellSans-Regular.ttf');
   font-weight: normal;
 }
-*{
+
+body {
   font-family: shantellasans;
 }
 
@@ -65,11 +66,11 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   }
 
   .hover-lists {
-    @apply px-4 py-2 hover:bg-slate-700/13 hover:shadow-dark-xl cursor-pointer rounded-24;
+    @apply px-4 py-2 hover:bg-slate-700/13 hover:shadow-blur cursor-pointer rounded-24;
   }
 
   .active-lists {
-    @apply bg-slate-400/10 shadow-dark-blur rounded-24;
+    @apply bg-slate-400/10 shadow-dark-xl rounded-24;
   }
 
 }
@@ -130,21 +131,43 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   background-size: var(--gap) var(--gap);
 }
 
-.custom-scrolbar::-webkit-scrollbar {
-  // width: 8px;
-  height: 10em;
-  scrollbar-width: thin;
-}
+@layer utilities {
+  .custom-scrolbar::-webkit-scrollbar {
+    scrollbar-width: thin;
+    scroll-snap-stop: always;
+  }
 
-.custom-scrolbar::-webkit-scrollbar-thumb {
-  background: #a7a6a6e0;
-  border-radius: 10px;
-}
+  .custom-scrolbar::-webkit-scrollbar-thumb {
+    background: #a7a6a6e0;
+    border-radius: 10px;
+    scroll-snap-stop: always;
 
-.custom-scrolbar::-webkit-scrollbar-thumb:hover {
-  background: #f8f8f8e5;
-}
+  }
 
-.custom-scrolbar::-webkit-scrollbar-track {
-  background: transparent;
+  .custom-scrolbar::-webkit-scrollbar-thumb:hover {
+    background: #f8f8f8e5;
+    scroll-snap-stop: always;
+  }
+
+  .custom-scrolbar::-webkit-scrollbar-track {
+    background: transparent;
+    scroll-snap-stop: always;
+  }
+
+  .no-custom-scrolbar::-webkit-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-custom-scrolbar::-webkit-scrollbar-thumb {
+    background: none;
+    border-radius: none;
+  }
+
+  .no-custom-scrolbar::-webkit-scrollbar-thumb:hover {
+    background: none;
+  }
+
+  .no-custom-scrolbar::-webkit-scrollbar-track {
+    background: none;
+  }
 }

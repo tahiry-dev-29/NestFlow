@@ -15,7 +15,6 @@ export class SideBarComponent {
   sideLeftBarState = sideLeftBarState;
   sideRightbarState = signal(false);
 
-  // Signal to detect if the screen size is mobile
   readonly isMobile = signal(window.innerWidth < 1024);
 
   readonly classes = computed(() => {
@@ -28,7 +27,7 @@ export class SideBarComponent {
       arrowClass: isOpened ? 'rotate-90 text text-gray-800' : 'text-white',
 
       menuIconClass: (route: string) => this.isActive(route) ? 'menu-icon-solid' : 'menu-icon-outline',
-      textClassList: (route: string) => this.isActive(route) ? 'text' : 'text-white',
+      textClassList: (route: string) => this.isActive(route) ? 'text' : 'text-gray-300 font-light',
     };
   });
 
@@ -37,20 +36,20 @@ export class SideBarComponent {
     return {
       listClasses: {
         'rounded-7': isOpened,
-        'text-white': !isOpened,
+        'text-gray-300 font-light': !isOpened,
       },
       iconClasses: {
         text: isOpened,
-        'text-white': !isOpened,
+        'text-gray-300 font-light': !isOpened,
       },
       textClasses: {
         text: isOpened,
-        'text-white': !isOpened,
+        'text-gray-300 font-light': !isOpened,
       },
       arrowClasses: {
         '-rotate-90': isOpened,
         text: isOpened,
-        'text-white': !isOpened,
+        'text-gray-300 font-light': !isOpened,
       },
     };
   });
