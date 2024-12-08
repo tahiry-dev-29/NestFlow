@@ -70,7 +70,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   }
 
   .text {
-    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] bg-clip-text;
+    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] text-transparent bg-clip-text;
   }
 
   .title {
@@ -86,7 +86,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] bg-clip-text;
+    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] bg-clip-text text-transparent;
   }
 
   .error-badge {

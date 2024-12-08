@@ -1,5 +1,7 @@
 <section class="flex gap-5 w-full flex-wrap">
-    <app-menu-subscription class="w-full"/>
-    <app-detail-lists class="w-full"/>
-  </section>
-  
+  <app-menu-subscription
+    class="w-full"
+    (filterChange)="onFilterChange($event)"
+  ></app-menu-subscription>
+  <app-detail-lists class="w-full" [filter]="filter()"></app-detail-lists>
+</section>
