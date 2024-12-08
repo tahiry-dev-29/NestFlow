@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DetailListsComponent } from "../../../users/components/detail-lists/detail-lists.component";
+import { DetailListsComponent } from "../detail-lists/detail-lists.component";
 import { MenuComponent } from "../menu/menu.component";
 
 @Component({
