@@ -1,4 +1,5 @@
-<div class="relative flex flex-col flex-auto min-w-0 p-4 overflow-hidden break-words border-0 bg-slate-850 shadow-dark-xl rounded-2xl bg-clip-border">
+<div
+  class="relative flex flex-col flex-auto min-w-0 p-4 overflow-hidden break-words border-0 bg-slate-850 shadow-dark-xl rounded-2xl bg-clip-border">
   <div class="flex flex-wrap -mx-3 h-16 items-center justify-around">
     <div class="flex-none w-auto max-w-full px-3">
       <h1 class="text-lg font-bold text-white">Add Users</h1>
@@ -7,27 +8,16 @@
       <div class="relative flex flex-col p-4 bg-gray-800 rounded-lg shadow-md">
         <ul class="flex flex-wrap p-1 list-none bg-gray-700 rounded-xl" role="tablist">
           <!-- Itération sur les items du menu -->
-          <li
-            *ngFor="let menuItem of menuItems; let i = index"
-            class="relative flex-auto text-center"
-            (click)="setActiveMenu(i, menuItem.filter)"
-          >
-            <a
-              class="flex items-center justify-center w-full px-4 py-2 transition-all ease-in-out rounded-lg cursor-pointer"
-              [ngClass]="{ 'bg-white text-blue-600': activeMenu() === i, 'text-gray-400': activeMenu() !== i }"
-            >
+          <li [@moveActiveBar]="" *ngFor="let menuItem of menuItems; let i = index" 
+              [class.active]="activeMenu() === i" 
+              class="relative flex-auto text-center active"
+              (click)="setActiveMenu(i, menuItem.filter)">
+            <a class="flex items-center justify-center w-full px-4 py-2 transition-all ease-in-out rounded-lg cursor-pointer"
+               [ngClass]="{ 'bg-white text-blue-600': activeMenu() === i, 'text-gray-400': activeMenu() !== i }">
               <span class="material-icons">{{ menuItem.icon }}</span>
               <span class="ml-2 text-sm">{{ menuItem.label }}</span>
             </a>
           </li>
-          <!-- Animation de l'onglet actif -->
-          <div
-            class="absolute z-10 bg-white rounded-lg shadow-md"
-            [@activeTab]="{
-              value: 'move',
-              params: { x: tabDimensions().position, width: tabDimensions().width }
-            }"
-          ></div>
         </ul>
       </div>
     </div>
