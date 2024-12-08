@@ -7,11 +7,11 @@
       <table class="min-w-full border-collapse text-white">
         <thead>
           <tr class="text-center">
-            <th class="px-6 py-3 border-b-2 border-gray-600 text-sm font-medium">ID</th>
-            <th class="px-6 py-3 border-b-2 border-gray-600 text-sm font-medium">Nom complet</th>
-            <th class="px-6 py-3 border-b-2 border-gray-600 text-sm font-medium">Email</th>
-            <th class="px-6 py-3 border-b-2 border-gray-600 text-sm font-medium">Progression</th>
-            <th class="px-6 py-3 border-b-2 border-gray-600 text-sm font-medium">Actions</th>
+            <th class="th">ID</th>
+            <th class="th">Nom complet</th>
+            <th class="th">Email</th>
+            <th class="th">Progression</th>
+            <th class="th">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -23,10 +23,10 @@
               'bg-slate-700': expandedId() === abonne.id
             }"
           >
-            <td class="px-6 py-4 text-center">{{ abonne.id }}</td>
-            <td class="px-6 py-4 text-center">{{ abonne.fullname }}</td>
-            <td class="px-6 py-4 text-center">{{ abonne.email }}</td>
-            <td class="px-6 py-4 text-center">
+            <td class="td">{{ abonne.id }}</td>
+            <td class="td">{{ abonne.fullname }}</td>
+            <td class="td">{{ abonne.email }}</td>
+            <td class="td">
               <div class="relative w-full h-2 bg-gray-700 rounded-full">
                 <div
                   class="absolute top-0 left-0 h-2 bg-green-500 rounded-full transition-all duration-500"
@@ -48,14 +48,14 @@
                 </button>
                 <div
                   *ngIf="expandedMenuId() === abonne.id"
-                  class="absolute right-0 z-10 bg-slate-700 text-white rounded shadow-md mt-2 p-2 transform origin-top scale-y-0 transition-all duration-300 ease-out"
+                  class="tooltip-container  scale-y-0 transition-all"
                   [ngClass]="{ 'scale-y-100': expandedMenuId() === abonne.id }"
                   [@expandCollapse]
                 >
                   <ul>
                     <li>
                       <button
-                        class="flex items-center px-4 py-2 text-sm hover:bg-red-600 hover:text-white"
+                        class="tooltip text-red-600"
                         (click)="deleteSubscriber(abonne.id)"
                       >
                         <span class="material-icons mr-2">delete</span> Supprimer
@@ -63,7 +63,7 @@
                     </li>
                     <li>
                       <button
-                        class="flex items-center px-4 py-2 text-sm hover:bg-blue-600 hover:text-white"
+                        class="tooltip text-blue-600"
                         (click)="editSubscriber(abonne.id)"
                       >
                         <span class="material-icons mr-2">edit</span> Modifier

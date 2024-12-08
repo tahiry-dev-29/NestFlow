@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'shantellasans';
+  src: url('../public/fonts/ShantellSans-Regular.ttf');
+  font-weight: normal;
+}
+*{
+  font-family: shantellasans;
+}
+
 $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 
 @layer components {
@@ -24,6 +33,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
     text-rendering: optimizeLegibility;
     font-feature-settings: "liga";
   }
+
   .material-icons {
     font-family: "Material Icons";
     font-weight: normal;
@@ -41,9 +51,11 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
     text-rendering: optimizeLegibility;
     font-feature-settings: "liga";
   }
+
   .menu-icon {
-    @apply w-8 h-8  transition duration-300;
+    @apply w-8 h-8 transition duration-300;
   }
+
   .menu-icon-outline {
     @apply material-icons-outlined flex items-center;
   }
@@ -55,18 +67,16 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .hover-lists {
     @apply px-4 py-2 hover:bg-slate-700/13 hover:shadow-dark-xl cursor-pointer rounded-24;
   }
+
   .active-lists {
     @apply bg-slate-400/10 shadow-dark-blur rounded-24;
   }
+
 }
 
 @layer components {
   .btn-gradient-bg {
     @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:-translate-y-px leading-normal text-sm ease-in shadow-md hover:border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-2 ring-offset-2;
-  }
-  
-  .custom-gradient {
-    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] transition-all duration-300 ease-in-out;
   }
 
   .text {
@@ -104,23 +114,19 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   width: 100%;
   height: 100%;
 
-  background: #0b122cfa ;
+  background: #0b122cfa;
   --gap: 5em;
   --line: 1px;
   --color: rgba(255, 255, 255, 0.2);
 
-  background-image: linear-gradient(
-      -90deg,
+  background-image: linear-gradient(-90deg,
       transparent calc(var(--gap) - var(--line)),
       var(--color) calc(var(--gap) - var(--line) + 1px),
-      var(--color) var(--gap)
-    ),
-    linear-gradient(
-      0deg,
+      var(--color) var(--gap)),
+    linear-gradient(0deg,
       transparent calc(var(--gap) - var(--line)),
       var(--color) calc(var(--gap) - var(--line) + 1px),
-      var(--color) var(--gap)
-    );
+      var(--color) var(--gap));
   background-size: var(--gap) var(--gap);
 }
 

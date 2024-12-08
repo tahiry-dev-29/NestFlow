@@ -1,5 +1,11 @@
-@layer {
-    .active {
-        @apply z-10 bg-white rounded-lg shadow-md;
+ul {
+    @apply relative flex w-full bg-slate-800/25 shadow-dark-xl rounded-xl;
+  
+    li {
+      @apply relative flex-auto text-center cursor-pointer;
     }
-}
+  
+    .active-bar {
+      @apply absolute bottom-0 left-0 h-1 text-gradient rounded-lg;
+    }
+  }

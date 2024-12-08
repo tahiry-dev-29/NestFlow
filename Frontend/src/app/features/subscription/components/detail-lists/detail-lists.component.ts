@@ -21,6 +21,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ]
 })
 export class DetailListsComponent {
+
   filter: InputSignal<string> = input<string>('all'); // Reçoit le filtre depuis le parent
 
   subscrib = signal([
@@ -58,5 +59,6 @@ export class DetailListsComponent {
   editSubscriber(id: number) {
     alert(`Modifier l'abonné avec ID : ${id}`);
   }
+
 }
 

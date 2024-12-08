@@ -1,5 +1,4 @@
 import { Component, HostListener } from '@angular/core';
-import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SideBarComponent } from '../side-bar/side-bar.component';
 import { HeaderComponent } from '../header/header.component';
@@ -10,7 +9,6 @@ import { CommonModule } from '@angular/common';
   selector: 'app-dashboard-overview',
   imports: [RouterOutlet, SideBarComponent, HeaderComponent, CommonModule],
   templateUrl: './dashboard-overview.component.html',
-  styleUrls: ['./dashboard-overview.component.scss'],
   styleUrls: ['./dashboard-overview.component.scss'],
 })
 export class DashboardOverviewComponent {
