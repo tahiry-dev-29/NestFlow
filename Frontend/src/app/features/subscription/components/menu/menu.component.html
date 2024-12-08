@@ -8,17 +8,20 @@
         Add Users
       </h1>
     </div>
+    <div class="flex-none w-auto px-3 mb-4 sm:mb-0">
+      <app-search-bar/>
+    </div>
 
     <!-- Menu -->
-    <div class="w-full sm:w-auto px-3">
+    <div class="sm:w-auto px-3">
       <div class="relative flex flex-col rounded-lg shadow-md">
         <ul
-          class="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-0 p-2 rounded-xl"
+          class="flex flex-col gap-5 sm:flex-row flex-wrap p-2 rounded-xl"
           role="tablist"
         >
           <!-- Items du menu -->
+          @for (menuItem of menuItems(); let i = $index; track i) {
           <li
-            *ngFor="let menuItem of menuItems; let i = index"
             class="relative text-center cursor-pointer w-full sm:w-auto"
             (click)="setActiveMenu(i, menuItem.filter)"
           >
@@ -33,11 +36,12 @@
               <span class="ml-2 text-sm">{{ menuItem.label }}</span>
             </a>
           </li>
+          }
 
           <!-- Barre d'indication active -->
           <span
-            class="absolute bottom-0 left-0 h-1 bg-[#a855f7] rounded-lg transition-transform duration-300 ease-in-out"
-            [style.width.%]="100 / menuItems.length"
+            class="absolute bottom-2 left-0 h-1 bg-[#a855f7] rounded-lg transition-transform duration-300 ease-in-out"
+            [style.width.%]="100 / menuItems().length"
             [style.transform]="'translateX(' + (activeMenu() * 100) + '%)'"
           ></span>
         </ul>
@@ -45,3 +49,4 @@
     </div>
   </div>
 </div>
+

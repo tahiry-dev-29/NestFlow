@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, computed, input, InputSignal } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { Component, computed, input, InputSignal, signal } from '@angular/core';
+import { expandCollapse } from '../../../shared/animations/animations';
 
 @Component({
   selector: 'app-detail-lists',
@@ -8,30 +8,86 @@ import { trigger, transition, style, animate } from '@angular/animations';
   imports: [CommonModule],
   templateUrl: './detail-lists.component.html',
   styleUrls: ['./detail-lists.component.scss'],
-  animations: [
-    trigger('expandCollapse', [
-      transition(':enter', [
-        style({ transform: 'translateY(-40px)', opacity: 0 }),
-        animate('300ms ease-out', style({ transform: 'translateY(0)', opacity: 1 }))
-      ]),
-      transition(':leave', [
-        animate('500ms ease-in', style({ opacity: 0, transform: 'translateY(-20px)' }))
-      ])
-    ])
-  ]
+  animations: [expandCollapse]
 })
 export class DetailListsComponent {
-
   filter: InputSignal<string> = input<string>('all'); // Reçoit le filtre depuis le parent
-
-  subscrib = signal([
-    { id: 1, fullname: 'Jean Dupont', email: 'jean.dupont@example.com', tel: '0612345678', adresse: '123 Rue des Lilas', createdAt: '2024-01-01', progress: 75, active: true },
-    { id: 2, fullname: 'Marie Curie', email: 'marie.curie@example.com', tel: '0623456789', adresse: '456 Avenue des Fleurs', createdAt: '2024-01-02', progress: 50, active: false },
-  ]);
-
 
   expandedId = signal<number | null>(null);
   expandedMenuId = signal<number | null>(null);
+
+  subscrib = signal([
+    {
+      id: 1,
+      fullname: 'Jean Dupont',
+      email: 'jean.dupont@example.com',
+      tel: '0612345678',
+      adresse: '123 Rue des Lilas',
+      createdAt: '2024-01-01',
+      progress: 75,
+      active: true,
+    },
+    {
+      id: 2,
+      fullname: 'Marie Curie',
+      email: 'marie.curie@example.com',
+      tel: '0623456789',
+      adresse: '456 Avenue des Fleurs',
+      createdAt: '2024-01-02',
+      progress: 50,
+      active: false,
+    },
+    {
+      id: 3,
+      fullname: 'YCurie',
+      email: 'ymarie.curie@example.com',
+      tel: '0623456789',
+      adresse: '42756 Avenue des Fleurs',
+      createdAt: '2024-01-02',
+      progress: 5,
+      active: true,
+    },
+    {
+      id: 4,
+      fullname: 'rCurie',
+      email: 'rcurie@example.com',
+      tel: '0623456789',
+      adresse: '5857 tt Fleurs',
+      createdAt: '2024-01-02',
+      progress: 78,
+      active: false,
+    },
+    {
+      id: 5,
+      fullname: 'oCurie',
+      email: 'ddcurie@example.com',
+      tel: '0623456789',
+      adresse: '7857 Avenue des Fleurs',
+      createdAt: '2024-01-02',
+      progress: 100,
+      active: true,
+    },
+    {
+      id: 6,
+      fullname: 'Marie',
+      email: 'vhcurie@example.com',
+      tel: '0623456789',
+      adresse: '41858 Avenue des Fleurs',
+      createdAt: '2024-01-02',
+      progress: 90,
+      active: false,
+    },
+  ]);
+
+  // Recalcule des classes pour la progression basée sur la liste filtrée
+  progressClasses = computed(() =>
+    this.filteredSubscrib().map((abonne) => {
+      if (abonne.progress === 100) return 'bg-green-500';
+      if (abonne.progress >= 75) return 'bg-blue-500';
+      if (abonne.progress >= 50) return 'bg-yellow-500';
+      return 'bg-red-500';
+    })
+  );
 
   filteredSubscrib = computed(() => {
     const filterValue = this.filter();
@@ -59,6 +115,4 @@ export class DetailListsComponent {
   editSubscriber(id: number) {
     alert(`Modifier l'abonné avec ID : ${id}`);
   }
-
 }
-

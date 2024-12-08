@@ -2,7 +2,7 @@
   <div class="overflow-x-auto w-full">
     <!-- Table des abonnés -->
     <div
-      class="align-middle inline-block min-w-full shadow-dark-xl rounded-2xl overflow-hidden bg-slate-850 px-6 pt-3 min-h-[60vh]"
+      class="align-middle inline-block min-w-full shadow-dark-xl rounded-2xl bg-slate-850 px-6 pt-3 h-[65vh] py-5 overflow-auto custom-scrolbar"
     >
       <table class="min-w-full border-collapse text-white">
         <thead>
@@ -16,7 +16,9 @@
         </thead>
         <tbody>
           <!-- Liste des abonnés filtrée -->
-          @for (abonne of filteredSubscrib(); track abonne.id) {
+          <!-- @for (abonne of filteredSubscrib(); track abonne.id) { -->
+          @for (abonne of filteredSubscrib(); let i = $index; track abonne.id) {
+
           <tr
             [ngClass]="{
               'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': expandedId() !== abonne.id,
@@ -26,15 +28,21 @@
             <td class="td">{{ abonne.id }}</td>
             <td class="td">{{ abonne.fullname }}</td>
             <td class="td">{{ abonne.email }}</td>
+
+
             <td class="td">
               <div class="relative w-full h-2 bg-gray-700 rounded-full">
+                <!-- Utilisation de i pour lier les couleurs réactives -->
                 <div
-                  class="absolute top-0 left-0 h-2 bg-green-500 rounded-full transition-all duration-500"
+                  class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
+                  [class]="progressClasses()[i]" 
                   [style.width.%]="abonne.progress"
                 ></div>
               </div>
               <span class="block text-sm text-gray-400 mt-1">{{ abonne.progress }}%</span>
             </td>
+
+
             <td class="px-6 py-4 text-center">
               <!-- Menu d'actions -->
               <div class="relative inline-block ml-2">
@@ -105,7 +113,5 @@
     </div>
   </div>
 </section>
-
-
 
 
