@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, computed, signal, WritableSignal } from '@angular/core';
 import { MenuComponent } from './../menu/menu.component';
 import { DetailListsComponent } from './../detail-lists/detail-lists.component';
 
@@ -10,10 +10,19 @@ import { DetailListsComponent } from './../detail-lists/detail-lists.component';
   imports: [MenuComponent, DetailListsComponent],
 })
 export class SubscriptionComponent {
-  filter: WritableSignal<string> = signal<string>('all');
+  filter: WritableSignal<string> = signal('all');
+  searchTerm: WritableSignal<string> = signal('');
 
-  onSearch(searchTerm: string) {
-    this.filter.set(searchTerm);
+  combinedFilter = computed(() => ({
+    menu: this.filter(),
+    search: this.searchTerm(),
+  }));
+
+  onFilterChange(filter: string) {
+    this.filter.set(filter);
+  }
+
+  onSearchChange(searchTerm: string) {
+    this.searchTerm.set(searchTerm);
   }
 }
-

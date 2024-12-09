@@ -1,4 +1,14 @@
 <section class="flex gap-5 w-full flex-wrap">
-  <app-menu-subscription (filterChange)="onSearch($event)" class="w-full"></app-menu-subscription>
-  <app-detail-lists [filter]="filter()" class="w-full"></app-detail-lists>
+  <!-- Composant menu avec gestion des filtres -->
+  <app-menu-subscription
+    class="w-full"
+    (filterChange)="onFilterChange($event)"
+    (search)="onSearchChange($event)"
+  ></app-menu-subscription>
+
+  <!-- Composant liste avec filtre combiné -->
+  <app-detail-lists
+    class="w-full"
+    [filter]="combinedFilter()"
+  ></app-detail-lists>
 </section>

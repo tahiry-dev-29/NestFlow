@@ -12,11 +12,13 @@ import { ISubscription } from '../../models/subscription.interface';
   animations: [expandCollapse]
 })
 export class DetailListsComponent {
-  filter: InputSignal<string> = input<string>('all');
-
+  filter: InputSignal<{ menu: string; search: string }> = input({
+    menu: 'all',
+    search: '',
+  });
   expandedId = signal<number | null>(null);
   expandedMenuId = signal<number | null>(null);
-  searchTerm = signal<string>(''); // Gère le terme de recherche localement
+  searchTerm = signal<string>('');
   
   subscrib: WritableSignal<ISubscription[]> = signal([
     {
@@ -81,7 +83,6 @@ export class DetailListsComponent {
     },
   ]);
 
-  // Recalcule des classes pour la progression basée sur la liste filtrée
   progressClasses = computed(() =>
     this.filteredSubscrib().map((abonne) => {
       if (abonne.progress === 100) return 'bg-green-500';
@@ -91,18 +92,17 @@ export class DetailListsComponent {
     })
   );
 
-  filteredSubscrib: Signal<ISubscription[]>  = computed(() => {
-    const filterValue = this.filter();
-    const filtered = this.subscrib().filter((sub) => {
-      if (filterValue === 'all') return true;
-      if (filterValue === 'active') return sub.active;
-      if (filterValue === 'inactive') return !sub.active;
-      return (
-        sub.fullname.toLowerCase().includes(filterValue.toLowerCase()) ||
-        sub.email.toLowerCase().includes(filterValue.toLowerCase())
-      );
+  filteredSubscrib = computed(() => {
+    const { menu, search } = this.filter();
+    return this.subscrib().filter((sub) => {
+      const matchesMenu =
+        menu === 'all' || (menu === 'active' ? sub.active : !sub.active);
+      const matchesSearch =
+        !search ||
+        sub.fullname.toLowerCase().includes(search.toLowerCase()) ||
+        sub.email.toLowerCase().includes(search.toLowerCase());
+      return matchesMenu && matchesSearch;
     });
-    return filtered;
   });
 
   setSearchTerm(term: string) {

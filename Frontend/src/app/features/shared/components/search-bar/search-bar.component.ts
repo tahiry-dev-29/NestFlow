@@ -9,15 +9,14 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule],
 })
 export class SearchBarComponent {
- search = output<string>();
+   search = output<string>();
   searchTerm = signal('');
   private timeout: any;
-
   onSearch() {
     clearTimeout(this.timeout);
-
     this.timeout = setTimeout(() => {
       this.search.emit(this.searchTerm());
     }, 300);
   }
 }
+
