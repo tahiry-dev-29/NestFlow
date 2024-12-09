@@ -1,32 +1,28 @@
 <div
-  class="relative flex flex-col flex-auto min-w-0 px-4 py-4 sm:px-6 md:px-10 lg:px-20 overflow-hidden break-words border-0 bg-slate-850 shadow-dark-xl rounded-2xl bg-clip-border"
+  class="relative grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 py-4 sm:px-6 md:px-10 lg:px-20 overflow-hidden break-words border-0 bg-slate-850 shadow-dark-xl rounded-2xl bg-clip-border"
 >
-  <div class="flex flex-wrap -mx-3 items-center justify-between">
-    <!-- Titre -->
-    <div class="flex-none w-auto px-3 mb-4 sm:mb-0">
-      <h1 class="text-lg font-bold text-white text-center sm:text-left">
+  <div
+    class="col-span-1 lg:col-span-3 flex flex-wrap justify-between gap-y-5 items-center px-3 mb-4 sm:mb-0"
+  >
+    <div class="w-full sm:w-auto mb-2 sm:mb-0">
+      <h1 class="text-lg font-bold text-white text-center">
         Add Users
       </h1>
     </div>
-    <div class="flex-none w-auto px-3 mb-4 sm:mb-0">
-      <app-search-bar/>
-    </div>
 
-    <!-- Menu -->
-    <div class="sm:w-auto px-3">
+    <div class="w-full sm:w-auto mb-2 sm:mb-0">
       <div class="relative flex flex-col rounded-lg shadow-md">
         <ul
-          class="flex flex-col gap-5 sm:flex-row flex-wrap p-2 rounded-xl"
+          class="flex sm:gap-6 p-2 rounded-xl justify-center sm:justify-start min-w-max"
           role="tablist"
         >
-          <!-- Items du menu -->
           @for (menuItem of menuItems(); let i = $index; track i) {
           <li
             class="relative text-center cursor-pointer w-full sm:w-auto"
             (click)="setActiveMenu(i, menuItem.filter)"
           >
             <a
-              class="flex items-center justify-center w-full px-4 py-2 transition-all ease-in-out border-none"
+              class="flex items-center justify-center w-full px-5 sm:h-10 py-2 transition-all ease-in-out border-none"
               [ngClass]="{
                 'text-gradient': activeMenu() === i,
                 'text-gray-100/90 hover:text-gradient': activeMenu() !== i
@@ -38,15 +34,19 @@
           </li>
           }
 
-          <!-- Barre d'indication active -->
           <span
             class="absolute bottom-2 left-0 h-1 bg-[#a855f7] rounded-lg transition-transform duration-300 ease-in-out"
             [style.width.%]="100 / menuItems().length"
-            [style.transform]="'translateX(' + (activeMenu() * 100) + '%)'"
+            [style.transform]="'translateX(' + activeMenu() * 100 + '%)'"
           ></span>
         </ul>
       </div>
     </div>
+    <div class="w-full sm:w-auto mb-2 sm:mb-0">
+      <app-search-bar
+        class="max-w-xs sm:max-w-md"
+        (search)="onSearch($event)"
+      ></app-search-bar>
+    </div>
   </div>
 </div>
-

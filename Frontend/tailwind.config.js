@@ -1407,7 +1407,7 @@ module.exports = {
           "@apply placeholder:text-gray-500 text-sm focus:ring-2 ring-offset-2 focus:ring-primary focus:border-primary outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:bg-text-gradient focus:text-white text-white items-center flex":
             {},
           "border-image": "linear-gradient(to right, #a855f7, #ec4899) 1",
-          borderRadius: "1rem", // Equivalent to rounded-lg (or use @apply rounded-lg)
+          borderRadius: "1rem",
         },
       });
     },

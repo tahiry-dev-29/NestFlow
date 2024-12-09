@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, InputSignal, signal } from '@angular/core';
+import { Component, computed, input, InputSignal, Signal, signal, WritableSignal } from '@angular/core';
 import { expandCollapse } from '../../../shared/animations/animations';
+import { ISubscription } from '../../models/subscription.interface';
 
 @Component({
   selector: 'app-detail-lists',
@@ -11,12 +12,13 @@ import { expandCollapse } from '../../../shared/animations/animations';
   animations: [expandCollapse]
 })
 export class DetailListsComponent {
-  filter: InputSignal<string> = input<string>('all'); // Reçoit le filtre depuis le parent
+  filter: InputSignal<string> = input<string>('all');
 
   expandedId = signal<number | null>(null);
   expandedMenuId = signal<number | null>(null);
-
-  subscrib = signal([
+  searchTerm = signal<string>(''); // Gère le terme de recherche localement
+  
+  subscrib: WritableSignal<ISubscription[]> = signal([
     {
       id: 1,
       fullname: 'Jean Dupont',
@@ -89,15 +91,23 @@ export class DetailListsComponent {
     })
   );
 
-  filteredSubscrib = computed(() => {
+  filteredSubscrib: Signal<ISubscription[]>  = computed(() => {
     const filterValue = this.filter();
-    return this.subscrib().filter((sub) => {
+    const filtered = this.subscrib().filter((sub) => {
       if (filterValue === 'all') return true;
       if (filterValue === 'active') return sub.active;
       if (filterValue === 'inactive') return !sub.active;
-      return true;
+      return (
+        sub.fullname.toLowerCase().includes(filterValue.toLowerCase()) ||
+        sub.email.toLowerCase().includes(filterValue.toLowerCase())
+      );
     });
+    return filtered;
   });
+
+  setSearchTerm(term: string) {
+    this.searchTerm.set(term);
+  }
 
   toggleDetails(id: number) {
     this.expandedId.set(this.expandedId() === id ? null : id);

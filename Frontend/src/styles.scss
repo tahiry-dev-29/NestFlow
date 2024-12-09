@@ -132,42 +132,32 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 }
 
 @layer utilities {
+
   .custom-scrolbar::-webkit-scrollbar {
-    scrollbar-width: thin;
-    scroll-snap-stop: always;
+    width: 10px;
+  }
+
+  .custom-scrolbar::-webkit-scrollbar-track {
+    background: transparent;
   }
 
   .custom-scrolbar::-webkit-scrollbar-thumb {
     background: #a7a6a6e0;
     border-radius: 10px;
-    scroll-snap-stop: always;
-
   }
 
   .custom-scrolbar::-webkit-scrollbar-thumb:hover {
     background: #f8f8f8e5;
-    scroll-snap-stop: always;
   }
 
-  .custom-scrolbar::-webkit-scrollbar-track {
-    background: transparent;
-    scroll-snap-stop: always;
+
+  .no-custom-scrolbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   .no-custom-scrolbar::-webkit-scrollbar {
-    scrollbar-width: none;
+    display: none;
   }
 
-  .no-custom-scrolbar::-webkit-scrollbar-thumb {
-    background: none;
-    border-radius: none;
-  }
-
-  .no-custom-scrolbar::-webkit-scrollbar-thumb:hover {
-    background: none;
-  }
-
-  .no-custom-scrolbar::-webkit-scrollbar-track {
-    background: none;
-  }
 }

@@ -1,18 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, signal } from '@angular/core';
-import { moveActiveBar } from '../../../shared/animations/animations';
+import { Component, EventEmitter, output, Output, signal } from '@angular/core';
 import { SearchBarComponent } from "../../../shared/components/search-bar/search-bar.component";
 
 @Component({
   selector: 'app-menu-subscription',
   standalone: true,
-  imports: [CommonModule, SearchBarComponent],
-  animations: [moveActiveBar],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
+  imports: [SearchBarComponent, CommonModule],
 })
 export class MenuComponent {
-  @Output() filterChange = new EventEmitter<string>();
+  search = output<string>();
+  filterChange = output<string>();
   activeMenu = signal<number>(0);
 
   menuItems = signal([
@@ -21,18 +20,16 @@ export class MenuComponent {
     { label: 'Inactifs', icon: 'cancel', filter: 'inactive' },
   ]);
 
-  getTranslateX(index: number): { start: number; end: number } {
-    const itemWidth = 0;
-    const start = this.activeMenu() * itemWidth;
-    const end = index * itemWidth;
-    return { start, end };
-  }
-
   setActiveMenu(index: number, filter: string) {
     this.activeMenu.set(index);
     this.filterChange.emit(filter);
-    console.log(`Filtre sélectionné : ${filter}`);
+    this.search.emit(filter);
   }
 
+  onSearch(searchTerm: string) {
+    // console.log('Recherche transmise au parent :', searchTerm);
+    this.filterChange.emit(searchTerm);
+  }
 
 }
+
