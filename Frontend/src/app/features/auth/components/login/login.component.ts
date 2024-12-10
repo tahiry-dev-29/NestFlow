@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
     RouterLink,
   ],
   templateUrl: './login.component.html',
+  standalone: true,
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {}

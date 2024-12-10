@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
   imports: [RouterOutlet, SideBarComponent, HeaderComponent, CommonModule],
   templateUrl: './dashboard-overview.component.html',
   styleUrls: ['./dashboard-overview.component.scss'],
+  standalone: true,
 })
 export class DashboardOverviewComponent {
   sideLeftBarState = sideLeftBarState; // On garde le signal

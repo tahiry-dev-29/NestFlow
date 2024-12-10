@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-not-found',
   imports: [],
+  standalone: true,
   templateUrl: './not-found.component.html',
   styleUrl: './not-found.component.scss'
 })

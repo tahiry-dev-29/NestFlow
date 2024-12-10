@@ -4,6 +4,7 @@ import { TableComponent } from "../table/table.component";
 @Component({
   selector: 'app-users',
   imports: [TableComponent],
+  standalone: true,
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })

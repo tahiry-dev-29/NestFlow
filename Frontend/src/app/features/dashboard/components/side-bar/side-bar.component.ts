@@ -7,6 +7,7 @@ import { sideLeftBarState } from '../../store/signal.store';
   selector: 'app-side-bar',
   imports: [CommonModule, RouterLinkActive, RouterLink],
   templateUrl: './side-bar.component.html',
+  standalone: true,
   styleUrls: ['./side-bar.component.scss'],
 })
 export class SideBarComponent {

@@ -5,7 +5,9 @@ import { sideLeftBarState } from '../../store/signal.store';
   selector: 'app-header',
   imports: [],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  styleUrl: './header.component.scss',
+  standalone: true,
+
 })
 export class HeaderComponent {
   sidebarState = sideLeftBarState;
@@ -14,5 +16,5 @@ export class HeaderComponent {
     this.sidebarState.update(state => !state);
   }
 
-  
+
 }
