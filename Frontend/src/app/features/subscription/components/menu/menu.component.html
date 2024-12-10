@@ -7,7 +7,7 @@
     <!-- Menu -->
     <div class="w-full sm:w-auto mb-2 sm:mb-0">
       <div class="relative flex flex-col rounded-lg shadow-md">
-        <ul class="flex sm:gap-6 p-2 rounded-xl justify-center sm:justify-start min-w-max" role="tablist">
+        <ul class="flex sm:gap-6 p-2 rounded-xl justify-center sm:justify-start min-w-max shadow-dark-xl" role="tablist">
           @for (menuItem of menuItems(); let i = $index; track i) {
           <li class="relative text-center cursor-pointer w-full sm:w-auto" (click)="setActiveMenu(i, menuItem.filter)">
             <a class="flex items-center justify-center w-full px-5 sm:h-10 py-2 transition-all ease-in-out border-none"

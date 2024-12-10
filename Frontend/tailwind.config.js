@@ -499,6 +499,7 @@ module.exports = {
       "1/2": "50%",
     },
     animation: {
+      "shadow-pulse": "shadow-pulse 2s infinite",
       glowing: "glowing 20s linear infinite",
       none: "none",
       spin: "spin 1s linear infinite",
@@ -949,8 +950,7 @@ module.exports = {
       "4/6": "66.666667%",
       "5/6": "83.333333%",
       full: "100%",
-      // sidenav: "calc(100vh - 310px)",
-      sidenav: "calc(100vh - 360px)", // for pro btn
+      sidenav: "calc(100vh - 360px)",
       screen: "100vh",
       min: "min-content",
       max: "max-content",
@@ -968,6 +968,16 @@ module.exports = {
       full: "100%",
     }),
     keyframes: {
+      "shadow-pulse": {
+        "0%, 100%": {
+          boxShadow:
+            "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+        },
+        "50%": {
+          boxShadow:
+            "0 8px 30px -2px rgba(0, 0, 0, 0.3), 0 4px 12px -2px rgba(0, 0, 0, 0.2)",
+        },
+      },
       glowing: {
         "0%": { backgroundPosition: "0% 0%" },
         "50%": { backgroundPosition: "400% 0%" },
@@ -1404,11 +1414,12 @@ module.exports = {
     function ({ addComponents }) {
       addComponents({
         ".input-theme": {
-          "@apply placeholder:text-gray-500 text-sm focus:ring-2 ring-offset-2 focus:ring-primary focus:border-primary outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:bg-text-gradient focus:text-white text-white items-center flex":
-            {},
-          "border-image": "linear-gradient(to right, #a855f7, #ec4899) 1",
-          borderRadius: "1rem",
-        },
+  "@apply placeholder:text-gray-500 text-sm focus:ring-4 ring-offset-2 outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-3 px-4 font-normal text-gray-300 transition-all focus:text-white rounded-xl":
+    {},
+  borderRadius: "2rem",
+  "--tw-ring-offset-color": "#ec4899d6",
+  "--tw-ring-color": "#3b51f629"
+},
       });
     },
   ],

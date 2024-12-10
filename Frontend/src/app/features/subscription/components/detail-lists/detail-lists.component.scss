@@ -74,5 +74,5 @@
     @apply absolute right-0 z-10 transform origin-top bg-slate-800/90 shadow-dark-xl text-white rounded-7  mt-2 py-2   duration-300 ease-out;
 }
 .tooltip {
-    @apply hover:text hover:scale-110 hover:duration-300 flex items-center px-4 py-2 text-sm;
+    @apply hover:scale-110 hover:duration-300 flex items-center px-4 py-2 text-sm;
 }
