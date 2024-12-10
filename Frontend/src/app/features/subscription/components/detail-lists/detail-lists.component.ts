@@ -1,25 +1,29 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, InputSignal, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, input, InputSignal, Signal, signal, WritableSignal } from '@angular/core';
 import { expandCollapse } from '../../../shared/animations/animations';
 import { ISubscription } from '../../models/subscription.interface';
+import { FilterSubscribersPipe } from '../../../shared/pipe/filter-search.pipe';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FilterSubscribersPipe],
   templateUrl: './detail-lists.component.html',
   styleUrls: ['./detail-lists.component.scss'],
-  animations: [expandCollapse]
+  animations: [expandCollapse],
 })
 export class DetailListsComponent {
+  // Signal pour le filtre
   filter: InputSignal<{ menu: string; search: string }> = input({
     menu: 'all',
     search: '',
   });
+
+  // Signal pour l'abonné sélectionné
   expandedId = signal<number | null>(null);
   expandedMenuId = signal<number | null>(null);
-  searchTerm = signal<string>('');
-  
+
+  // Signal pour les abonnés
   subscrib: WritableSignal<ISubscription[]> = signal([
     {
       id: 1,
@@ -83,32 +87,15 @@ export class DetailListsComponent {
     },
   ]);
 
-  progressClasses = computed(() =>
-    this.filteredSubscrib().map((abonne) => {
-      if (abonne.progress === 100) return 'bg-green-500';
-      if (abonne.progress >= 75) return 'bg-blue-500';
-      if (abonne.progress >= 50) return 'bg-yellow-500';
-      return 'bg-red-500';
-    })
-  );
-
-  filteredSubscrib = computed(() => {
-    const { menu, search } = this.filter();
-    return this.subscrib().filter((sub) => {
-      const matchesMenu =
-        menu === 'all' || (menu === 'active' ? sub.active : !sub.active);
-      const matchesSearch =
-        !search ||
-        sub.fullname.toLowerCase().includes(search.toLowerCase()) ||
-        sub.email.toLowerCase().includes(search.toLowerCase());
-      return matchesMenu && matchesSearch;
-    });
-  });
-
-  setSearchTerm(term: string) {
-    this.searchTerm.set(term);
+  // Calcul des classes pour la progression
+  progressClasses(subscriber: ISubscription) {
+    if (subscriber.progress === 100) return 'bg-green-500';
+    if (subscriber.progress >= 75) return 'bg-blue-500';
+    if (subscriber.progress >= 50) return 'bg-yellow-500';
+    return 'bg-red-500';
   }
 
+  // Méthodes d'interaction
   toggleDetails(id: number) {
     this.expandedId.set(this.expandedId() === id ? null : id);
   }
@@ -118,8 +105,7 @@ export class DetailListsComponent {
   }
 
   deleteSubscriber(id: number) {
-    const updatedList = this.subscrib().filter((abonne) => abonne.id !== id);
-    this.subscrib.set(updatedList);
+    this.subscrib.set(this.subscrib().filter((abonne) => abonne.id !== id));
   }
 
   editSubscriber(id: number) {
