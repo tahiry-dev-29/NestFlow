@@ -1,18 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-pin-input',
-  templateUrl: './pin-input.component.html',
+  selector: 'app-pin',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
+  templateUrl: './pin.component.html',
+  styleUrl: './pin.component.scss'
 })
+export class PINComponent {
+  private readonly  location = inject(Location);
 
-export class PinInputComponent {
-  pinValues = signal(['', '', '', '']); // Les valeurs des inputs PIN
+  pinValues = signal(['', '', '', '']);
 
   updatePin(index: number, event: Event) {
-    const inputElement = event.target as HTMLInputElement; // Cast explicite dans le TypeScript
+    const inputElement = event.target as HTMLInputElement;
     const value = inputElement.value;
 
     const currentPin = [...this.pinValues()];
@@ -33,12 +35,22 @@ export class PinInputComponent {
 
   // Navigation vers l'input précédent
   focusPrevious(index: number, inputElement: EventTarget | null) {
-    if (!inputElement) return; // Sécurité si l'élément est null
+    if (!inputElement) return;
 
     const input = inputElement as HTMLInputElement;
     if (input.value === '' && index > 0) {
       const prevInput = input.previousElementSibling as HTMLInputElement | null;
       prevInput?.focus();
     }
+  }
+
+
+  // Retour en arrière
+  navigateBack() {
+    this.location.back();
+  }
+
+  reloadPin() {
+    window.location.reload();
   }
 }

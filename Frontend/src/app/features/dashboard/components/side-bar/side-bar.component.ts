@@ -1,4 +1,10 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  WritableSignal,
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { sideLeftBarState } from '../../store/signal.store';
@@ -15,20 +21,35 @@ export class SideBarComponent {
 
   sideLeftBarState = sideLeftBarState;
   sideRightbarState = signal(false);
+  dropdownState: WritableSignal<boolean> = signal(false);
 
   readonly isMobile = signal(window.innerWidth < 1024);
-
   readonly classes = computed(() => {
     const isOpened = this.sideRightbarState();
 
     return {
       listClass: isOpened ? 'rounded-7' : 'text-white',
       iconClass: isOpened ? 'text text-gray-800' : 'text-white',
-      textClass: isOpened ? 'font-semibold text-gray-800' : 'font-semibold text-white',
+      textClass: isOpened
+        ? 'font-semibold text-gray-800'
+        : 'font-semibold text-white',
       arrowClass: isOpened ? 'rotate-90 text text-gray-800' : 'text-white',
 
-      menuIconClass: (route: string) => this.isActive(route) ? 'menu-icon-solid' : 'menu-icon-outline',
-      textClassList: (route: string) => this.isActive(route) ? 'text' : 'text-gray-300 font-light',
+      menuIconClass: (route: string) =>
+        this.isActive(route) ? 'menu-icon-solid' : 'menu-icon-outline',
+
+      editSubscriptionIconClass: (
+        route: string,
+        isEditSubscription: boolean
+      ) => {
+        if (isEditSubscription) {
+          return 'bx bx-plus';
+        }
+        return this.isActive(route) ? 'menu-icon-solid' : 'menu-icon-outline';
+      },
+
+      textClassList: (route: string) =>
+        this.isActive(route) ? 'text' : 'text-gray-300 font-light',
     };
   });
 
@@ -55,11 +76,29 @@ export class SideBarComponent {
     };
   });
 
+  
   toggleDropdown() {
     this.sideRightbarState.set(!this.sideRightbarState());
   }
 
   isActive(route: string): boolean {
     return this.router.url.includes(route);
+  }
+
+
+  toggleDropdownState() {
+    this.dropdownState.update((prev) => !prev);
+  }
+
+  dropdownSignal() {
+    const isOpen = this.dropdownState();
+    return {
+      listClasses: isOpen ? 'bg-gray-800' : 'bg-gray-700',
+      iconClasses: isOpen ? 'text-blue-500' : 'text-gray-500',
+      textClasses: isOpen ? 'text' : 'text-gray-400',
+      arrowClasses: isOpen
+        ? 'rotate-90 text'
+        : 'rotate-0 text-gray-300 font-light',
+    };
   }
 }

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -9,5 +9,8 @@ import { RouterLink } from '@angular/router';
   standalone: true,
 })
 export class RegisterComponent {
-
+  private readonly router = inject(Router)
+  load(){
+    this.router.navigate(["/pin"])
+  }
 }

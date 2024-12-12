@@ -1,6 +1,7 @@
-<section class="flex flex-wrap w-full justify-center">
-  <div class="overflow-x-auto w-full">
-    <div class="align-middle inline-block min-w-full shadow-dark-xl rounded-2xl bg-slate-850 px-6 pt-3 h-[65vh] py-5 overflow-auto custom-scrolbar">
+<section class="flex flex-wrap w-full justify-center shadow-dark-xl rounded-2xl">
+  <div class="overflow-x-auto w-full rounded-2xl">
+    <div
+      class="align-middle inline-block min-w-full rounded-2xl bg-slate-850 px-6 pt-3 h-[65vh] py-5 overflow-auto custom-scrolbar">
       <table class="min-w-full border-collapse text-white">
         <thead>
           <tr class="text-center">
@@ -13,87 +14,74 @@
         </thead>
         <tbody>
           @for (abonne of subscrib() | filterSubscribers: filter(); let i = $index; track abonne.id) {
-            <tr
-              [ngClass]="{
+          <tr [ngClass]="{
                 'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': expandedId() !== abonne.id,
                 'bg-slate-700': expandedId() === abonne.id
-              }"
-            >
-              <td class="td">{{ abonne.id }}</td>
-              <td class="td hidden sm:table-cell">{{ abonne.fullname }}</td>
-              <td class="td hidden sm:table-cell">{{ abonne.email }}</td>
-              <td class="td">
-                <div class="relative w-full h-2 bg-gray-700 rounded-full">
-                  <div
-                    class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
-                    [class]="progressClasses(abonne)" 
-                    [style.width.%]="abonne.progress"
-                  ></div>
-                </div>
-                <span class="block text-sm text-gray-400 mt-1">{{ abonne.progress }}%</span>
-              </td>
-              <td class="px-6 py-4 text-center">
-                <div class="relative inline-block ml-2">
-                  <button
-                    class="text-gray-100 hover:text-gray-500 relative top-3"
-                    (click)="toggleMenu(abonne.id)"
-                  >
-                    <span
-                      class="material-icons transition-all duration-300 transform"
-                      [ngClass]="{ 'rotate-180': expandedMenuId() === abonne.id }"
-                    >
-                      more_vert
-                    </span>
-                  </button>
-                  <div
-                    *ngIf="expandedMenuId() === abonne.id"
-                    class="tooltip-container scale-y-0 transition-all"
-                    [ngClass]="{ 'scale-y-100': expandedMenuId() === abonne.id }"
-                    [@expandCollapse]
-                  >
-                    <ul>
-                      <li>
-                        <button class="tooltip hover:text text-red-600" (click)="deleteSubscriber(abonne.id)">
-                          <span class="material-icons mr-2">delete</span> Supprimer
-                        </button>
-                      </li>
-                      <li>
-                        <button class="tooltip hover:text text-blue-600" (click)="editSubscriber(abonne.id)">
-                          <span class="material-icons mr-2">edit</span> Modifier
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <button
-                  class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2"
-                  (click)="toggleDetails(abonne.id)"
-                >
-                  <span
-                    class="material-icons  transition-all duration-300 transform text-8"
-                    [ngClass]="{ 'rotate-180': expandedId() === abonne.id }"
-                  >
-                    {{ expandedId() === abonne.id ? 'expand_less' : 'expand_more' }}
+              }">
+            <td class="td">{{ abonne.id }}</td>
+            <td class="td hidden sm:table-cell">{{ abonne.fullname }}</td>
+            <td class="td hidden sm:table-cell">{{ abonne.email }}</td>
+            <td class="td">
+              <div class="relative w-full h-2 bg-gray-700 rounded-full">
+                <div class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
+                  [class]="progressClasses(abonne)" [style.width.%]="abonne.progress"></div>
+              </div>
+              <span class="block text-sm text-gray-400 mt-1">{{ abonne.progress }}%</span>
+            </td>
+            <td class="px-6 py-4 text-center">
+              <div class="relative inline-block ml-2">
+                <button class="text-gray-100 hover:text-gray-500 relative top-3" (click)="toggleMenu(abonne.id)">
+                  <span class="material-icons transition-all duration-300 transform"
+                    [ngClass]="{ 'rotate-180': expandedMenuId() === abonne.id }">
+                    more_vert
                   </span>
                 </button>
-              </td>
-            </tr>
-        
-            @if (expandedId() === abonne.id) {
-              <tr [@expandCollapse]>
-                <td colspan="5" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
-                  <div class="text-sm text-white">
-                    <p><strong>Adresse :</strong> {{ abonne.adresse }}</p>
-                    <p><strong>Téléphone :</strong> {{ abonne.tel }}</p>
-                    <p><strong>Date d'inscription :</strong> {{ abonne.createdAt }}</p>
-                  </div>
-                </td>
-              </tr>
-            }
+                <!-- *ngIf detected -->
+                <div *ngIf="expandedMenuId() === abonne.id" class="tooltip-container scale-y-0 transition-all"
+                  [ngClass]="{ 'scale-y-100': expandedMenuId() === abonne.id }" [@expandCollapse]>
+                  <ul>
+                    <li>
+                      <button class="tooltip hover:text text-red-600" (click)="openPopup(abonne.id)">
+                        <span class="material-icons mr-2">delete</span> Supprimer
+                      </button>
+                    </li>
+                    <li>
+                      <button class="tooltip hover:text text-blue-600" (click)="editSubscriber(abonne.id)">
+                        <span class="material-icons mr-2">edit</span> Modifier
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <button class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2"
+                (click)="toggleDetails(abonne.id)">
+                <span class="material-icons  transition-all duration-300 transform text-8"
+                  [ngClass]="{ 'rotate-180': expandedId() === abonne.id }">
+                  {{ expandedId() === abonne.id ? 'expand_less' : 'expand_more' }}
+                </span>
+              </button>
+            </td>
+          </tr>
+
+          @if (expandedId() === abonne.id) {
+          <tr [@expandCollapse]>
+            <td colspan="5" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
+              <div class="text-sm text-white">
+                <p><strong>Adresse :</strong> {{ abonne.adresse }}</p>
+                <p><strong>Téléphone :</strong> {{ abonne.tel }}</p>
+                <p><strong>Date d'inscription :</strong> {{ abonne.createdAt }}</p>
+              </div>
+            </td>
+          </tr>
+          }
           }
         </tbody>
       </table>
     </div>
   </div>
 </section>
+
+@if (showPopup()) {
+<app-popups (confirm)="confirmDelete()" (cancel)="closePopup()"/>
+}
 

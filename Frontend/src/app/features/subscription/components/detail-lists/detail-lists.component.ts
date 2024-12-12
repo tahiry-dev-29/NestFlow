@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, InputSignal, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, input, InputSignal, signal, WritableSignal } from '@angular/core';
 import { expandCollapse } from '../../../shared/animations/animations';
-import { ISubscription } from '../../models/subscription.interface';
+import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { FilterSubscribersPipe } from '../../../shared/pipe/filter-search.pipe';
+import { ISubscription } from '../../models/subscription.interface';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
-  imports: [CommonModule, FilterSubscribersPipe],
+  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ],
   templateUrl: './detail-lists.component.html',
   styleUrls: ['./detail-lists.component.scss'],
   animations: [expandCollapse],
@@ -19,11 +20,8 @@ export class DetailListsComponent {
     search: '',
   });
 
-  // Signal pour l'abonné sélectionné
   expandedId = signal<number | null>(null);
   expandedMenuId = signal<number | null>(null);
-
-  // Signal pour les abonnés
   subscrib: WritableSignal<ISubscription[]> = signal([
     {
       id: 1,
@@ -86,8 +84,10 @@ export class DetailListsComponent {
       active: false,
     },
   ]);
+  
+  showPopup = signal(false);
+  subscriberToDelete = signal<number | null>(null);
 
-  // Calcul des classes pour la progression
   progressClasses(subscriber: ISubscription) {
     if (subscriber.progress === 100) return 'bg-green-500';
     if (subscriber.progress >= 75) return 'bg-blue-500';
@@ -95,7 +95,7 @@ export class DetailListsComponent {
     return 'bg-red-500';
   }
 
-  // Méthodes d'interaction
+  // Interaction
   toggleDetails(id: number) {
     this.expandedId.set(this.expandedId() === id ? null : id);
   }
@@ -111,4 +111,22 @@ export class DetailListsComponent {
   editSubscriber(id: number) {
     alert(`Modifier l'abonné avec ID : ${id}`);
   }
+
+  // Popup
+  openPopup(subscriberId: number) {
+    this.subscriberToDelete.set(subscriberId);
+    this.showPopup.set(true);
+  }
+  closePopup() {
+    this.showPopup.set(false);
+    this.subscriberToDelete.set(null);
+  }
+  confirmDelete() {
+    const id = this.subscriberToDelete();
+    if (id !== null) {
+      this.deleteSubscriber(id);
+    }
+    this.closePopup();
+  }
+
 }

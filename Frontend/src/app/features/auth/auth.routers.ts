@@ -1,16 +1,19 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
 
 export const AuthRoutes: Routes = [
   {
     path: 'login',
     title: 'Login',
-    component: LoginComponent,
+    loadComponent: () => import("./components/login/login.component").then(m => m.LoginComponent)
   },
   {
     path: 'register',
     title: 'Sign Up',
-    component: RegisterComponent,
+    loadComponent: () => import("./components/register/register.component").then(m => m.RegisterComponent)
+  },
+  {
+    path: 'pin',
+    title: 'Verification Pin',
+    loadComponent: () => import("./components/pin/pin.component").then(m => m.PINComponent)
   },
 ];

@@ -1,0 +1,87 @@
+<li [ngClass]="menuItem.style === 'settings' ? 'settings-menu' : 'primary-menu'">
+    <!-- Item sans dropdown -->
+    <div *ngIf="!menuItem.dropdown" class="flex items-center">
+      <a [routerLink]="menuItem.route" class="flex items-center w-full">
+        <span class="material-icons text-lg">{{ menuItem.icon }}</span>
+        <span class="font-semibold text-sm">{{ menuItem.label }}</span>
+      </a>
+    </div>
+  
+    <!-- Item avec dropdown -->
+    <div *ngIf="menuItem.dropdown" class="group w-full flex flex-wrap gap-y-4">
+      <button
+        class="flex items-center justify-between w-full font-medium cursor-pointer rounded-lg"
+        (click)="toggleDropdown()"
+      >
+        <div class="flex items-center gap-5">
+          <span class="material-icons text-lg">{{ menuItem.icon }}</span>
+          <span class="font-semibold text-sm">{{ menuItem.label }}</span>
+        </div>
+        <!-- Icône de flèche pour dropdown -->
+        <span
+          class="material-icons transition-transform text-lg"
+          [ngClass]="{
+            'rotate-90 text-primary': dropdownState(),
+            'rotate-0 text-gray-400': !dropdownState()
+          }"
+        >
+          arrow_forward_ios
+        </span>
+      </button>
+  
+      <!-- Sous-menu -->
+      <ul
+        class="transition-all duration-300 ml-6"
+        [class.hidden]="!dropdownState()"
+      >
+        <li
+          *ngFor="let child of menuItem.children"
+          class="flex items-center hover-lists pl-4"
+          [ngClass]="{
+            'text-primary': isActive
+          }"
+        >
+          <a [routerLink]="child.route" class="flex items-center w-full">
+            <span class="font-semibold text-sm">{{ child.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </li>
+  
+  <!-- Fixe l'élément 'Settings' en bas -->
+  <li [class]="menuItem.style === 'settings' ? 'fixed bottom-0' : ''">
+    <button
+      *ngIf="menuItem.dropdown"
+      (click)="menuItem.dropdown = !menuItem.dropdown"
+      class="flex justify-between w-full items-center"
+    >
+      <div class="flex items-center">
+        <span class="material-icons">{{ menuItem.icon }}</span>
+        <span>{{ menuItem.label }}</span>
+      </div>
+      <span class="material-icons">{{ menuItem.dropdown ? 'expand_less' : 'expand_more' }}</span>
+    </button>
+  
+    <a
+      *ngIf="!menuItem.dropdown"
+      [routerLink]="menuItem.route"
+      routerLinkActive="active"
+      class="flex items-center"
+    >
+      <span class="material-icons">{{ menuItem.icon }}</span>
+      <span>{{ menuItem.label }}</span>
+    </a>
+  
+    <ul *ngIf="menuItem.dropdown && menuItem.children">
+      <li *ngFor="let child of menuItem.children">
+        <a
+          [routerLink]="child.route"
+          routerLinkActive="active"
+          class="flex items-center"
+        >
+          <span>{{ child.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </li>

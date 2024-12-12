@@ -1,6 +1,6 @@
-<form class="flex items-center max-w-sm mx-auto">
+<form class="flex items-center max-w-sm mx-auto relative">
   <div class="relative w-full">
-    <!-- Icône de recherche -->
+    <!-- Icône de recherche à gauche -->
     <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
       <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
         fill="none" viewBox="0 0 18 20">
@@ -9,9 +9,18 @@
       </svg>
     </div>
 
-    <!-- Champ de recherche avec écoute des frappes -->
-    <input type="text"
-      class="bg-slate-850/80 text-white border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
-      placeholder="Search by name or email..." [(ngModel)]="searchTerm" (input)="onSearch()" [ngModelOptions]="{standalone: true}"/>
+    <!-- Champ de recherche -->
+    <input type="search"
+      class="input-theme shadow-dark-blur focus:animate-shadow-pro-pulse block w-full ps-10 p-2.5"
+      placeholder="Search by name or email..."
+      [(ngModel)]="searchTerm" (input)="onSearch()" [ngModelOptions]="{standalone: true}" />
   </div>
+
+  <!-- Spinner à droite (visible uniquement lorsque isLoading est vrai) -->
+  @if (isLoading()) {
+    <div class="absolute inset-y-0 end-2 flex items-center">
+      <!-- Spinner Tailwind -->
+      <span class="w-5 h-5 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></span>
+    </div>
+  }
 </form>

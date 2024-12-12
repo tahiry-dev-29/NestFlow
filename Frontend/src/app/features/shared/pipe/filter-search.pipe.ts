@@ -16,15 +16,13 @@ export class FilterSubscribersPipe implements PipeTransform {
 
     let filtered = subscribers;
 
-    // Filtrage par menu (statut)
     if (menu === 'active') {
       filtered = filtered.filter((sub) => sub.active);
     } else if (menu === 'inactive') {
       filtered = filtered.filter((sub) => !sub.active);
     }
 
-    // Filtrage par recherche
-    if (search) {
+    if (typeof search === 'string' && search.trim()) {
       const lowerSearch = search.toLowerCase();
       filtered = filtered.filter(
         (sub) =>

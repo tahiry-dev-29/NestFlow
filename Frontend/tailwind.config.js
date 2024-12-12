@@ -500,6 +500,7 @@ module.exports = {
     },
     animation: {
       "shadow-pulse": "shadow-pulse 2s infinite",
+      "shadow-pro-pulse": "shadow-pro-pulse 2.5s infinite",
       glowing: "glowing 20s linear infinite",
       none: "none",
       spin: "spin 1s linear infinite",
@@ -978,6 +979,16 @@ module.exports = {
             "0 8px 30px -2px rgba(0, 0, 0, 0.3), 0 4px 12px -2px rgba(0, 0, 0, 0.2)",
         },
       },
+      "shadow-pro-pulse": {
+        "0%, 100%": {
+          boxShadow:
+            "0 1px 1px -1px rgba(0, 0, 0, 0.1), 0 1px 0 -1px rgba(0, 0, 0, 0.1)",
+        },
+        "50%": {
+          boxShadow:
+            "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
+        },
+      },
       glowing: {
         "0%": { backgroundPosition: "0% 0%" },
         "50%": { backgroundPosition: "400% 0%" },
@@ -1414,12 +1425,12 @@ module.exports = {
     function ({ addComponents }) {
       addComponents({
         ".input-theme": {
-  "@apply placeholder:text-gray-500 text-sm focus:ring-4 ring-offset-2 outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-3 px-4 font-normal text-gray-300 transition-all focus:text-white rounded-xl":
-    {},
-  borderRadius: "2rem",
-  "--tw-ring-offset-color": "#ec4899d6",
-  "--tw-ring-color": "#3b51f629"
-},
+          "@apply placeholder:text-gray-500 text-sm focus:ring-4 ring-offset-2 outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-3 px-4 font-normal text-gray-300 transition-all focus:text-white rounded-xl":
+            {},
+          borderRadius: "2rem",
+          "--tw-ring-offset-color": "#ec4899d6",
+          "--tw-ring-color": "#3b51f629",
+        },
       });
     },
   ],
