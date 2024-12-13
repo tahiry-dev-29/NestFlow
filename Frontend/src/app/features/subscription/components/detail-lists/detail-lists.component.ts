@@ -46,6 +46,11 @@ export class DetailListsComponent {
     return this.store.subscriptionDetails()?.find(s => s.id === abonneId)?.remainingDays || 0;
   }
 
+  // Helper method to get remaining progress
+  getRemainingProgress(id: number): number {
+    return this.store.subscriptionDetails()?.find(s => s.id === id)?.progress || 0;
+  }
+
   // Interaction methods
   toggleDetails(id: number) {
     this.store.toggleDetails(id);

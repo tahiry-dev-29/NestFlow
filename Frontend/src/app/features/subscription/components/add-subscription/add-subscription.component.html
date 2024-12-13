@@ -42,6 +42,17 @@
                     Numéro de téléphone requis
                   </div>
                 </div>
+
+                <div class="mb-4">
+                  <input type="password" 
+                         formControlName="password"
+                         class="input-theme" 
+                         placeholder="Mot de passe" />
+                  <div *ngIf="subscriptionForm.get('password')?.invalid && subscriptionForm.get('password')?.touched"
+                       class="text-red-500 text-sm mt-1">
+                    Le mot de passe doit contenir au moins 6 caractères
+                  </div>
+                </div>
               </div>
 
               <!-- Right Column -->
@@ -58,12 +69,22 @@
 
                 <div class="mb-4">
                   <select formControlName="subscriptionType" class="input-theme">
-                    <option value="Basique">Basique</option>
-                    <option value="Classique">Classique</option>
+                    <option value="Basique">Basique (250 chaînes)</option>
+                    <option value="Classique">Classique (500 chaînes)</option>
                   </select>
                   <div *ngIf="subscriptionForm.get('subscriptionType')?.invalid && subscriptionForm.get('subscriptionType')?.touched"
                        class="text-red-500 text-sm mt-1">
                     Le type d'abonnement est requis
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <input type="number" 
+                         formControlName="channelCount"
+                         class="input-theme bg-gray-700" 
+                         readonly />
+                  <div class="text-gray-400 text-sm mt-1">
+                    Le nombre de chaînes est défini par le type d'abonnement
                   </div>
                 </div>
               </div>

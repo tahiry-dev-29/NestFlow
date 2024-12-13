@@ -11,6 +11,18 @@ export interface SubscriptionState {
   expandedMenuId: number | null;
 }
 
+// Constants for subscription settings
+const SUBSCRIPTION_SETTINGS = {
+  'Basique': {
+    duration: 30, // 30 days
+    channels: 250
+  },
+  'Classique': {
+    duration: 90, // 90 days
+    channels: 500
+  }
+};
+
 // Initial state with mock data
 const initialState: SubscriptionState = {
   subscriptions: [
@@ -24,6 +36,8 @@ const initialState: SubscriptionState = {
       subscriptionType: 'Basique',
       progress: 75,
       active: true,
+      channelCount: 250,
+      password: 'pass123'
     },
     {
       id: 2,
@@ -35,6 +49,8 @@ const initialState: SubscriptionState = {
       subscriptionType: 'Classique',
       progress: 50,
       active: false,
+      channelCount: 500,
+      password: 'pass456'
     },
     {
       id: 3,
@@ -46,6 +62,8 @@ const initialState: SubscriptionState = {
       subscriptionType: 'Basique',
       progress: 5,
       active: true,
+      channelCount: 250,
+      password: 'pass123'
     },
     {
       id: 4,
@@ -57,6 +75,8 @@ const initialState: SubscriptionState = {
       subscriptionType: 'Basique',
       progress: 78,
       active: false,
+      channelCount: 250,
+      password: 'pass123'
     },
     {
       id: 5,
@@ -68,6 +88,8 @@ const initialState: SubscriptionState = {
       subscriptionType: 'Classique',
       progress: 100,
       active: true,
+      channelCount: 500,
+      password: 'pass456'
     },
     {
       id: 6,
@@ -79,6 +101,8 @@ const initialState: SubscriptionState = {
       subscriptionType: 'Classique',
       progress: 90,
       active: false,
+      channelCount: 500,
+      password: 'pass456'
     },
   ],
   loading: false,
@@ -109,21 +133,28 @@ export const SubscriptionStore = signalStore(
       if (progress >= 50) return 'bg-yellow-500';
       return 'bg-red-500';
     }),
-    subscriptionDetails: computed(() => 
-      subscriptions().map(sub => {
+    subscriptionDetails: computed(() => {
+      return subscriptions().map(sub => {
         const startDate = new Date(sub.createdAt);
+        const currentDate = new Date();
+        const duration = SUBSCRIPTION_SETTINGS[sub.subscriptionType].duration;
         const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 30); // 30 jours d'abonnement
-        const now = new Date();
-        const remainingDays = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+        endDate.setDate(startDate.getDate() + duration);
+        
+        const totalDays = duration;
+        const elapsedDays = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const remainingDays = Math.max(0, totalDays - elapsedDays);
+        
+        // Calculate progress as percentage of remaining days
+        const progress = Math.max(0, Math.min(100, Math.round((remainingDays / totalDays) * 100)));
         
         return {
-          ...sub,
-          endDate: endDate.toISOString().split('T')[0],
-          remainingDays
+          id: sub.id,
+          remainingDays,
+          progress
         };
-      })
-    )
+      });
+    })
   })),
 
   // CRUD Methods

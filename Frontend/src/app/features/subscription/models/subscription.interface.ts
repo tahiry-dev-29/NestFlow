@@ -10,4 +10,6 @@ export interface ISubscription {
   subscriptionType: SubscriptionType;
   progress: number;
   active: boolean;
+  channelCount: number;
+  password: string;
 }
