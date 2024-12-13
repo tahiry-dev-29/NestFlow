@@ -2,8 +2,24 @@
     <div class="w-full max-w-full px-3 mt-0 lg:flex-none">
         <div
             class="border-black/12.5 bg-slate-850 shadow-dark-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-clip-border">
-            <form>
-                
+            <form [formGroup]="editForm" (ngSubmit)="onSubmit()" role="form text-left">
+                <div formArrayName="subscription">
+                    <div *ngFor="let item of subscriptionControls; let i = index" [ngClass]="{ 'mb-4': i !== subscriptionControls.length - 1 }">
+                        <label class="block text-sm font-medium text-gray-700" [for]="'input-' + i">
+                            {{ item.get('label')?.value }}
+                        </label>
+                        <input
+                            [type]="item.get('type')?.value"
+                            [id]="'input-' + i"
+                            class="input-theme"
+                            [placeholder]="item.get('placeholder')?.value"
+                            [formControlName]="i"
+                        />
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn-gradient-bg focus:outline-none right-blue-400" [disabled]="!editForm.valid">Modifier</button>
+                </div>
             </form>
         </div>
     </div>

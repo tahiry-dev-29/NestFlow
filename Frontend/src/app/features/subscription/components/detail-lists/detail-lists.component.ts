@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, InputSignal, signal, WritableSignal } from '@angular/core';
+import { Component, inject, input, InputSignal, signal, WritableSignal } from '@angular/core';
 import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { FilterSubscribersPipe } from '../../../shared/pipe/filter-search.pipe';
 import { ISubscription } from '../../models/subscription.interface';
+import { ToastrModule, ToastrService } from "ngx-toastr";
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
-  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent],
+  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ToastrModule],
   templateUrl: './detail-lists.component.html',
   styleUrl: './detail-lists.component.scss',
   animations: [expandCollapse],
@@ -84,7 +85,7 @@ export class DetailListsComponent {
       active: false,
     },
   ]);
-  
+
   showPopup = signal(false);
   subscriberToDelete = signal<number | null>(null);
 
@@ -123,10 +124,14 @@ export class DetailListsComponent {
   }
   confirmDelete() {
     const id = this.subscriberToDelete();
+    const fullname = this.subscrib().find(abonne => abonne.id === id)?.fullname ?? '';
     if (id !== null) {
       this.deleteSubscriber(id);
+      this.toastr.success(`Abonné <span class="bg-gray-200/60 text-slate-800/80 rounded px-2 py-1 text-white">${id} ${fullname}</span> supprimé avec succès`, 'Suppression');
     }
     this.closePopup();
   }
+
+  private readonly toastr = inject(ToastrService);
 
 }

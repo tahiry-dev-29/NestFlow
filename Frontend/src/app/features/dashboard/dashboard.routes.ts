@@ -34,6 +34,14 @@ export const DashboardRouter: Routes = [
           ),
       },
       {
+        path: 'subscriptions/add',
+        title: 'Subscriptions / Add',
+        loadComponent: () =>
+          import('../subscription/components/edit-subscrition/edit-subscrition.component').then(
+            (m) => m.EditSubscritionComponent
+          ),
+      },
+      {
         path: 'settings',
         title: 'Dashboard / Settings',
         loadComponent: () =>
