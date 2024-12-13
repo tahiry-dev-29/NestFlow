@@ -5,11 +5,12 @@ import { PopupsComponent } from "../../../shared/components/popups/popups.compon
 import { FilterSubscribersPipe } from '../../../shared/pipe/filter-search.pipe';
 import { ToastrModule, ToastrService } from "ngx-toastr";
 import { SubscriptionStore } from '../../store/subscribed.store';
+import { AddSubscriptionComponent } from '../add-subscription/add-subscription.component';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
-  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ToastrModule],
+  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ToastrModule, AddSubscriptionComponent],
   templateUrl: './detail-lists.component.html',
   styleUrls: ['./detail-lists.component.scss'],
   animations: [expandCollapse],
@@ -30,6 +31,7 @@ export class DetailListsComponent {
   expandedMenuId = this.store.expandedMenuId;
   showPopup = signal(false);
   subscriberToDelete = signal<number | null>(null);
+  showAddForm = signal(false);
 
   // Progress classes helper
   getProgressClasses(progress: number): string {
@@ -53,6 +55,10 @@ export class DetailListsComponent {
     this.store.toggleMenu(id);
   }
 
+  toggleAddForm() {
+    this.showAddForm.update(value => !value);
+  }
+
   // Popup methods
   openPopup(subscriberId: number) {
     this.subscriberToDelete.set(subscriberId);
@@ -70,8 +76,7 @@ export class DetailListsComponent {
     if (id !== null) {
       this.store.deleteSubscription(id);
       this.toastr.success(
-        `Abonné <span class="bg-gray-200/60 text-slate-800/80 rounded px-2 py-1 text-white">${id} ${fullname}</span> supprimé avec succès`,
-        'Suppression'
+        `L'abonnement de <span class="msg-class">${id} ${fullname}</span> supprimé avec succès`
       );
     }
     this.closePopup();

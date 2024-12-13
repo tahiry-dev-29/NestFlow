@@ -23,19 +23,21 @@ export class AddSubscriptionComponent {
     email: ['', [Validators.required, Validators.email]],
     tel: ['', [Validators.required]],
     adresse: ['', [Validators.required]],
+    subscriptionType: ['Basique', [Validators.required]],
+    active: [true],
+    progress: [0]
   });
-
+  
   onSubmit() {
     if (this.subscriptionForm.valid) {
+      const now = new Date();
+      const formattedDate = now.toISOString().split('.')[0] + 'Z'; // Remove milliseconds
       const newSubscription = {
         ...this.subscriptionForm.value,
-        createdAt: new Date().toISOString(),
-        progress: 0,
-        active: true
+        createdAt: formattedDate,
       };
-
       this.store.addSubscription(newSubscription);
-      this.toastr.success('Abonnement ajouté avec succès');
+      this.toastr.success(`L'abonnement <span class="msg-class">${newSubscription.subscriptionType} de ${newSubscription.fullname}</span> ajouté avec succès`);
       this.loadListsSubscriptions();
     }
   }

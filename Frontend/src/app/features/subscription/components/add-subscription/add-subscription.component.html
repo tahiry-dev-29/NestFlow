@@ -1,67 +1,84 @@
-<main class="mt-0 transition-all duration-200 ease-in-out flex justify-center items-center min-h-screen">
-  <section class="container">
-    <div class="flex flex-wrap justify-center">
-      <div class="w-full max-w-full px-3 mx-auto md:flex-0 shrink-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
-        <div class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
-          <div class="pt-6 mb-0 text-center bg-slate-850/80 font-bold text-lg border-b-0 rounded-t-2xl">
-            <h5 class="title">Ajouter un abonnement</h5>
-          </div>
-          <div class="flex-auto p-6">
-            <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()" role="form text-left">
-              <div class="mb-4">
-                <input type="text" 
-                       formControlName="fullname"
-                       class="input-theme" 
-                       placeholder="Nom complet" />
-                <div *ngIf="subscriptionForm.get('fullname')?.invalid && subscriptionForm.get('fullname')?.touched"
-                     class="text-red-500 text-sm mt-1">
-                  Le nom complet est requis
+<main class="mt-0 transition-all duration-200 ease-in-out min-h-screen">
+  <div class="flex flex-wrap">
+    <div class="w-full max-w-full px-3 mx-auto md:flex-0 shrink-0">
+      <div class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
+        <div class="pt-6 mb-0 text-center bg-slate-850/80 font-bold text-lg border-b-0 rounded-t-2xl">
+          <h5 class="title">Ajouter un abonnement</h5>
+        </div>
+        <div class="flex-auto p-6">
+          <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()" role="form text-left">
+            <section class="grid grid-cols-2 gap-4">
+              <!-- Left Column -->
+              <div class="col-span-1">
+                <div class="mb-4">
+                  <input type="text" 
+                         formControlName="fullname"
+                         class="input-theme" 
+                         placeholder="Nom complet" />
+                  <div *ngIf="subscriptionForm.get('fullname')?.invalid && subscriptionForm.get('fullname')?.touched"
+                       class="text-red-500 text-sm mt-1">
+                    Le nom complet est requis
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <input type="email" 
+                         formControlName="email"
+                         class="input-theme" 
+                         placeholder="Email" />
+                  <div *ngIf="subscriptionForm.get('email')?.invalid && subscriptionForm.get('email')?.touched"
+                       class="text-red-500 text-sm mt-1">
+                    Email invalide
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <input type="tel" 
+                         formControlName="tel"
+                         class="input-theme" 
+                         placeholder="Téléphone" />
+                  <div *ngIf="subscriptionForm.get('tel')?.invalid && subscriptionForm.get('tel')?.touched"
+                       class="text-red-500 text-sm mt-1">
+                    Numéro de téléphone requis
+                  </div>
                 </div>
               </div>
 
-              <div class="mb-4">
-                <input type="email" 
-                       formControlName="email"
-                       class="input-theme" 
-                       placeholder="Email" />
-                <div *ngIf="subscriptionForm.get('email')?.invalid && subscriptionForm.get('email')?.touched"
-                     class="text-red-500 text-sm mt-1">
-                  Email invalide
+              <!-- Right Column -->
+              <div class="col-span-1">
+                <div class="mb-4">
+                  <textarea formControlName="adresse"
+                           class="input-theme min-h-[100px]" 
+                           placeholder="Adresse"></textarea>
+                  <div *ngIf="subscriptionForm.get('adresse')?.invalid && subscriptionForm.get('adresse')?.touched"
+                       class="text-red-500 text-sm mt-1">
+                    L'adresse est requise
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <select formControlName="subscriptionType" class="input-theme">
+                    <option value="Basique">Basique</option>
+                    <option value="Classique">Classique</option>
+                  </select>
+                  <div *ngIf="subscriptionForm.get('subscriptionType')?.invalid && subscriptionForm.get('subscriptionType')?.touched"
+                       class="text-red-500 text-sm mt-1">
+                    Le type d'abonnement est requis
+                  </div>
                 </div>
               </div>
+            </section>
 
-              <div class="mb-4">
-                <input type="tel" 
-                       formControlName="tel"
-                       class="input-theme" 
-                       placeholder="Téléphone" />
-                <div *ngIf="subscriptionForm.get('tel')?.invalid && subscriptionForm.get('tel')?.touched"
-                     class="text-red-500 text-sm mt-1">
-                  Numéro de téléphone invalide
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <textarea formControlName="adresse"
-                          class="input-theme min-h-[100px]" 
-                          placeholder="Adresse"></textarea>
-                <div *ngIf="subscriptionForm.get('adresse')?.invalid && subscriptionForm.get('adresse')?.touched"
-                     class="text-red-500 text-sm mt-1">
-                  L'adresse est requise
-                </div>
-              </div>
-
-              <div class="text-center">
-                <button type="submit" 
-                        [disabled]="!subscriptionForm.valid"
-                        class="btn-gradient-bg focus:outline-none right-blue-400">
-                  Ajouter l'abonnement
-                </button>
-              </div>
-            </form>
-          </div>
+            <div class="text-center">
+              <button type="submit" 
+                      [disabled]="!subscriptionForm.valid"
+                      class="bg-gradient-to-tl from-blue-500 to-violet-500 text-white px-8 py-2 rounded-lg">
+                Ajouter
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </main>

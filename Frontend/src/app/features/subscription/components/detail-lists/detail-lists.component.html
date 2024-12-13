@@ -1,9 +1,19 @@
 <section class="flex flex-wrap w-full justify-center shadow-dark-xl rounded-2xl">
+  <div class="flex justify-between items-center mb-4 px-4">
+    <h2 class="text-xl font-semibold text-white">Liste des abonnés</h2>
+    <button (click)="toggleAddForm()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+      {{ showAddForm() ? 'Fermer' : 'Ajouter un abonné' }}
+    </button>
+  </div>
+
+  <app-add-subscription *ngIf="showAddForm()" class="mb-4"></app-add-subscription>
+
   <div class="overflow-x-auto w-full rounded-2xl">
     <div
       class="align-middle inline-block min-w-full rounded-2xl bg-slate-850 px-6 pt-3 h-[65vh] py-5 overflow-auto custom-scrolbar">
       <table class="min-w-full border-collapse text-white">
-        <thead>
+        <!-- ajouter une class pour mettre enposition sticky et une bg couleur blurs transparent -->
+        <thead class="sticky top-0 z-50 bg-slate-850/80 backdrop-blur backdrop-saturate-200 border-b-2 border-gray-200">
           <tr class="text-center">
             <th class="th">ID</th>
             <th class="th hidden sm:table-cell">Nom complet</th>
@@ -79,7 +89,7 @@
               <div class="text-sm text-white">
                 <p><strong>Adresse :</strong> {{ abonne.adresse }}</p>
                 <p><strong>Téléphone :</strong> {{ abonne.tel }}</p>
-                <p><strong>Date d'inscription :</strong> {{ abonne.createdAt }}</p>
+                <p><strong>Date d'inscription :</strong> {{ abonne.createdAt | date:'dd/MM/yyyy à HH:mm' }}</p>
               </div>
             </td>
           </tr>

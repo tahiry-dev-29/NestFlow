@@ -107,6 +107,10 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .error-badge {
     @apply bg-[#FF6A3D] px-2 text-sm rounded rotate-12 absolute;
   }
+
+  .msg-class {
+    @apply bg-gray-200/60 text-slate-800/80 rounded px-2 py-1 text-white;
+  }
 }
 
 @layer components {
