@@ -24,81 +24,94 @@ export class SideBarComponent {
   dropdownState: WritableSignal<boolean> = signal(false);
 
   readonly isMobile = signal(window.innerWidth < 1024);
-  readonly classes = computed(() => {
-    const isOpened = this.sideRightbarState();
 
-    return {
-      listClass: isOpened ? 'rounded-7' : 'text-white',
-      iconClass: isOpened ? 'text text-gray-800' : 'text-white',
-      textClass: isOpened
-        ? 'font-semibold text-gray-800'
-        : 'font-semibold text-white',
-      arrowClass: isOpened ? 'rotate-90 text text-gray-800' : 'text-white',
+  // Dropdown actif
+  activeDropdown = signal<number | null>(null);
 
-      menuIconClass: (route: string) =>
-        this.isActive(route) ? 'menu-icon-solid' : 'menu-icon-outline',
-
-      editSubscriptionIconClass: (
-        route: string,
-        isEditSubscription: boolean
-      ) => {
-        if (isEditSubscription) {
-          return 'bx bx-plus';
-        }
-        return this.isActive(route) ? 'menu-icon-solid' : 'menu-icon-outline';
-      },
-
-      textClassList: (route: string) =>
-        this.isActive(route) ? 'text' : 'text-gray-300 font-light',
-    };
-  });
-
-  readonly dropdownClasses = computed(() => {
-    const isOpened = this.sideRightbarState();
-    return {
-      listClasses: {
-        'rounded-7': isOpened,
-        'text-gray-300 font-light': !isOpened,
-      },
-      iconClasses: {
-        text: isOpened,
-        'text-gray-300 font-light': !isOpened,
-      },
-      textClasses: {
-        text: isOpened,
-        'text-gray-300 font-light': !isOpened,
-      },
-      arrowClasses: {
-        '-rotate-90': isOpened,
-        text: isOpened,
-        'text-gray-300 font-light': !isOpened,
-      },
-    };
-  });
-
+  // Gestion des menus dropdown
+  dropdowns = [
+    {
+      label: 'Subscriptions',
+      link: 'subscriptions',
+      icon: 'subscriptions',
+      subItems: [
+        { label: 'List Subscriptions', link: 'subscriptions/list', icon: 'list' },
+        { label: 'Add Subscription', link: 'subscriptions/add', icon: 'add' },
+      ],
+    },
+    {
+      label: 'Users',
+      link: 'users',
+      icon: 'person',
+      subItems: [
+        { label: 'List Users', link: 'users/list', icon: 'list' },
+        { label: 'Add Users', link: 'users/add', icon: 'add' },
+      ],
+    },
+  ];
   
-  toggleDropdown() {
-    this.sideRightbarState.set(!this.sideRightbarState());
+
+  toggleDropdownState(index: number) {
+    this.activeDropdown.update((prev) => (prev === index ? null : index));
   }
 
   isActive(route: string): boolean {
     return this.router.url.includes(route);
   }
+  
+  readonly classes = computed(() => {
 
-
-  toggleDropdownState() {
-    this.dropdownState.update((prev) => !prev);
-  }
-
-  dropdownSignal() {
-    const isOpen = this.dropdownState();
     return {
-      listClasses: isOpen ? 'bg-gray-800' : 'bg-gray-700',
-      iconClasses: isOpen ? 'text-blue-500' : 'text-gray-500',
-      textClasses: isOpen ? 'text' : 'text-gray-400',
-      arrowClasses: isOpen
-        ? 'rotate-90 text'
-        : 'rotate-0 text-gray-300 font-light',
+      menuIconClass: (route: string) =>
+        this.isActive(route) ? 'menu-icon-solid text' : 'menu-icon-outline text-gray-500',
+    
+      textClassList: (route: string) =>
+        this.isActive(route) ? 'text' : 'font-light text-gray-300',
+    
+      dropdownListClasses: (index: number) =>
+        this.activeDropdown() === index ? 'active-lists text-white' : 'text-gray-400',
+    
+      dropdownIconClasses: (index: number) =>
+        this.activeDropdown() === index ? 'text' : 'text-gray-500',
+    
+      dropdownTextClasses: (index: number) =>
+        this.activeDropdown() === index ? 'text font-semibold' : 'text-gray-400 font-light',
+    
+      dropdownArrowClasses: (index: number) =>
+        this.activeDropdown() === index
+          ? 'rotate-90 text'
+          : 'rotate-0 text-gray-300',
     };
+    
+  });
+
+
+  // Classes dynamiques spécifiques pour Settings
+  readonly dropdownClasses = computed(() => {
+    const isOpened = this.sideRightbarState();
+    return {
+      listClasses: {
+        'rounded-7': isOpened,
+        'text-gray-400': !isOpened,
+      },
+      iconClasses: {
+        'text': isOpened,
+        'text-gray-500': !isOpened,
+      },
+      textClasses: {
+        'text': isOpened,
+        'text-gray-500/85 font-light': !isOpened,
+      },
+      arrowClasses: {
+        '-rotate-90 text': isOpened,
+        text: isOpened,
+        'rotate-0 text-gray-300': !isOpened,
+      },
+    };
+  });
+
+
+  toggleDropdown() {
+    this.sideRightbarState.set(!this.sideRightbarState());
   }
 }

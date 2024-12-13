@@ -8,9 +8,9 @@ import { ISubscription } from '../../models/subscription.interface';
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
-  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ],
+  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent],
   templateUrl: './detail-lists.component.html',
-  styleUrls: ['./detail-lists.component.scss'],
+  styleUrl: './detail-lists.component.scss',
   animations: [expandCollapse],
 })
 export class DetailListsComponent {

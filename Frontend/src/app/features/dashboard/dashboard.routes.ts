@@ -26,8 +26,8 @@ export const DashboardRouter: Routes = [
           ),
       },
       {
-        path: 'subscriptions',
-        title: 'Dashboard / Subscriptions',
+        path: 'subscriptions/list',
+        title: 'Subscriptions / List',
         loadComponent: () =>
           import('../subscription/components/subscription/subscription.component').then(
             (m) => m.SubscriptionComponent

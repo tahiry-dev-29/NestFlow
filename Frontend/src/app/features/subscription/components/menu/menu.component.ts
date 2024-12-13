@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, output, Output, signal } from '@angular/core';
+import { Component, output, signal } from '@angular/core';
 import { SearchBarComponent } from "../../../shared/components/search-bar/search-bar.component";
 
 @Component({

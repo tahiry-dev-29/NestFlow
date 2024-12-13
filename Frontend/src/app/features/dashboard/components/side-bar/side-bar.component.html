@@ -1,13 +1,11 @@
 <!-- Sidebar mobile -->
+
 <aside
-  class="lg:static z-50 text-white transition-all duration-300 ease-in-out rounded-2xl hover:overflow-y-auto overflow-hidden h-full bg-opacity-85"
-  [ngClass]="
-    sideLeftBarState() ? 'hover:custom-scrolbar' : 'no-custom-scrolbar'
-  "
-  [class.bg-transparent]="!sideLeftBarState() && isMobile()"
-  [class.bg-slate-850]="sideLeftBarState()"
->
-  <div class="flex flex-col space-y-6 m-4 pb-0 h-full">
+  class="lg:static z-50 text-white transition-all duration-300 ease-in-out rounded-2xl h-full bg-opacity-85"
+  [class.bg-transparent]="!sideLeftBarState() && isMobile()" 
+  [class.bg-slate-850]="sideLeftBarState()">
+  
+  <div class="flex flex-col space-y-6 my-0 mx-2 h-full">
     <!-- Logo -->
     <div class="flex items-center justify-center">
       <img src="#" alt="Site Logo" class="h-10" />
@@ -16,132 +14,56 @@
     <hr class="border-gray-700" />
 
     <!-- Navigation -->
-    <section class="flex flex-col flex-grow mt-4 mb-0">
+    <section
+      class="flex flex-col flex-grow mt-4 mb-0 overflow-y-auto custom-scrolbar"
+      [ngClass]="sideLeftBarState() ? 'hover:custom-scrolbar' : 'no-custom-scrolbar'"
+      style="max-height: 100vh;" 
+    >
       <ul class="flex flex-col pl-0 mb-0 space-y-2 gap-y-3">
         <!-- Dashboard -->
-        <li
-          class="flex items-center hover-lists"
-          routerLink="overview"
-          routerLinkActive="active-lists"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
+        <li class="flex items-center hover-lists" routerLink="overview" routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }">
           <a class="flex items-center text-blue-500/85">
-            <span
-              class="menu-icon"
-              [ngClass]="classes().menuIconClass('overview')"
-            >
+            <span class="menu-icon" [ngClass]="classes().menuIconClass('overview')">
               dashboard
             </span>
-            <span
-              class="font-semibold"
-              [ngClass]="classes().textClassList('overview')"
-            >
+            <span class="font-semibold" [ngClass]="classes().textClassList('overview')">
               Dashboard
             </span>
           </a>
         </li>
 
-        <!-- Users -->
-        <li
-          class="hover-lists"
-          routerLink="users"
-          routerLinkActive="active-lists"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a class="flex items-center text-green-500/85">
-            <span
-              class="menu-icon flex items-center"
-              [ngClass]="classes().menuIconClass('users')"
-            >
-              person
-            </span>
-            <span
-              class="font-semibold"
-              [ngClass]="classes().textClassList('users')"
-            >
-              Users
-            </span>
-          </a>
-        </li>
-
-        <li
-          class="flex items-center hover-dropdown-lists"
-          [ngClass]="dropdownClasses().listClasses"
-        >
-          <div class="group w-full flex flex-wrap gap-y-4">
-            <button
-              class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
-              (click)="toggleDropdownState()"
-            >
-              <div class="flex items-center gap-5">
-                <span
-                  class="material-icons text-5 text-yellow-500/85"
-                  [ngClass]="dropdownSignal().iconClasses"
-                >
-                subscriptions
+        <li *ngFor="let dropdown of dropdowns; let i = index" class="flex flex-col hover-dropdown-lists"
+          [ngClass]="classes().dropdownListClasses(i)">
+          <div class="group w-full flex flex-col gap-y-4">
+            <!-- Bouton principal du dropdown -->
+            <button class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
+              (click)="toggleDropdownState(i)">
+              <div class="flex gap-2 items-center justify-between">
+                <span class="material-icons text-5" [ngClass]="classes().dropdownIconClasses(i)">
+                  {{ dropdown.icon }}
                 </span>
-                <span
-                  class="font-semibold"
-                  [ngClass]="dropdownSignal().textClasses"
-                >
-                  Subscriptions
+                <span class="font-semibold" [ngClass]="classes().dropdownTextClasses(i)">
+                  {{ dropdown.label }}
                 </span>
               </div>
-              
-              <span
-                class="material-icons text-lg transition-transform"
-                [ngClass]="dropdownSignal().arrowClasses"
-              >
+              <span class="material-icons text-lg transition-transform" [ngClass]="classes().dropdownArrowClasses(i)">
                 arrow_forward_ios
               </span>
             </button>
 
-            <div
-              class="transition-all duration-300"
-              [class.hidden]="!dropdownState()"
-            >
+            <!-- Sous-listes -->
+            <div class="transition-all duration-300" [class.hidden]="activeDropdown() !== i">
               <ul class="flex flex-col gap-2 text-white">
-                <li
-                  class="flex items-center hover-lists"
-                  routerLink="subscriptions"
-                  routerLinkActive="active-lists"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                >
-                  <a class="flex items-center text-yellow-500/85">
-                    <span
-                      class="menu-icon menu-icon-red text-5"
-                      [ngClass]="classes().menuIconClass('subscriptions')"
-                    >
-                      subscriptions
-                    </span>
-                    <span
-                      class="font-semibold"
-                      [ngClass]="classes().textClassList('subscriptions')"
-                    >
-                      Subscriptions
-                    </span>
-                  </a>
-                </li>
-
-                <!-- Modification d'une souscription -->
-                <li
-                  class="flex items-center hover-lists"
-                  routerLink="subscriptions/id"
-                  routerLinkActive="active-lists"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                >
+                <li *ngFor="let subItem of dropdown.subItems" class="flex items-center hover-lists"
+                  [routerLink]="subItem.link" routerLinkActive="active-lists"
+                  [routerLinkActiveOptions]="{ exact: true }">
                   <a class="flex items-center gap-2 text-yellow-500/85">
-                    <span
-                      class="menu-icon-solid text-5"
-                      [ngClass]="classes().editSubscriptionIconClass('subscriptions', true)"
-                    >
-                      edit
+                    <span class="material-icons text-5" [ngClass]="classes().menuIconClass(subItem.link)">
+                      {{ subItem.icon }}
                     </span>
-                    <span
-                      class="font-semibold"
-                      [ngClass]="classes().textClassList('subscriptions')"
-                    >
-                      Edit Subscriptions
+                    <span class="font-semibold" [ngClass]="classes().textClassList(subItem.link)">
+                      {{ subItem.label }}
                     </span>
                   </a>
                 </li>
@@ -149,142 +71,36 @@
             </div>
           </div>
         </li>
-        <li
-          class="flex items-center hover-dropdown-lists"
-          [ngClass]="dropdownClasses().listClasses"
-        >
-          <div class="group w-full flex flex-wrap gap-y-4">
-            <button
-              class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
-              (click)="toggleDropdownState()"
-            >
-              <div class="flex items-center gap-5">
-                <span
-                  class="material-icons text-5 text-yellow-500/85"
-                  [ngClass]="dropdownSignal().iconClasses"
-                >
-                subscriptions
-                </span>
-                <span
-                  class="font-semibold"
-                  [ngClass]="dropdownSignal().textClasses"
-                >
-                  Subscriptions
-                </span>
-              </div>
-              
-              <span
-                class="material-icons text-lg transition-transform"
-                [ngClass]="dropdownSignal().arrowClasses"
-              >
-                arrow_forward_ios
-              </span>
-            </button>
 
-            <div
-              class="transition-all duration-300"
-              [class.hidden]="!dropdownState()"
-            >
-              <ul class="flex flex-col gap-2 text-white">
-                <li
-                  class="flex items-center hover-lists"
-                  routerLink="subscriptions"
-                  routerLinkActive="active-lists"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                >
-                  <a class="flex items-center text-yellow-500/85">
-                    <span
-                      class="menu-icon menu-icon-red text-5"
-                      [ngClass]="classes().menuIconClass('subscriptions')"
-                    >
-                      subscriptions
-                    </span>
-                    <span
-                      class="font-semibold"
-                      [ngClass]="classes().textClassList('subscriptions')"
-                    >
-                      Subscriptions
-                    </span>
-                  </a>
-                </li>
 
-                <!-- Modification d'une souscription -->
-                <li
-                  class="flex items-center hover-lists"
-                  routerLink="subscriptions/id"
-                  routerLinkActive="active-lists"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                >
-                  <a class="flex items-center gap-2 text-yellow-500/85">
-                    <span
-                      class="menu-icon-solid text-5"
-                      [ngClass]="classes().editSubscriptionIconClass('subscriptions', true)"
-                    >
-                      edit
-                    </span>
-                    <span
-                      class="font-semibold"
-                      [ngClass]="classes().textClassList('subscriptions')"
-                    >
-                      Edit Subscriptions
-                    </span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </li>
+
       </ul>
 
       <!-- Settings -->
       <ul class="mt-auto border-t border-gray-700 pt-4">
-        <li
-          class="flex items-center hover-lists"
-          [ngClass]="dropdownClasses().listClasses"
-        >
+        <li class="flex items-center hover-lists" [ngClass]="dropdownClasses().listClasses">
           <div class="group w-full">
-            <div
-              class="transition-all duration-300"
-              [class.hidden]="!sideRightbarState()"
-            >
+            <div class="transition-all duration-300" [class.hidden]="!sideRightbarState()">
               <ul class="flex flex-col gap-2 text-white">
-                <li
-                  class="flex items-center group-hover:shadow-dark-blur group rounded-3 transition mb-3"
-                >
-                  <a
-                    routerLink="/logout"
-                    class="flex w-full justify-around gap-2 p-2 items-center space-x-3"
-                  >
+                <li class="flex items-center group-hover:shadow-dark-blur group rounded-3 transition mb-3">
+                  <a routerLink="/logout" class="flex w-full justify-around gap-2 p-2 items-center space-x-3">
                     <span class="font-semibold group-hover:text">Logout</span>
-                    <span class="material-icons text-5 group-hover:text"
-                      >logout</span
-                    >
+                    <span class="material-icons text-5 group-hover:text">logout</span>
                   </a>
                 </li>
               </ul>
             </div>
-            <button
-              class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
-              (click)="toggleDropdown()"
-            >
+            <button class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
+              (click)="toggleDropdown()">
               <div class="flex items-center gap-5">
-                <span
-                  class="material-icons text-5 text-gray-500/85"
-                  [ngClass]="dropdownClasses().iconClasses"
-                >
+                <span class="material-icons text-5" [ngClass]="dropdownClasses().iconClasses">
                   settings
                 </span>
-                <span
-                  class="font-semibold"
-                  [ngClass]="dropdownClasses().textClasses"
-                >
+                <span class="font-semibold" [ngClass]="dropdownClasses().textClasses">
                   Settings
                 </span>
               </div>
-              <span
-                class="material-icons text-lg transition-transform"
-                [ngClass]="dropdownClasses().arrowClasses"
-              >
+              <span class="material-icons text-lg transition-transform" [ngClass]="dropdownClasses().arrowClasses">
                 arrow_forward_ios
               </span>
             </button>
