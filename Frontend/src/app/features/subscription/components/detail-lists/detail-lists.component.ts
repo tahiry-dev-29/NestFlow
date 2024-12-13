@@ -1,137 +1,83 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, InputSignal, signal, WritableSignal } from '@angular/core';
+import { Component, inject, input, InputSignal, signal } from '@angular/core';
 import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { FilterSubscribersPipe } from '../../../shared/pipe/filter-search.pipe';
-import { ISubscription } from '../../models/subscription.interface';
 import { ToastrModule, ToastrService } from "ngx-toastr";
+import { SubscriptionStore } from '../../store/subscribed.store';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
   imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ToastrModule],
   templateUrl: './detail-lists.component.html',
-  styleUrl: './detail-lists.component.scss',
+  styleUrls: ['./detail-lists.component.scss'],
   animations: [expandCollapse],
 })
 export class DetailListsComponent {
-  // Signal pour le filtre
+  private store = inject(SubscriptionStore);
+  private toastr = inject(ToastrService);
+
+  // Input signal for filter
   filter: InputSignal<{ menu: string; search: string }> = input({
     menu: 'all',
     search: '',
   });
 
-  expandedId = signal<number | null>(null);
-  expandedMenuId = signal<number | null>(null);
-  subscrib: WritableSignal<ISubscription[]> = signal([
-    {
-      id: 1,
-      fullname: 'Jean Dupont',
-      email: 'jean.dupont@example.com',
-      tel: '0612345678',
-      adresse: '123 Rue des Lilas',
-      createdAt: '2024-01-01',
-      progress: 75,
-      active: true,
-    },
-    {
-      id: 2,
-      fullname: 'Marie Curie',
-      email: 'marie.curie@example.com',
-      tel: '0623456789',
-      adresse: '456 Avenue des Fleurs',
-      createdAt: '2024-01-02',
-      progress: 50,
-      active: false,
-    },
-    {
-      id: 3,
-      fullname: 'YCurie',
-      email: 'ymarie.curie@example.com',
-      tel: '0623456789',
-      adresse: '42756 Avenue des Fleurs',
-      createdAt: '2024-01-02',
-      progress: 5,
-      active: true,
-    },
-    {
-      id: 4,
-      fullname: 'rCurie',
-      email: 'rcurie@example.com',
-      tel: '0623456789',
-      adresse: '5857 tt Fleurs',
-      createdAt: '2024-01-02',
-      progress: 78,
-      active: false,
-    },
-    {
-      id: 5,
-      fullname: 'oCurie',
-      email: 'ddcurie@example.com',
-      tel: '0623456789',
-      adresse: '7857 Avenue des Fleurs',
-      createdAt: '2024-01-02',
-      progress: 100,
-      active: true,
-    },
-    {
-      id: 6,
-      fullname: 'Marie',
-      email: 'vhcurie@example.com',
-      tel: '0623456789',
-      adresse: '41858 Avenue des Fleurs',
-      createdAt: '2024-01-02',
-      progress: 90,
-      active: false,
-    },
-  ]);
-
+  // Store signals
+  subscrib = this.store.subscriptions;
+  expandedId = this.store.expandedId;
+  expandedMenuId = this.store.expandedMenuId;
   showPopup = signal(false);
   subscriberToDelete = signal<number | null>(null);
 
-  progressClasses(subscriber: ISubscription) {
-    if (subscriber.progress === 100) return 'bg-green-500';
-    if (subscriber.progress >= 75) return 'bg-blue-500';
-    if (subscriber.progress >= 50) return 'bg-yellow-500';
+  // Progress classes helper
+  getProgressClasses(progress: number): string {
+    if (progress === 100) return 'bg-green-500';
+    if (progress >= 75) return 'bg-blue-500';
+    if (progress >= 50) return 'bg-yellow-500';
     return 'bg-red-500';
   }
 
-  // Interaction
+  // Helper method to get remaining days
+  getRemainingDays(abonneId: number) {
+    return this.store.subscriptionDetails()?.find(s => s.id === abonneId)?.remainingDays || 0;
+  }
+
+  // Interaction methods
   toggleDetails(id: number) {
-    this.expandedId.set(this.expandedId() === id ? null : id);
+    this.store.toggleDetails(id);
   }
 
   toggleMenu(id: number) {
-    this.expandedMenuId.set(this.expandedMenuId() === id ? null : id);
+    this.store.toggleMenu(id);
   }
 
-  deleteSubscriber(id: number) {
-    this.subscrib.set(this.subscrib().filter((abonne) => abonne.id !== id));
+  // Popup methods
+  openPopup(subscriberId: number) {
+    this.subscriberToDelete.set(subscriberId);
+    this.showPopup.set(true);
+  }
+
+  closePopup() {
+    this.showPopup.set(false);
+    this.subscriberToDelete.set(null);
+  }
+
+  confirmDelete() {
+    const id = this.subscriberToDelete();
+    const fullname = this.subscrib().find(abonne => abonne.id === id)?.fullname ?? '';
+    if (id !== null) {
+      this.store.deleteSubscription(id);
+      this.toastr.success(
+        `Abonné <span class="bg-gray-200/60 text-slate-800/80 rounded px-2 py-1 text-white">${id} ${fullname}</span> supprimé avec succès`,
+        'Suppression'
+      );
+    }
+    this.closePopup();
   }
 
   editSubscriber(id: number) {
     alert(`Modifier l'abonné avec ID : ${id}`);
   }
-
-  // Popup
-  openPopup(subscriberId: number) {
-    this.subscriberToDelete.set(subscriberId);
-    this.showPopup.set(true);
-  }
-  closePopup() {
-    this.showPopup.set(false);
-    this.subscriberToDelete.set(null);
-  }
-  confirmDelete() {
-    const id = this.subscriberToDelete();
-    const fullname = this.subscrib().find(abonne => abonne.id === id)?.fullname ?? '';
-    if (id !== null) {
-      this.deleteSubscriber(id);
-      this.toastr.success(`Abonné <span class="bg-gray-200/60 text-slate-800/80 rounded px-2 py-1 text-white">${id} ${fullname}</span> supprimé avec succès`, 'Suppression');
-    }
-    this.closePopup();
-  }
-
-  private readonly toastr = inject(ToastrService);
-
 }

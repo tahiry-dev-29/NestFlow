@@ -16,10 +16,11 @@ export class FilterSubscribersPipe implements PipeTransform {
 
     let filtered = subscribers;
 
+    
     if (menu === 'active') {
-      filtered = filtered.filter((sub) => sub.active);
+      filtered = filtered.filter((sub) => sub.progress >= 50);
     } else if (menu === 'inactive') {
-      filtered = filtered.filter((sub) => !sub.active);
+      filtered = filtered.filter((sub) => sub.progress < 50);
     }
 
     if (typeof search === 'string' && search.trim()) {

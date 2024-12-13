@@ -9,6 +9,7 @@
             <th class="th hidden sm:table-cell">Nom complet</th>
             <th class="th hidden sm:table-cell">Email</th>
             <th class="th">Progression</th>
+            <th class="th">Status</th>
             <th class="th">Actions</th>
           </tr>
         </thead>
@@ -24,9 +25,18 @@
             <td class="td">
               <div class="relative w-full h-2 bg-gray-700 rounded-full">
                 <div class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
-                  [class]="progressClasses(abonne)" [style.width.%]="abonne.progress"></div>
+                  [class]="getProgressClasses(abonne.progress)" [style.width.%]="abonne.progress"></div>
               </div>
               <span class="block text-sm text-gray-400 mt-1">{{ abonne.progress }}%</span>
+            </td>
+            <td class="td">
+              <div class="flex flex-col items-center">
+                <span [ngClass]="{
+                  'text-blue-400': abonne.subscriptionType === 'Basique',
+                  'text-green-400': abonne.subscriptionType === 'Classique',
+                }">{{ abonne.subscriptionType }}</span>
+                <span class="text-xs text-gray-400">{{ getRemainingDays(abonne.id) }} jours restants</span>
+              </div>
             </td>
             <td class="px-6 py-4 text-center">
               <div class="relative inline-block ml-2">
@@ -65,7 +75,7 @@
 
           @if (expandedId() === abonne.id) {
           <tr [@expandCollapse]>
-            <td colspan="5" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
+            <td colspan="6" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
               <div class="text-sm text-white">
                 <p><strong>Adresse :</strong> {{ abonne.adresse }}</p>
                 <p><strong>Téléphone :</strong> {{ abonne.tel }}</p>
