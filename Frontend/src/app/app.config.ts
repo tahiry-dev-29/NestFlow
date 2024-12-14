@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideStore(),
     provideToastr({
-      positionClass: 'toast-top-right',
+      positionClass: 'toast-bottom-right',
       preventDuplicates: true,
       timeOut: 3000,
       enableHtml: true,

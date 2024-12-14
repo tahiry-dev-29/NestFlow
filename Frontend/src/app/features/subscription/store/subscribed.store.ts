@@ -1,6 +1,6 @@
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { ISubscription } from '../models/subscription.interface';
+import { ISubscription, TypeNewSubscription } from '../models/subscription.interface';
 
 // Define the state interface
 export interface SubscriptionState {
@@ -160,7 +160,7 @@ export const SubscriptionStore = signalStore(
   // CRUD Methods
   withMethods(({ subscriptions, expandedId, expandedMenuId, ...store }) => ({
     // Create
-    addSubscription(subscription: Omit<ISubscription, 'id'>) {
+    addSubscription(subscription: TypeNewSubscription) {
       const newId = Math.max(0, ...subscriptions().map(s => s.id)) + 1;
       const newSubscription = { ...subscription, id: newId };
       patchState(store, {
@@ -172,6 +172,11 @@ export const SubscriptionStore = signalStore(
     // Read (filter by status)
     getSubscriptionsByStatus(active: boolean) {
       return subscriptions().filter(sub => sub.active === active);
+    },
+
+    // Retrieve a subscription by its ID
+    getSubscriptionById(id: number): ISubscription | undefined {
+      return subscriptions().find(sub => sub.id === id);
     },
 
     // Update

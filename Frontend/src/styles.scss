@@ -111,6 +111,10 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .msg-class {
     @apply bg-gray-200/60 text-slate-800/80 rounded px-2 py-1 text-white;
   }
+
+  .error {
+    @apply text-red-500;
+  }
 }
 
 @layer components {

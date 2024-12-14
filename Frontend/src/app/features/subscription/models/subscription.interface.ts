@@ -2,7 +2,7 @@ export type SubscriptionType = 'Basique' | 'Classique';
 
 export interface ISubscription {
   id: number;
-  fullname: string;
+  fullname: string ;
   email: string;
   tel: string;
   adresse: string;
@@ -13,3 +13,5 @@ export interface ISubscription {
   channelCount: number;
   password: string;
 }
+
+export type TypeNewSubscription = Omit<ISubscription, 'id'>;

@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, input, InputSignal, signal } from '@angular/core';
+import { ToastrModule, ToastrService } from "ngx-toastr";
 import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { FilterSubscribersPipe } from '../../../shared/pipe/filter-search.pipe';
-import { ToastrModule, ToastrService } from "ngx-toastr";
 import { SubscriptionStore } from '../../store/subscribed.store';
-import { AddSubscriptionComponent } from '../add-subscription/add-subscription.component';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
-  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ToastrModule, AddSubscriptionComponent],
+  imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ToastrModule],
   templateUrl: './detail-lists.component.html',
   styleUrls: ['./detail-lists.component.scss'],
   animations: [expandCollapse],
@@ -81,7 +80,7 @@ export class DetailListsComponent {
     if (id !== null) {
       this.store.deleteSubscription(id);
       this.toastr.success(
-        `L'abonnement de <span class="msg-class">${id} ${fullname}</span> supprimé avec succès`
+        `L'abonnement de <span class="msg-class">${id} ${fullname}</span>est supprimé avec succès`
       );
     }
     this.closePopup();

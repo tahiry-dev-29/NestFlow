@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, output, signal } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { SearchBarComponent } from "../../../shared/components/search-bar/search-bar.component";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu-subscription',
@@ -13,6 +14,8 @@ export class MenuComponent {
   filterChange = output<string>();
   search = output<string>();
   activeMenu = signal<number>(0);
+
+  private readonly router = inject(Router);
 
   menuItems = signal([
     { label: 'Tous', icon: 'apps', filter: 'all' },
@@ -27,5 +30,9 @@ export class MenuComponent {
   
   onSearch(searchTerm: string) {
     this.search.emit(searchTerm);
+  }
+
+  onAddUser() {
+    this.router.navigate(['dashboard','subscriptions', 'add']);
   }
 }

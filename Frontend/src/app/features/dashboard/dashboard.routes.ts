@@ -38,7 +38,7 @@ export const DashboardRouter: Routes = [
         title: 'Subscriptions / Edit',
         loadComponent: () =>
           import('../subscription/components/edit-subscrition/edit-subscrition.component').then(
-            (m) => m.EditSubscritionComponent
+            (m) => m.EditSubscriptionComponent
           ),
       },
       {
