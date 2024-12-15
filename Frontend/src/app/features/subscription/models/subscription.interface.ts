@@ -2,16 +2,23 @@ export type SubscriptionType = 'Basique' | 'Classique';
 
 export interface ISubscription {
   id: number;
-  fullname: string ;
+  fullname: string;
   email: string;
   tel: string;
   adresse: string;
-  createdAt: string;
   subscriptionType: SubscriptionType;
+  subscriptionStartDate: string;
+  subscriptionEndDate: string;
   progress: number;
   active: boolean;
   channelCount: number;
   password: string;
 }
 
-export type TypeNewSubscription = Omit<ISubscription, 'id'>;
+export interface SubscriptionState {
+  subscriptions: ISubscription[];
+  loading: boolean;
+  error: string | null;
+  expandedId: number | null;
+  expandedMenuId: number | null;
+}

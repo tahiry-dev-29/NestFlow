@@ -20,7 +20,7 @@
                   </div>
                 </div>
                 <div class="mb-4">
-                  <input type="email" formControlName="email" class="input-theme" placeholder="Email" />
+                  <input type="email" formControlName="email" class="input-theme" placeholder="Email"/>
                   <div *ngIf="subscriptionForm.get('email')?.invalid && subscriptionForm.get('email')?.touched" class="error">
                     <small *ngIf="subscriptionForm.get('email')?.errors?.['required']">Email requis.</small>
                     <small *ngIf="subscriptionForm.get('email')?.errors?.['email']">Email invalide.</small>
@@ -67,7 +67,7 @@
             </section>
             <div class="text-center">
               <button type="submit" [disabled]="!subscriptionForm.valid"
-                class="bg-gradient-to-tl from-blue-500 to-violet-500 text-white px-8 py-2 rounded-lg">
+                class="">
                 Ajouter
               </button>
             </div>

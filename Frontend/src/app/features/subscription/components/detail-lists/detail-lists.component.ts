@@ -5,6 +5,7 @@ import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { FilterSubscribersPipe } from '../../../shared/pipe/filter-search.pipe';
 import { SubscriptionStore } from '../../store/subscribed.store';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-detail-lists',
@@ -17,12 +18,14 @@ import { SubscriptionStore } from '../../store/subscribed.store';
 export class DetailListsComponent {
   private store = inject(SubscriptionStore);
   private toastr = inject(ToastrService);
+  private router = inject(Router);
 
   // Input signal for filter
   filter: InputSignal<{ menu: string; search: string }> = input({
     menu: 'all',
     search: '',
   });
+  
 
   // Store signals
   subscrib = this.store.subscriptions;
@@ -87,6 +90,10 @@ export class DetailListsComponent {
   }
 
   editSubscriber(id: number) {
-    alert(`Modifier l'abonné avec ID : ${id}`);
+    this.router.navigate(['dashboard/subscriptions/edit', id]);
+  }
+
+  trackById(index: number, item: any): number {
+    return item.id;
   }
 }

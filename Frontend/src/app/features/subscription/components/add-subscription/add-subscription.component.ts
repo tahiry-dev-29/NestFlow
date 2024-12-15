@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { SubscriptionType } from '../../models/subscription.interface';
 import { SubscriptionStore } from '../../store/subscribed.store';
-import { ISubscription, SubscriptionType, TypeNewSubscription } from '../../models/subscription.interface';
+import { ISubscription } from './../../models/subscription.interface';
 
 @Component({
   selector: 'app-add-subscription',
@@ -22,17 +23,14 @@ export class AddSubscriptionComponent implements OnInit {
   subscriptionForm = this.fb.group({
     fullname: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
     email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$')]],
-    tel: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]], // 10 chiffres
+    tel: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
     adresse: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
     subscriptionType: ['Basique', [Validators.required]],
-    channelCount: [250, [Validators.required]], // Défini dynamiquement
+    channelCount: [250, [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(4)]],
-    active: [true],
-    progress: [0],
   });
 
   ngOnInit() {
-    // Abonnement aux changements de `subscriptionType` pour ajuster `channelCount`
     this.subscriptionForm.get('subscriptionType')?.valueChanges.subscribe((type) => {
       const channelCount = type === 'Classique' ? 500 : 250;
       this.subscriptionForm.patchValue({ channelCount }, { emitEvent: false });
@@ -43,16 +41,14 @@ export class AddSubscriptionComponent implements OnInit {
     if (this.subscriptionForm.valid) {
       this.addSubscription();
     } else {
-      this.subscriptionForm.markAllAsTouched(); // Marquer tous les champs comme "touchés" pour afficher les erreurs
+      this.subscriptionForm.markAllAsTouched();
     }
   }
 
   private addSubscription() {
-    const now = new Date();
-    const formattedDate = now.toISOString().split('.')[0] + 'Z'; // Format ISO sans millisecondes
-
     const formValues = this.subscriptionForm.value;
-    const newSubscription: TypeNewSubscription = {
+    const newSubscription: ISubscription = {
+      id: 0,
       fullname: formValues.fullname || '',
       email: formValues.email || '',
       tel: formValues.tel || '',
@@ -60,19 +56,20 @@ export class AddSubscriptionComponent implements OnInit {
       subscriptionType: (formValues.subscriptionType || 'Basique') as SubscriptionType,
       channelCount: formValues.channelCount || 250,
       password: formValues.password || '',
-      active: formValues.active ?? true,
-      progress: formValues.progress ?? 0,
-      createdAt: formattedDate,
+      subscriptionStartDate: '',
+      subscriptionEndDate: '',
+      progress: 0,
+      active: true,
     };
 
     this.store.addSubscription(newSubscription);
     this.toastr.success(
       `L'abonnement <span class="msg-class">${newSubscription.subscriptionType} de ${newSubscription.fullname}</span> ajouté avec succès`
     );
-    this.redirectAtList(); // Redirection après succès
+    this.redirectAtList();
   }
 
   redirectAtList() {
-    this.router.navigate(['/dashboard/subscriptions/list']); // Retour à la liste
+    this.router.navigate(['/dashboard/subscriptions/list']);
   }
 }

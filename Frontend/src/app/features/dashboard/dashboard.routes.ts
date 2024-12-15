@@ -37,7 +37,7 @@ export const DashboardRouter: Routes = [
         path: 'subscriptions/edit/:id',
         title: 'Subscriptions / Edit',
         loadComponent: () =>
-          import('../subscription/components/edit-subscrition/edit-subscrition.component').then(
+          import('../subscription/components/edit-subscription/edit-subscription.component').then(
             (m) => m.EditSubscriptionComponent
           ),
       },

@@ -1,7 +1,6 @@
 <section class="flex flex-wrap w-full justify-center shadow-dark-xl rounded-2xl">
   <div class="overflow-x-auto w-full rounded-2xl">
-    <div
-      class="align-middle inline-block min-w-full rounded-2xl bg-slate-850 px-6 pt-3 h-[65vh] py-5 overflow-auto custom-scrolbar">
+    <div class="align-middle inline-block min-w-full rounded-2xl bg-slate-850 px-6 pt-3 h-[65vh] py-5 overflow-auto custom-scrolbar">
       <table class="min-w-full border-collapse text-white">
         <thead class="sticky top-0 z-50 bg-black/25 backdrop-blur-md backdrop-saturate-200 border-b-2 border-gray-200">
           <tr class="text-center">
@@ -13,81 +12,110 @@
             <th class="th">Actions</th>
           </tr>
         </thead>
+        
         <tbody>
-          @for (abonne of subscrib() | filterSubscribers: filter(); let i = $index; track abonne.id) {
-          <tr [ngClass]="{
+          @if (subscrib().length === 0) {
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <tr class="animate-pulse">
+                <td class="td"><div class="h-4 bg-gray-700 rounded w-1/2"></div></td>
+                <td class="td hidden sm:table-cell"><div class="h-4 bg-gray-700 rounded"></div></td>
+                <td class="td hidden sm:table-cell"><div class="h-4 bg-gray-700 rounded"></div></td>
+                <td class="td">
+                  <div class="h-2 bg-gray-700 rounded-full w-full"></div>
+                  <div class="h-4 bg-gray-700 rounded w-1/4 mt-1"></div>
+                </td>
+                <td class="td">
+                  <div class="flex flex-col items-center">
+                    <div class="h-4 bg-gray-700 rounded w-3/4"></div>
+                    <div class="h-3 bg-gray-700 rounded w-1/2 mt-1"></div>
+                  </div>
+                </td>
+                <td class="td">
+                  <div class="flex justify-center space-x-2">
+                    <div class="h-8 w-8 bg-gray-700 rounded-full"></div>
+                    <div class="h-8 w-8 bg-gray-700 rounded-full"></div>
+                  </div>
+                </td>
+              </tr>
+            }
+          } @else {
+            @for (abonne of subscrib() | filterSubscribers: filter(); track abonne.id) {
+              <tr [ngClass]="{
                 'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': expandedId() !== abonne.id,
                 'bg-slate-700': expandedId() === abonne.id
               }">
-            <td class="td">{{ abonne.id }}</td>
-            <td class="td hidden sm:table-cell">{{ abonne.fullname }}</td>
-            <td class="td hidden sm:table-cell">{{ abonne.email }}</td>
-            <td class="td">
-              <div class="relative w-full h-2 bg-gray-700 rounded-full">
-                <div class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
-                  [class]="getProgressClasses(getRemainingProgress(abonne.id))" 
-                  [style.width.%]="getRemainingProgress(abonne.id)"></div>
-              </div>
-              <span class="block text-sm text-gray-400 mt-1">{{ getRemainingProgress(abonne.id) }}%</span>
-            </td>
-            <td class="td">
-              <div class="flex flex-col items-center">
-                <span [ngClass]="{
-                  'text-blue-400': abonne.subscriptionType === 'Basique',
-                  'text-green-400': abonne.subscriptionType === 'Classique',
-                }">{{ abonne.subscriptionType }}</span>
-                <span class="text-xs text-gray-400">{{ getRemainingDays(abonne.id) }} jours restants</span>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-center">
-              <div class="relative inline-block ml-2">
-                <button class="text-gray-100 hover:text-gray-500 relative top-3" (click)="toggleMenu(abonne.id)">
-                  <span class="material-icons transition-all duration-300 transform"
-                    [ngClass]="{ 'rotate-180': expandedMenuId() === abonne.id }">
-                    more_vert
-                  </span>
-                </button>
-                <!-- *ngIf detected -->
-                <div *ngIf="expandedMenuId() === abonne.id" class="tooltip-container scale-y-0 transition-all"
-                  [ngClass]="{ 'scale-y-100': expandedMenuId() === abonne.id }" [@expandCollapse]>
-                  <ul>
-                    <li>
-                      <button class="tooltip hover:text text-red-600" (click)="openPopup(abonne.id)">
-                        <span class="material-icons mr-2">delete</span> Supprimer
-                      </button>
-                    </li>
-                    <li>
-                      <button class="tooltip hover:text text-blue-600" (click)="editSubscriber(abonne.id)">
-                        <span class="material-icons mr-2">edit</span> Modifier
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <button class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2"
-                (click)="toggleDetails(abonne.id)">
-                <span class="material-icons  transition-all duration-300 transform text-8"
-                  [ngClass]="{ 'rotate-180': expandedId() === abonne.id }">
-                  {{ expandedId() === abonne.id ? 'expand_less' : 'expand_more' }}
-                </span>
-              </button>
-            </td>
-          </tr>
+                <td class="td">{{ abonne.id }}</td>
+                <td class="td hidden sm:table-cell">{{ abonne.fullname }}</td>
+                <td class="td hidden sm:table-cell">{{ abonne.email }}</td>
+                <td class="td">
+                  <div class="relative w-full h-2 bg-gray-700 rounded-full">
+                    <div class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
+                      [class]="getProgressClasses(getRemainingProgress(abonne.id))" 
+                      [style.width.%]="getRemainingProgress(abonne.id)"></div>
+                  </div>
+                  <span class="block text-sm text-gray-400 mt-1">{{ getRemainingProgress(abonne.id) }}%</span>
+                </td>
+                <td class="td">
+                  <div class="flex flex-col items-center">
+                    <span [ngClass]="{
+                      'text-blue-400': abonne.subscriptionType === 'Basique',
+                      'text-green-400': abonne.subscriptionType === 'Classique',
+                    }">{{ abonne.subscriptionType }}</span>
+                    <span class="text-xs text-gray-400">{{ getRemainingDays(abonne.id) }} jours restants</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <div class="relative inline-block ml-2">
+                    <button class="text-gray-100 hover:text-gray-500 relative top-3" (click)="toggleMenu(abonne.id)">
+                      <span class="material-icons transition-all duration-300 transform"
+                        [ngClass]="{ 'rotate-180': expandedMenuId() === abonne.id }">
+                        more_vert
+                      </span>
+                    </button>
+                    @if (expandedMenuId() === abonne.id) {
+                      <div class="tooltip-container scale-y-0 transition-all"
+                        [ngClass]="{ 'scale-y-100': expandedMenuId() === abonne.id }" [@expandCollapse]>
+                        <ul>
+                          <li>
+                            <button class="tooltip hover:text text-red-600" (click)="openPopup(abonne.id)">
+                              <span class="material-icons mr-2">delete</span> Supprimer
+                            </button>
+                          </li>
+                          <li>
+                            <button class="tooltip hover:text text-blue-600" (click)="editSubscriber(abonne.id)">
+                              <span class="material-icons mr-2">edit</span> Modifier
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    }
+                  </div>
+                  <button class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2"
+                    (click)="toggleDetails(abonne.id)">
+                    <span class="material-icons transition-all duration-300 transform text-8"
+                      [ngClass]="{ 'rotate-180': expandedId() === abonne.id }">
+                      {{ expandedId() === abonne.id ? 'expand_less' : 'expand_more' }}
+                    </span>
+                  </button>
+                </td>
+              </tr>
 
-          @if (expandedId() === abonne.id) {
-          <tr [@expandCollapse]>
-            <td colspan="6" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
-              <div class="text-sm text-white">
-                <p><strong>Adresse :</strong> {{ abonne.adresse }}</p>
-                <p><strong>Téléphone :</strong> {{ abonne.tel }}</p>
-                <p><strong>Nombre de chaînes :</strong> {{ abonne.channelCount }}</p>
-                <p><strong>Mot de passe :</strong> {{ abonne.password }}</p>
-                <p><strong>Date d'inscription :</strong> {{ abonne.createdAt | date:'dd/MM/yyyy à HH:mm' }}</p>
-                <p><strong>Actif :</strong> {{ abonne.active }}</p>
-              </div>
-            </td>
-          </tr>
-          }
+              @if (expandedId() === abonne.id) {
+                <tr [@expandCollapse]>
+                  <td colspan="6" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
+                    <div class="text-sm text-white">
+                      <p><strong>Adresse :</strong> {{ abonne.adresse }}</p>
+                      <p><strong>Téléphone :</strong> {{ abonne.tel }}</p>
+                      <p><strong>Nombre de chaînes :</strong> {{ abonne.channelCount }}</p>
+                      <p><strong>Mot de passe :</strong> {{ abonne.password }}</p>
+                      <p><strong>Date d'inscription :</strong> {{ abonne.subscriptionStartDate | date:'dd/MM/yyyy à HH:mm' }}</p>
+                      <p><strong>Date fin :</strong> {{ abonne.subscriptionEndDate | date:'dd/MM/yyyy à HH:mm' }}</p>
+                      <p><strong>Actif :</strong> {{ abonne.active }}</p>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
           }
         </tbody>
       </table>
@@ -96,5 +124,5 @@
 </section>
 
 @if (showPopup()) {
-<app-popups (confirm)="confirmDelete()" (cancel)="closePopup()"/>
+  <app-popups (confirm)="confirmDelete()" (cancel)="closePopup()"/>
 }
