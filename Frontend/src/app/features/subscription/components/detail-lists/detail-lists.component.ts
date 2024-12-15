@@ -6,13 +6,14 @@ import { PopupsComponent } from "../../../shared/components/popups/popups.compon
 import { FilterSubscribersPipe } from '../../../shared/pipe/filter-search.pipe';
 import { SubscriptionStore } from '../../store/subscribed.store';
 import { Router } from '@angular/router';
+import { ISubscription } from '../../models/subscription.interface';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
   imports: [CommonModule, FilterSubscribersPipe, PopupsComponent, ToastrModule],
   templateUrl: './detail-lists.component.html',
-  styleUrls: ['./detail-lists.component.scss'],
+  styleUrl: './detail-lists.component.scss',
   animations: [expandCollapse],
 })
 export class DetailListsComponent {
@@ -20,14 +21,11 @@ export class DetailListsComponent {
   private toastr = inject(ToastrService);
   private router = inject(Router);
 
-  // Input signal for filter
   filter: InputSignal<{ menu: string; search: string }> = input({
     menu: 'all',
     search: '',
   });
-  
 
-  // Store signals
   subscrib = this.store.subscriptions;
   expandedId = this.store.expandedId;
   expandedMenuId = this.store.expandedMenuId;
@@ -35,7 +33,6 @@ export class DetailListsComponent {
   subscriberToDelete = signal<number | null>(null);
   showAddForm = signal(false);
 
-  // Progress classes helper
   getProgressClasses(progress: number): string {
     if (progress === 100) return 'bg-green-500';
     if (progress >= 75) return 'bg-blue-500';
@@ -43,17 +40,25 @@ export class DetailListsComponent {
     return 'bg-red-500';
   }
 
-  // Helper method to get remaining days
+
   getRemainingDays(abonneId: number) {
-    return this.store.subscriptionDetails()?.find(s => s.id === abonneId)?.remainingDays || 0;
+    const subscription = this.store.subscriptions()?.find(s => s.id === abonneId);
+    return subscription ? this.calculateRemainingDays(subscription) : 0;
   }
 
-  // Helper method to get remaining progress
+  private calculateRemainingDays(subscription: ISubscription): number {
+    const endDate = new Date(subscription.subscriptionEndDate);
+    const today = new Date();
+    const differenceInTime = endDate.getTime() - today.getTime();
+    return Math.ceil(differenceInTime / (1000 * 3600 * 24));
+  }
+
   getRemainingProgress(id: number): number {
-    return this.store.subscriptionDetails()?.find(s => s.id === id)?.progress || 0;
+    const subscription = this.store.subscriptions()?.find((s) => s.id === id);
+    return subscription?.progress ?? 0;
   }
 
-  // Interaction methods
+
   toggleDetails(id: number) {
     this.store.toggleDetails(id);
   }
@@ -66,7 +71,6 @@ export class DetailListsComponent {
     this.showAddForm.update(value => !value);
   }
 
-  // Popup methods
   openPopup(subscriberId: number) {
     this.subscriberToDelete.set(subscriberId);
     this.showPopup.set(true);
@@ -83,7 +87,7 @@ export class DetailListsComponent {
     if (id !== null) {
       this.store.deleteSubscription(id);
       this.toastr.success(
-        `L'abonnement de <span class="msg-class">${id} ${fullname}</span>est supprimé avec succès`
+        `L'abonnement de <span class="msg-class">${fullname}</span> est supprimé avec succès`
       );
     }
     this.closePopup();

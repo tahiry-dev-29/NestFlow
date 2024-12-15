@@ -7,12 +7,13 @@ export interface ISubscription {
   tel: string;
   adresse: string;
   subscriptionType: SubscriptionType;
-  subscriptionStartDate: string;
-  subscriptionEndDate: string;
-  progress: number;
-  active: boolean;
   channelCount: number;
   password: string;
+  subscriptionStartDate: string;
+  subscriptionEndDate: string;
+  active: boolean;
+  progress: number | null;
+  [key: string]: any;
 }
 
 export interface SubscriptionState {

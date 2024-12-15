@@ -3,9 +3,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { SubscriptionType } from '../../models/subscription.interface';
-import { SubscriptionStore } from '../../store/subscribed.store';
-import { ISubscription } from './../../models/subscription.interface';
+import { SubscriptionType, ISubscription } from '../../models/subscription.interface';
+import { SUBSCRIPTION_SETTINGS, SubscriptionStore } from '../../store/subscribed.store';
 
 @Component({
   selector: 'app-add-subscription',
@@ -39,37 +38,52 @@ export class AddSubscriptionComponent implements OnInit {
 
   onSubmit() {
     if (this.subscriptionForm.valid) {
+      const formValues = this.subscriptionForm.value;
+      if (!formValues.fullname || !formValues.email || !formValues.tel || !formValues.adresse || !formValues.password) {
+        this.toastr.error('Tous les champs obligatoires doivent être remplis.');
+        return;
+      }
       this.addSubscription();
     } else {
       this.subscriptionForm.markAllAsTouched();
     }
   }
 
+  private calculateRemainingDays(startDate: string, endDate: string): number {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const difference = end.getTime() - start.getTime();
+    return Math.ceil(difference / (1000 * 3600 * 24));
+  }
+
   private addSubscription() {
     const formValues = this.subscriptionForm.value;
+
+    const subscriptionType: SubscriptionType = formValues.subscriptionType === 'Classique' ? 'Classique' : 'Basique';
+    const duration = SUBSCRIPTION_SETTINGS[subscriptionType]?.duration || 31;
+
+    const startDate = new Date().toISOString().split('T')[0];
+    const endDate = new Date(Date.now() + duration * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const remainingDays = this.calculateRemainingDays(startDate, endDate);
+    const progress = (remainingDays / duration) * 100;
+
     const newSubscription: ISubscription = {
+      subscriptionStartDate: startDate,
+      subscriptionEndDate: endDate,
+      active: true,
       id: 0,
       fullname: formValues.fullname || '',
       email: formValues.email || '',
       tel: formValues.tel || '',
       adresse: formValues.adresse || '',
-      subscriptionType: (formValues.subscriptionType || 'Basique') as SubscriptionType,
+      subscriptionType,
       channelCount: formValues.channelCount || 250,
       password: formValues.password || '',
-      subscriptionStartDate: '',
-      subscriptionEndDate: '',
-      progress: 0,
-      active: true,
+      progress: progress,
     };
 
     this.store.addSubscription(newSubscription);
-    this.toastr.success(
-      `L'abonnement <span class="msg-class">${newSubscription.subscriptionType} de ${newSubscription.fullname}</span> ajouté avec succès`
-    );
-    this.redirectAtList();
-  }
-
-  redirectAtList() {
-    this.router.navigate(['/dashboard/subscriptions/list']);
+    this.toastr.success('Abonnement ajouté avec succès!');
+    this.router.navigate(['dashboard/subscriptions/list']);
   }
 }
