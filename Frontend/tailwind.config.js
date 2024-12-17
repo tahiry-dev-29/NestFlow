@@ -1425,7 +1425,7 @@ module.exports = {
     function ({ addComponents }) {
       addComponents({
         ".input-theme": {
-          "@apply placeholder:text-gray-500 text-sm focus:ring-4 ring-offset-2 outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-3 px-4 font-normal text-gray-300 transition-all focus:text-white rounded-xl":
+          "@apply h-14 placeholder:text-gray-500 text-sm focus:ring-4 ring-offset-2 outline-none leading-5 block w-full appearance-none bg-slate-800/80 bg-clip-padding py-3 px-4 font-normal text-gray-300 transition-all focus:text-white rounded-xl":
             {},
           borderRadius: "2rem",
           "--tw-ring-offset-color": "#ec4899d6",

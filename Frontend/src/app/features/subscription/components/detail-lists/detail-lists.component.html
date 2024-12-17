@@ -13,34 +13,10 @@
           </tr>
         </thead>
         
-        <tbody>
-          @if (subscrib().length === 0) {
-            @for (i of [1, 2, 3, 4, 5]; track i) {
-              <tr class="animate-pulse">
-                <td class="td"><div class="h-4 bg-gray-700 rounded w-1/2"></div></td>
-                <td class="td hidden sm:table-cell"><div class="h-4 bg-gray-700 rounded"></div></td>
-                <td class="td hidden sm:table-cell"><div class="h-4 bg-gray-700 rounded"></div></td>
-                <td class="td">
-                  <div class="h-2 bg-gray-700 rounded-full w-full"></div>
-                  <div class="h-4 bg-gray-700 rounded w-1/4 mt-1"></div>
-                </td>
-                <td class="td">
-                  <div class="flex flex-col items-center">
-                    <div class="h-4 bg-gray-700 rounded w-3/4"></div>
-                    <div class="h-3 bg-gray-700 rounded w-1/2 mt-1"></div>
-                  </div>
-                </td>
-                <td class="td">
-                  <div class="flex justify-center space-x-2">
-                    <div class="h-8 w-8 bg-gray-700 rounded-full"></div>
-                    <div class="h-8 w-8 bg-gray-700 rounded-full"></div>
-                  </div>
-                </td>
-              </tr>
-            }
-          } @else {
+        <tbody cdkVirtualScrollViewport itemSize="10">
+          @defer (on timer(500ms)) {
             @for (abonne of subscrib() | filterSubscribers: filter(); track abonne.id) {
-              <tr [ngClass]="{
+              <tr cdkVirtualFor [ngClass]="{
                 'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': expandedId() !== abonne.id,
                 'bg-slate-700': expandedId() === abonne.id
               }">
@@ -57,7 +33,6 @@
                     {{ getRemainingProgress(abonne.id) }}%
                   </span>
                 </td>
-
                 <td class="td">
                   <div class="flex flex-col items-center">
                     <span [ngClass]="{
@@ -102,7 +77,6 @@
                   </button>
                 </td>
               </tr>
-
               @if (expandedId() === abonne.id) {
                 <tr [@expandCollapse]>
                   <td colspan="6" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
@@ -124,13 +98,65 @@
                   </td>
                 </tr>
               }
+            } @empty {
+              <tr class="h-[50vh]">
+                <td colspan="6" class="text-center align-middle text-gray-400">
+                  <div class="flex flex-col items-center justify-center h-full">
+                    <span class="material-icons text-5xl mb-2 animate-bounce">search_off</span>
+                    <p class="text-xl">Aucun abonné trouvé</p>
+                  </div>
+                </td>
+              </tr>
             }
+          } @placeholder {
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <tr class="animate-pulse">
+                <td class="td"><div class="h-4 bg-gray-300 rounded w-12 animate-pulse"></div></td>
+                <td class="td hidden sm:table-cell"><div class="h-4 bg-gray-300 rounded w-32 animate-pulse"></div></td>
+                <td class="td hidden sm:table-cell"><div class="h-4 bg-gray-300 rounded w-40 animate-pulse"></div></td>
+                <td class="td">
+                  <div class="space-y-2">
+                    <div class="h-2 bg-gray-300 rounded animate-pulse"></div>
+                    <div class="h-2 bg-gray-300 rounded w-3/4 animate-pulse"></div>
+                  </div>
+                </td>
+                <td class="td">
+                  <div class="flex flex-col items-center space-y-1">
+                    <div class="h-4 bg-gray-300 rounded w-20 animate-pulse"></div>
+                    <div class="h-3 bg-gray-300 rounded w-16 animate-pulse"></div>
+                  </div>
+                </td>
+                <td class="td">
+                  <div class="flex justify-center space-x-2">
+                    <div class="h-6 w-6 bg-gray-300 rounded-full animate-pulse"></div>
+                    <div class="h-6 w-6 bg-gray-300 rounded-full animate-pulse"></div>
+                  </div>
+                </td>
+              </tr>
+            }
+          } @loading {
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                  <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+                </div>
+              </td>
+            </tr>
+          } @error {
+            <tr>
+              <td colspan="6" class="text-center py-4 text-red-500">
+                Une erreur est survenue lors du chargement des données.
+              </td>
+            </tr>
           }
         </tbody>
       </table>
     </div>
   </div>
 </section>
+<div class="w-full text-center text-white mt-4 text-2xl">
+  Total subscribers <span class="text">{{ (subscrib() | filterSubscribers: filter()).length }}</span>
+</div>
 
 @if (showPopup()) {
   <app-popups (confirm)="confirmDelete()" (cancel)="closePopup()"/>

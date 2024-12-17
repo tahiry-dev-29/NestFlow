@@ -13,29 +13,35 @@
               <div class="col-span-1">
                 <div class="mb-4">
                   <input type="text" formControlName="fullname" class="input-theme" placeholder="Nom complet" />
-                  <div *ngIf="subscriptionForm.get('fullname')?.invalid && subscriptionForm.get('fullname')?.touched" class="error">
+                  <div *ngIf="subscriptionForm.get('fullname')?.invalid && subscriptionForm.get('fullname')?.touched"
+                    class="error">
                     <small *ngIf="subscriptionForm.get('fullname')?.errors?.['required']">Nom complet requis.</small>
-                    <small *ngIf="subscriptionForm.get('fullname')?.errors?.['minlength']">Le nom complet doit contenir au moins 5 caractères.</small>
-                    <small *ngIf="subscriptionForm.get('fullname')?.errors?.['maxlength']">Le nom complet doit contenir au plus 100 caractères.</small>
+                    <small *ngIf="subscriptionForm.get('fullname')?.errors?.['minlength']">Le nom complet doit contenir
+                      au moins 5 caractères.</small>
+                    <small *ngIf="subscriptionForm.get('fullname')?.errors?.['maxlength']">Le nom complet doit contenir
+                      au plus 100 caractères.</small>
                   </div>
                 </div>
                 <div class="mb-4">
-                  <input type="email" formControlName="email" class="input-theme" placeholder="Email"/>
-                  <div *ngIf="subscriptionForm.get('email')?.invalid && subscriptionForm.get('email')?.touched" class="error">
+                  <input type="email" formControlName="email" class="input-theme" placeholder="Email" />
+                  <div *ngIf="subscriptionForm.get('email')?.invalid && subscriptionForm.get('email')?.touched"
+                    class="error">
                     <small *ngIf="subscriptionForm.get('email')?.errors?.['required']">Email requis.</small>
                     <small *ngIf="subscriptionForm.get('email')?.errors?.['email']">Email invalide.</small>
                   </div>
                 </div>
                 <div class="mb-4">
                   <input type="tel" formControlName="tel" class="input-theme" placeholder="Téléphone" />
-                  <div *ngIf="subscriptionForm.get('tel')?.invalid && subscriptionForm.get('tel')?.touched" class="error">
+                  <div *ngIf="subscriptionForm.get('tel')?.invalid && subscriptionForm.get('tel')?.touched"
+                    class="error">
                     <small *ngIf="subscriptionForm.get('tel')?.errors?.['required']">Téléphone requis.</small>
                     <small *ngIf="subscriptionForm.get('tel')?.errors?.['pattern']">Doit contenir 10 chiffres.</small>
                   </div>
                 </div>
                 <div class="mb-4">
                   <input type="password" formControlName="password" class="input-theme" placeholder="Mot de passe" />
-                  <div *ngIf="subscriptionForm.get('password')?.invalid && subscriptionForm.get('password')?.touched" class="error">
+                  <div *ngIf="subscriptionForm.get('password')?.invalid && subscriptionForm.get('password')?.touched"
+                    class="error">
                     <small *ngIf="subscriptionForm.get('password')?.errors?.['required']">Mot de passe requis.</small>
                     <small *ngIf="subscriptionForm.get('password')?.errors?.['minlength']">Minimum 4 caractères.</small>
                   </div>
@@ -47,10 +53,13 @@
                 <div class="mb-4">
                   <textarea formControlName="adresse" class="input-theme min-h-[100px]"
                     placeholder="Adresse"></textarea>
-                  <div *ngIf="subscriptionForm.get('adresse')?.invalid && subscriptionForm.get('adresse')?.touched" class="error">
+                  <div *ngIf="subscriptionForm.get('adresse')?.invalid && subscriptionForm.get('adresse')?.touched"
+                    class="error">
                     <small *ngIf="subscriptionForm.get('adresse')?.errors?.['required']">Adresse requise.</small>
-                    <small *ngIf="subscriptionForm.get('adresse')?.errors?.['minlength']">L'adresse doit contenir au moins 5 caractères.</small>
-                    <small *ngIf="subscriptionForm.get('adresse')?.errors?.['maxlength']">L'adresse doit contenir au plus 100 caractères.</small>
+                    <small *ngIf="subscriptionForm.get('adresse')?.errors?.['minlength']">L'adresse doit contenir au
+                      moins 5 caractères.</small>
+                    <small *ngIf="subscriptionForm.get('adresse')?.errors?.['maxlength']">L'adresse doit contenir au
+                      plus 100 caractères.</small>
                   </div>
                 </div>
                 <div class="mb-4">
@@ -65,9 +74,15 @@
                 </div>
               </div>
             </section>
-            <div class="text-center">
-              <button type="submit" [disabled]="!subscriptionForm.valid"
-                class="">
+            <div class="text-center flex justify-end gap-5">
+              <button type="button"
+                class="w-25 inline-block text-sm font-medium active:text-orange-500 focus:outline-none focus:ring btn-gradient-bg bg-opacity-30"
+                (click)="redirectToList()">
+                Cancel
+              </button>
+              <button type="submit" [disabled]="subscriptionForm.invalid"
+                class="w-25"
+                [ngClass]="{'btn-desactived-bg': !subscriptionForm.valid, 'btn-gradient-bg': subscriptionForm.valid}">
                 Ajouter
               </button>
             </div>

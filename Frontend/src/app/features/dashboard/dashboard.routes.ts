@@ -15,39 +15,15 @@ export const DashboardRouter: Routes = [
       {
         path: 'overview',
         title: 'Dashboard Overview',
-        loadComponent: () =>import('../dashboard/components/content-dashboard/content-dashboard.component').then((m) => m.ContentDashboardComponent),
+        loadComponent: () => import('../dashboard/components/content-dashboard/content-dashboard.component').then((m) => m.ContentDashboardComponent),
       },
       {
-        path: 'users',
-        title: 'Dashboard / Users',
-        loadComponent: () =>
-          import('../users/components/users/users.component').then(
-            (m) => m.UsersComponent
-          ),
+        path: "subscriptions",
+        loadChildren: () => import('../subscription/subscritpion.routes').then(m => m.SubscriptionRoutes)
       },
       {
-        path: 'subscriptions/list',
-        title: 'Subscriptions / List',
-        loadComponent: () =>
-          import('../subscription/components/subscription/subscription.component').then(
-            (m) => m.SubscriptionComponent
-          ),
-      },
-      {
-        path: 'subscriptions/edit/:id',
-        title: 'Subscriptions / Edit',
-        loadComponent: () =>
-          import('../subscription/components/edit-subscription/edit-subscription.component').then(
-            (m) => m.EditSubscriptionComponent
-          ),
-      },
-      {
-        path: 'subscriptions/add',
-        title: 'Subscriptions / Add',
-        loadComponent: () =>
-          import('../subscription/components/add-subscription/add-subscription.component').then(
-            (m) => m.AddSubscriptionComponent
-          ),
+        path: "users",
+        loadChildren: () => import('../users/users.routes').then(m => m.UsersRoutes)
       },
       {
         path: 'settings',

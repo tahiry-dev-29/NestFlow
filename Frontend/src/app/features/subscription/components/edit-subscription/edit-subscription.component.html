@@ -7,6 +7,7 @@
                     <h5 class="title animate-pulse">Ajouter un abonnement</h5>
                 </div>
                 <div class="flex-auto p-6">
+                    @defer (on timer(500ms)) {
                     <form [formGroup]="editForm" (ngSubmit)="onSubmit()" role="form text-left">
                         <section class="grid grid-cols-2 gap-4">
                             <div class="col-span-1">
@@ -72,7 +73,8 @@
                                     </div>
                                 </div>
                                 <div class="mb-4">
-                                    <select formControlName="subscriptionType" class="input-theme" (change)="onSubscriptionTypeChange($event)">
+                                    <select formControlName="subscriptionType" class="input-theme"
+                                        (change)="onSubscriptionTypeChange($event)">
                                         <option value="Basique">Basique (250 chaînes)</option>
                                         <option value="Classique">Classique (500 chaînes)</option>
                                     </select>
@@ -85,7 +87,7 @@
                                 </div>
                             </div>
                         </section>
-                        <div class="flex gap-5 justify-end w-full ">
+                        <div class="flex gap-5 justify-end w-full">
                             <button type="submit" [disabled]="editForm.invalid"
                                 class="bg-gradient-to-tl from-blue-500 to-violet-500 text-white px-8 py-2 rounded-lg">
                                 Modifier
@@ -97,6 +99,21 @@
                             </button>
                         </div>
                     </form>
+                    } @placeholder {
+                    <div class="animate-pulse space-y-4">
+                        <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                        <div class="h-4 bg-gray-300 rounded"></div>
+                        <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+                    </div>
+                    } @loading {
+                    <div class="flex justify-center items-center">
+                        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                    } @error {
+                    <div class="text-red-500 text-center">
+                        Une erreur s'est produite lors du chargement du formulaire.
+                    </div>
+                    }
                 </div>
             </div>
         </div>

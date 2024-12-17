@@ -41,9 +41,14 @@ export class EditSubscriptionComponent implements OnInit {
       const subscription = this.store.getSubscriptionById(+id);
       if (subscription) {
         this.editForm.patchValue({
-          ...subscription,
+          fullname: subscription.fullname,
+          email: subscription.email,
+          tel: subscription.tel,
+          adresse: subscription.adresse,
+          subscriptionType: subscription.subscriptionType,
+          channelCount: subscription.channelCount,
+          password: subscription.password,
         });
-        this.updateChannelCount(subscription.subscriptionType);
       } else {
         this.toastr.error('Abonnement non trouvé');
         this.redirectToList();
@@ -83,11 +88,6 @@ export class EditSubscriptionComponent implements OnInit {
     this.editForm.patchValue({
       channelCount: this.subscriptionTypes[selectedType].channels,
     });
-  }
-
-  private updateChannelCount(type: SubscriptionType): void {
-    const channelCount = this.subscriptionTypes[type]?.channels;
-    this.editForm.patchValue({ channelCount: channelCount });
   }
 
   redirectToList(): void {

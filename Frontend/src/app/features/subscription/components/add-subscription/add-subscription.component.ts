@@ -45,6 +45,7 @@ export class AddSubscriptionComponent implements OnInit {
       }
       this.addSubscription();
     } else {
+      this.toastr.error('Le formulaire est invalide.');
       this.subscriptionForm.markAllAsTouched();
     }
   }
@@ -83,7 +84,11 @@ export class AddSubscriptionComponent implements OnInit {
     };
 
     this.store.addSubscription(newSubscription);
-    this.toastr.success('Abonnement ajouté avec succès!');
+    this.toastr.success(`Abonnement <span class="msg-class">${newSubscription.subscriptionType}</span> ajouté avec succès!`);
+    this.redirectToList();
+  }
+  
+  redirectToList() {
     this.router.navigate(['dashboard/subscriptions/list']);
   }
 }

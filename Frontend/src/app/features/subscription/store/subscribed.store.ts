@@ -31,7 +31,7 @@ export const SubscriptionStore = signalStore(
     inactiveSubscriptions: computed(() =>
       subscriptions().filter((sub) => !sub.active)
     ),
-    filteredSubscriptions: computed(() => (menu: string, search: string) => {
+    filteredSubscriptions: computed(() => (menu: string, search: string | null) => {
       let filtered = subscriptions();
 
       if (menu === 'active') {
@@ -40,7 +40,7 @@ export const SubscriptionStore = signalStore(
         filtered = filtered.filter((sub) => !sub.active);
       }
 
-      if (search.trim()) {
+      if (search && typeof search === 'string') {
         const lowerSearch = search.toLowerCase();
         filtered = filtered.filter(
           (sub) =>
