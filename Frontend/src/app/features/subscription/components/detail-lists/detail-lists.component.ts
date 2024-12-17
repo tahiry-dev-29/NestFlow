@@ -1,19 +1,22 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, InputSignal, signal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { NgxPaginationModule } from 'ngx-pagination';
 import { ToastrModule, ToastrService } from "ngx-toastr";
 import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
-import { SubscriptionStore } from '../../store/subscribed.store';
-import { Router } from '@angular/router';
 import { ISubscription } from '../../models/subscription.interface';
+import { SubscriptionStore } from '../../store/subscribed.store';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
-  imports: [CommonModule, PopupsComponent, ToastrModule],
+  imports: [CommonModule, PopupsComponent, ToastrModule, ScrollingModule, NgxPaginationModule],
   templateUrl: './detail-lists.component.html',
   styleUrl: './detail-lists.component.scss',
   animations: [expandCollapse],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DetailListsComponent {
   store = inject(SubscriptionStore);
@@ -28,10 +31,11 @@ export class DetailListsComponent {
   showPopup = signal(false);
   subscriberToDelete = signal<number | null>(null);
   showAddForm = signal(false);
+  p: number = 1;
 
   getRemainingDays(abonneId: number) {
     const subscription = this.store.getSubscriptionById(abonneId);
-    if (!subscription) return 0; // Handle null case
+    if (!subscription) return 0;
     return this.calculateRemainingDays(subscription);
   }
 
