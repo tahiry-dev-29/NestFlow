@@ -1,10 +1,10 @@
-package com.nest.flow.BackNestFlow;
+package com.nestfolow.nestflow;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class NestFlowApplicationTests {
+class NestflowApplicationTests {
 
 	@Test
 	void contextLoads() {

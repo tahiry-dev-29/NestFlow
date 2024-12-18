@@ -1,13 +1,13 @@
-package com.nest.flow.BackNestFlow;
+package com.nestfolow.nestflow;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NestFlowApplication {
+public class NestflowApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NestFlowApplication.class, args);
+		SpringApplication.run(NestflowApplication.class, args);
 	}
 
 }
