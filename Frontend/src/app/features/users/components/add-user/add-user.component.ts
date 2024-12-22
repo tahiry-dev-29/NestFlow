@@ -49,12 +49,9 @@ import { ToastrService } from 'ngx-toastr';
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    {{ selectedFileName || 'Ajouter une image' }}
+                    {{ selectedFileName || 'Ajouter une image (optionnel)' }}
                   </button>
                   <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden">
-                  <div *ngIf="userForm.get('image')?.invalid && userForm.get('image')?.touched" class="text-red-500 text-xs mt-1">
-                    <small>Image requise.</small>
-                  </div>
                 </div>
                 <div class="flex justify-center">
                   <button type="submit" [disabled]="userForm.invalid" class="w-3/4" [ngClass]="{'btn-desactived-bg': !userForm.valid, 'btn-gradient-bg': userForm.valid}">
@@ -82,7 +79,7 @@ export class AddUserComponent {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(4)]],
     status: ['active', Validators.required],
-    image: ['', Validators.required]
+    image: ['']
   });
 
   selectedFileName: string | null = null;
@@ -93,7 +90,7 @@ export class AddUserComponent {
       this.store.addUser(this.userForm.value);
       this.userForm.reset();
       this.selectedFileName = null;
-      this.toastr.success(`Utilisateur <span class="msg-class">${fullname}</span> ajouté avec succès`, '', { positionClass: 'toast-top-left' });
+      this.toastr.success(`Utilisateur <span class="msg-class">${fullname}</span> ajouté avec succès`);
       this.userForm.markAsUntouched();
     }
   }

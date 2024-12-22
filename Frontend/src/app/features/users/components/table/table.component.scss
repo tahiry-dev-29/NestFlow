@@ -11,3 +11,34 @@
   @include status-badge;
   @apply bg-gradient-to-tl from-slate-600 to-slate-300;
 }
+.user-th {
+  @apply px-6 py-3 font-bold uppercase align-middle bg-transparent border-b border-collapse shadow-none border-white/40 text-white text-xxs tracking-none whitespace-nowrap opacity-70 border-solid;
+}
+// Styles pour ngx-pagination
+/* ::ng-deep .ngx-pagination {
+  @apply flex justify-center items-center gap-3 text-gray-600 my-4;
+
+  .current {
+    @apply rounded-full px-4 py-2 font-bold shadow-md text-white;
+    background-color: inherit;
+  }
+
+  a,
+  .pagination-previous,
+  .pagination-next {
+    @apply bg-slate-850/85 hover:text-white transition-all duration-300 ease-in-out px-3 py-1 rounded-md;
+
+    &:hover {
+      @apply hover:bg-transparent hover:transform hover:scale-105;
+    }
+  }
+
+  .pagination-previous,
+  .pagination-next {
+    @apply font-semibold;
+
+    &.disabled {
+      @apply opacity-50 cursor-not-allowed;
+    }
+  }
+} */

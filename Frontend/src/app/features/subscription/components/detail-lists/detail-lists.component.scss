@@ -43,21 +43,21 @@
 //     border-radius: 10px;
 //     opacity: 0;
 //   }
-  
+
 //   @keyframes glowing {
 //     0% {background-position: 0 0;}
 //     50% {background-position: 400% 0;}
 //     100% {background-position: 0 0;}
 //   }
-  
+
 //   .btn:hover::before {
 //     opacity: 1;
 //   }
-  
+
 //   .btn:active:after {
 //     background: transparent;
 //   }
-  
+
 //   .btn:active {
 //     color: #000;
 //     font-weight: bold;
@@ -67,13 +67,15 @@
 .th {
     @apply px-6 py-3 border-b-2 border-gray-600 text-sm font-medium;
 }
+
 .td {
     @apply px-6 py-4 text-center;
 }
+
 .tooltip-container {
-    @apply absolute right-0 z-10 transform origin-top bg-slate-800/90 shadow-dark-xl text-white rounded-7  mt-2 py-2   duration-300 ease-out;
+    @apply absolute right-0 z-10 transform origin-top bg-slate-800/90 shadow-dark-xl text-white rounded-7 mt-2 py-2 duration-300 ease-out;
 }
+
 .tooltip {
     @apply hover:scale-110 hover:duration-300 flex items-center px-4 py-2 text-sm;
 }
-

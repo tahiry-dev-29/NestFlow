@@ -1,6 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, signal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, inject, input, InputSignal, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ToastrModule, ToastrService } from "ngx-toastr";
@@ -8,11 +8,12 @@ import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { ISubscription } from '../../models/subscription.interface';
 import { SubscriptionStore } from '../../store/subscribed.store';
+import { DirectiveModule } from '../../../../modules';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
-  imports: [CommonModule, PopupsComponent, ToastrModule, ScrollingModule, NgxPaginationModule],
+  imports: [CommonModule, PopupsComponent, ToastrModule, NgxPaginationModule, DirectiveModule],
   templateUrl: './detail-lists.component.html',
   styleUrl: './detail-lists.component.scss',
   animations: [expandCollapse],
@@ -76,7 +77,17 @@ export class DetailListsComponent {
     this.router.navigate(['dashboard/subscriptions/edit', id]);
   }
 
-  trackById(index: number, item: any): number {
+  trackById(item: any): number {
     return item.id;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.store.expandedMenuId() !== null) {
+      const clickedElement = event.target as HTMLElement;
+      if (!clickedElement.closest('.tooltip-container') && !clickedElement.closest('button')) {
+        this.store.closeExpandedMenu();
+      }
+    }
   }
 }

@@ -1,111 +1,153 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, HostListener } from '@angular/core';
-import { UserStore } from '../../store/users.store';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, ElementRef, HostListener, ViewChild, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ToastrService } from 'ngx-toastr';
+import { slideInOut } from '../../../shared/animations/animations';
+import { PopupsComponent } from "../../../shared/components/popups/popups.component";
+import { UserStore } from '../../store/users.store';
 import { AddUserComponent } from "../add-user/add-user.component";
-import { trigger, transition, style, animate } from '@angular/animations';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ImageUrl } from '../../../../../../public/images/constant.images';
 
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [CommonModule, AddUserComponent],
-  template: `
-    <main class="relative overflow-hidden">
-      <div class="flex flex-wrap -mx-3">
-        <div class="flex-none w-full max-w-full px-3">
-          <div class="relative flex flex-col min-w-0 mb-6 p-2 break-words border-0 border-transparent border-solid bg-slate-850 shadow-dark-xl rounded-2xl bg-clip-border">
-            <div class="flex justify-between items-center p-6 pb-0 mb-0 border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-              <h6 class="text-white text-xl font-semibold">Users Table</h6>
-              <button class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1" (click)="toggleAddUserSidebar()">
-                <span class="flex items-center">
-                  <i class="material-icons mr-2">add</i>
-                  Add User
-                </span>
-              </button>
-            </div>
-            <div class="flex-auto px-0 pt-0 pb-2">
-              <div class="p-0 overflow-x-auto">
-                <table class="items-center w-full mb-0 align-top border-collapse border-white/40 text-slate-500">
-                  <thead class="align-bottom">
-                    <tr>
-                      <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none border-white/40 text-white text-xxs border-b-solid tracking-none whitespace-nowrap opacity-70">User</th>
-                      <th class="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none border-white/40 text-white text-xxs border-b-solid tracking-none whitespace-nowrap opacity-70">Email</th>
-                      <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-collapse shadow-none border-white/40 text-white text-xxs border-b-solid tracking-none whitespace-nowrap opacity-70">Status</th>
-                      <th class="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-collapse border-solid shadow-none border-white/40 text-white tracking-none whitespace-nowrap opacity-70">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let user of store.users()">
-                      <td class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
-                        <div class="flex px-2 py-1">
-                          <div>
-                            <img [src]="user.image" class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl" [alt]="user.fullname" />
-                          </div>
-                          <div class="flex flex-col justify-center">
-                            <h6 class="mb-0 text-sm leading-normal text-white">{{ user.fullname }}</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
-                        <p class="mb-0 text-xs leading-tight text-white opacity-80">{{ user.email }}</p>
-                      </td>
-                      <td class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
-                        <span [ngClass]="store.userStatusClass()(user.status)" class="px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">{{ user.status }}</span>
-                      </td>
-                      <td class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
-                        <a href="javascript:;" class="text-xs font-semibold leading-tight text-white opacity-80">Edit</a>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div *ngIf="showAddUserSidebar" class="fixed inset-0 bg-black bg-opacity-50 z-980" (click)="closeSidebar()"></div>
-      <div *ngIf="showAddUserSidebar" [@slideInOut] class="fixed top-0 right-0 z-990 h-full w-85 bg-slate-900 shadow-lg flex flex-col">
-        <div class="flex justify-between items-center p-4 border-b border-gray-700">
-          <h2 class="title animate-pulse">Add User</h2>
-          <button (click)="closeSidebar()" class="text-white hover:text-gray-300">
-            <i class="material-icons">close</i>
-          </button>
-        </div>
-        <div class="flex-grow overflow-y-auto p-4">
-          <app-add-user></app-add-user>
-        </div>
-      </div>
-    </main>
-  `,
+  imports: [CommonModule, AddUserComponent, PopupsComponent, NgxPaginationModule, ReactiveFormsModule],
+  templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
-  animations: [
-    trigger('slideInOut', [
-      transition(':enter', [
-        style({ transform: 'translateX(100%)' }),
-        animate('300ms ease-in', style({ transform: 'translateX(0%)' }))
-      ]),
-      transition(':leave', [
-        animate('300ms ease-in', style({ transform: 'translateX(100%)' }))
-      ])
-    ])
-  ]
+  animations: [slideInOut],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class TableComponent {
-  store = inject(UserStore);
-  showAddUserSidebar = false;
+  showPopup = signal(false);
+  userIdToDelete: number | null = null;
+  currentPage = 1;
+  showEditUserSidebar = signal(false);
+  userToEdit: any = null;
+  selectedUser: any = null;
+  userForm!: FormGroup;
+  userId: number | null = null;
+  p: number = 1;
 
-  toggleAddUserSidebar() {
-    this.showAddUserSidebar = !this.showAddUserSidebar;
+  readonly defaultImages = ImageUrl.defaultImages;
+
+  readonly store = inject(UserStore);
+  readonly router = inject(Router);
+  private readonly toastr = inject(ToastrService);
+  private readonly fb = inject(FormBuilder);
+
+  showAddUserSidebar = signal(false);
+
+  @ViewChild('sidebarContent') sidebarContent!: ElementRef;
+  @ViewChild('editSidebarContent') editSidebarContent!: ElementRef;
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
+  constructor() {
+    this.initForm();
+  }
+
+  initForm(user: any = null) {
+    this.userForm = this.fb.group({
+      fullname: [user?.fullname || '', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
+      email: [user?.email || '', [Validators.required, Validators.email]],
+      password: ['', user ? [] : [Validators.required, Validators.minLength(4)]],
+      confirmPassword: ['', user ? [] : [Validators.required]],
+      status: [user?.status || 'active', Validators.required],
+      image: [user?.image || null, Validators.required]
+    }, { validator: this.passwordMatchValidator });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.showAddUserSidebar() && this.sidebarContent && !this.sidebarContent.nativeElement.contains(event.target)) {
+      this.closeSidebar();
+    }
+    if (this.showEditUserSidebar() && this.editSidebarContent && !this.editSidebarContent.nativeElement.contains(event.target)) {
+      this.closeEditSidebar();
+    }
+  }
+
+  confirmDelete() {
+    if (this.userIdToDelete !== null) {
+      this.store.deleteUser(this.userIdToDelete);
+      this.toastr.success('User deleted successfully');
+      this.closePopup();
+    }
+  }
+
+  closePopup() {
+    this.showPopup.set(false);
+    this.userIdToDelete = null;
+  }
+
+  openPopup(userId: number) {
+    this.userIdToDelete = userId;
+    this.showPopup.set(true);
+  }
+
+  openEditSidebar(user: any) {
+    this.userToEdit = user;
+    this.initForm(user);
+    this.showEditUserSidebar.set(true);
+  }
+
+  openSidebar(user: any) {
+    this.selectedUser = user;
+    this.showAddUserSidebar.set(true);
   }
 
   closeSidebar() {
-    this.showAddUserSidebar = false;
+    this.showAddUserSidebar.set(false);
+    this.initForm();
   }
 
-  @HostListener('document:keydown.escape', ['$event'])
-  handleEscapeKey(event: KeyboardEvent) {
-    if (this.showAddUserSidebar) {
-      this.closeSidebar();
+  closeEditSidebar() {
+    this.showEditUserSidebar.set(false);
+    this.userToEdit = null;
+    this.initForm();
+  }
+
+  passwordMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  }
+
+  onSubmit(): void {
+    if (this.userForm.valid) {
+      const userData = this.userForm.value;
+      if (this.userToEdit) {
+        const updatedUser = { ...this.userToEdit, ...userData };
+        this.store.updateUser(updatedUser.id, updatedUser);
+        this.toastr.success('User updated successfully');
+        this.closeEditSidebar();
+      } else {
+        this.store.addUser(userData);
+        this.toastr.success('User added successfully');
+        this.closeSidebar();
+      }
+    } else {
+      this.toastr.error('Please fill all fields correctly');
+      this.userForm.markAllAsTouched();
+    }
+  }
+
+  triggerFileInput(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  selectedFileName: string | null = null;
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      this.selectedFileName = file.name;
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const imageUrl = e.target?.result as string;
+        this.userForm.patchValue({ image: imageUrl });
+      };
+      reader.readAsDataURL(file);
     }
   }
 }

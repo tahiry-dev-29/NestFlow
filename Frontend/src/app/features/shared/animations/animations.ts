@@ -1,8 +1,19 @@
-import { animate, group, query, style, transition, trigger } from '@angular/animations';
+import {
+  animate,
+  group,
+  query,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 
 export const moveActiveBar = trigger('moveActiveBar', [
   transition('* => *', [
-    query('.active-indicator', style({ transform: 'translateX({{ start }}px)' }), { optional: true }),
+    query(
+      '.active-indicator',
+      style({ transform: 'translateX({{ start }}px)' }),
+      { optional: true }
+    ),
     group([
       query(
         '.active-indicator',
@@ -26,5 +37,15 @@ export const expandCollapse = trigger('expandCollapse', [
       '500ms ease-in',
       style({ opacity: 0, transform: 'translateY(-20px)' })
     ),
+  ]),
+]);
+
+export const slideInOut = trigger('slideInOut', [
+  transition(':enter', [
+    style({ transform: 'translateX(100%)' }),
+    animate('300ms ease-in', style({ transform: 'translateX(0%)' })),
+  ]),
+  transition(':leave', [
+    animate('300ms ease-in', style({ transform: 'translateX(100%)' })),
   ]),
 ]);

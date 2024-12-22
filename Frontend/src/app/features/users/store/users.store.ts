@@ -14,8 +14,6 @@ export interface UserState {
   users: IUsers[];
   loading: boolean;
   error: string | null;
-  expandedId: number | null;
-  expandedMenuId: number | null;
 }
 
 const getInitialState = (): UserState => {
@@ -27,8 +25,6 @@ const getInitialState = (): UserState => {
     users: [],
     loading: false,
     error: null,
-    expandedId: null,
-    expandedMenuId: null,
   };
 };
 
@@ -63,10 +59,15 @@ export const UserStore = signalStore(
       this.saveToLocalStorage();
     },
     updateUser(id: number, updates: Partial<IUsers>): void {
-      patchState(store, {
-        users: store.users().map((user) => (user.id === id ? { ...user, ...updates } : user)),
-      });
-      this.saveToLocalStorage();
+      const user = this.getUserById(id);
+      if (user) {
+        const newUsers = store.users().map((u) => (u.id === id ? { ...u, ...updates } : u));
+        patchState(store, { users: newUsers });
+        this.saveToLocalStorage();
+      }
+      else {
+        console.error(`User with id ${id} not found`);
+      }
     },
     deleteUser(id: number): void {
       patchState(store, {
@@ -83,21 +84,12 @@ export const UserStore = signalStore(
     resetError(): void {
       patchState(store, { error: null });
     },
-    toggleExpand(id: number | null): void {
-      patchState(store, { expandedId: store.expandedId() === id ? null : id });
-    },
-    toggleMenuExpand(id: number | null): void {
-      patchState(store, { expandedMenuId: store.expandedMenuId() === id ? null : id });
-    },
     saveToLocalStorage(): void {
       localStorage.setItem('UserState', JSON.stringify({
         users: store.users(),
         loading: store.loading(),
         error: store.error(),
-        expandedId: store.expandedId(),
-        expandedMenuId: store.expandedMenuId(),
       }));
     },
   }))
 );
-    
