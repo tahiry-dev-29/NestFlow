@@ -1,4 +1,16 @@
-<main class="mt-0 transition-all duration-200 ease-in-out">
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, Input, ViewChild, WritableSignal, inject, input, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { slideInOut } from '../../../shared/animations/animations';
+import { IUsers, UserStore } from '../../store/users.store';
+
+@Component({
+  selector: 'app-edit-user',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  template: `
+    <main class="mt-0 transition-all duration-200 ease-in-out">
     <div class="flex flex-col items-center">
         <div class="w-full max-w-md px-3 mx-auto">
             <div
@@ -13,9 +25,11 @@
                                 <small *ngIf="userForm.get('fullname')?.errors?.['required']">Full Name is
                                     required.</small>
                                 <small *ngIf="userForm.get('fullname')?.errors?.['minlength']">Full Name must contain at
-                                    least 5 characters.</small>
+                                    least 5
+                                    characters.</small>
                                 <small *ngIf="userForm.get('fullname')?.errors?.['maxlength']">Full Name must contain at
-                                    most 100 characters.</small>
+                                    most 100
+                                    characters.</small>
                             </div>
                         </div>
                         <div class="mb-4">
@@ -24,17 +38,6 @@
                             <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="error">
                                 <small *ngIf="userForm.get('email')?.errors?.['required']">Email is required.</small>
                                 <small *ngIf="userForm.get('email')?.errors?.['email']">Email is invalid.</small>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <input type="password" formControlName="password" class="input-theme w-full"
-                                placeholder="Password" />
-                            <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched"
-                                class="error">
-                                <small *ngIf="userForm.get('password')?.errors?.['required']">Password is
-                                    required.</small>
-                                <small *ngIf="userForm.get('password')?.errors?.['minlength']">Password must contain at
-                                    least 4 characters.</small>
                             </div>
                         </div>
                         <div class="mb-4">
@@ -51,7 +54,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                 </svg>
-                                {{ selectedFileName || 'Ajouter une image (optionnel)' }}
+                                {{selectedFileName || 'Ajouter une image'}}
                             </button>
                             <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*"
                                 class="hidden">
@@ -59,7 +62,7 @@
                         <div class="flex justify-center">
                             <button type="submit" [disabled]="userForm.invalid" class="w-3/4"
                                 [ngClass]="{'btn-desactived-bg': !userForm.valid, 'btn-gradient-bg': userForm.valid}">
-                                Ajouter
+                                Edit
                             </button>
                         </div>
                     </form>
@@ -68,3 +71,63 @@
         </div>
     </div>
 </main>
+  
+  `,
+  styleUrl: './edit-user.component.scss',
+  animations: [slideInOut]
+})
+export class EditUserComponent {
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  @Input() user: null | IUsers = null;
+
+  userForm!: FormGroup;
+  private readonly store = inject(UserStore);
+  private readonly toastr = inject(ToastrService);
+  private readonly fb = inject(FormBuilder);
+  selectedFileName: string | null = null;
+
+
+
+  ngOnInit(): void {
+    this.initForm(this.user);
+  }
+
+  initForm(user: IUsers | null): void {
+    this.userForm = this.fb.group({
+      fullname: [user?.fullname || '', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
+      email: [user?.email || '', [Validators.required, Validators.email]],
+      status: [user?.status || 'active', Validators.required],
+      image: [user?.image || null]
+    });
+  }
+
+  onSubmit(): void {
+    if (this.userForm.valid && this.user) {
+      const updatedUser = { ...this.user, ...this.userForm.value };
+      this.store.updateUser(this.user.id, updatedUser);
+      this.toastr.success(`User <span class="msg-class">${updatedUser.fullname}</span> updated successfully`);
+    } else {
+      this.toastr.error('Please fill in all fields correctly');
+      this.userForm.markAllAsTouched();
+    }
+  }
+
+  triggerFileInput(): void {
+    if (this.fileInput) {
+      this.fileInput.nativeElement.click();
+    }
+  }
+
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      this.selectedFileName = file.name;
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const imageUrl = e.target?.result as string;
+        this.userForm.patchValue({ image: imageUrl });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+}

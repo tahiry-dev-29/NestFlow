@@ -1,27 +1,13 @@
-<section 
-  class="z-sticky backdrop-blur-2xl backdrop-saturate-200 bg-slate-850/80 shadow-3xl w-90 ease fixed top-0 left-auto flex h-full min-w-0 flex-col break-words rounded-none border-0 bg-clip-border px-2.5 duration-300 ease-in-out right-0"
-  >
-  <!-- [class.w-64]="sidebarState()"
-  [class.translate-x-full]="!sidebarState()" -->
-  <div class="px-6 pt-4 pb-0 mb-0 border-b-0 rounded-t-2xl">
-    <div class="float-left">
-      <h5 class="mt-4 mb-0 text-white">Argon Configurator</h5>
-      <p class="text-white opacity-80">See our dashboard options.</p>
-    </div>
-    <div class="float-right mt-6">
-      <button
-        fixed-plugin-close-button=""
-        class="inline-block p-0 mb-4 font-bold leading-normal text-center uppercase align-middle transition-all ease-in bg-transparent border-0 rounded-lg shadow-none cursor-pointer hover:-translate-y-px text-sm tracking-tight-rem bg-150 bg-x-25 active:opacity-85 text-slate-700"
-      >
-      </button>
-    </div>
+@if (showAddUserSidebar()) {
+<div class="fixed top-0 right-0 z-990 h-full w-85 bg-slate-900 shadow-lg flex flex-col" [@slideInOut]>
+  <div class="flex justify-between items-center p-4 border-b border-gray-700">
+    <h2 class="title animate-pulse">Add User</h2>
+    <button  class="text-white hover:text-gray-300">
+      <i class="material-icons">close</i>
+    </button>
   </div>
-  <hr
-    class="h-px mx-0 my-1 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent"
-  />
-  <div class="flex-auto p-6 pt-0 overflow-auto sm:pt-4">
-    <hr
-      class="h-px my-6 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent"
-    />
+  <div class="flex-grow overflow-y-auto p-4 custom-scrolbar">
+    
   </div>
-</section>
+</div>
+}

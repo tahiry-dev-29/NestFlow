@@ -9,7 +9,7 @@ export const UsersRoutes: Routes = [
     {
         path: 'list',
         title: 'List / Users',
-        loadComponent: () => import('./components/table/table.component').then(m => m.TableComponent),
+        loadComponent: () => import('./components/table/user-table.component').then(m => m.UserTableComponent),
     },
     {
         path: 'add',
