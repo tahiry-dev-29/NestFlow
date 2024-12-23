@@ -64,8 +64,7 @@
               </td>
             </tr>
             } @else {
-            <ng-container
-              *cdkVirtualFor="let subscription of store.filteredSubscriptions()(filter.menu, filter.search); trackBy: trackById">
+            @for (subscription of store.filteredSubscriptions()(filter.menu, filter.search); track subscription.id) {
               <tr
                 [ngClass]="{'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== subscription.id, 'bg-slate-700': store.expandedId() === subscription.id}">
                 <td class="td">{{ subscription.id }}</td>
@@ -84,7 +83,7 @@
                     <span
                       [ngClass]="{'text-blue-400': subscription.subscriptionType === 'Basique', 'text-green-400': subscription.subscriptionType === 'Classique'}">{{
                       subscription.subscriptionType }}</span>
-                    <span class="text-xs text-gray-400">{{ getRemainingDays(subscription.id) }} jours restants</span>
+                    <span class="text-xs text-gray-400">{{ store.getRemainingDays(subscription.id) }} jours restants</span>
                   </div>
                 </td>
                 <td class="px-6 py-4 text-center">
@@ -115,7 +114,8 @@
                   </button>
                 </td>
               </tr>
-              <tr *ngIf="store.expandedId() === subscription.id" [@expandCollapse]>
+              @if (store.expandedId() === subscription.id) {
+              <tr [@expandCollapse]>
                 <td colspan="6" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
                   <div class="flex flex-wrap text-sm text-white">
                     <div class="w-1/3 p-2">
@@ -136,7 +136,8 @@
                   </div>
                 </td>
               </tr>
-            </ng-container>
+              }
+            }
             }
           </tbody>
         </table>
@@ -146,12 +147,12 @@
       class="sticky left-0 bottom-0 border-t border-gray-600 z-50 w-full flex justify-between items-center text-white bg-slate-850 py-2 px-4">
       @if (filter.search) {
       <div class="text-white mb-4">
-        Find subscription number : {{ (store.filteredSubscriptions()(filter.menu, filter.search) || []).length }}
+        Find subscription number : {{ store.filteredSubscriptions()(filter.menu, filter.search).length }}
       </div>
       } @else {
       <span class="w-2/12"></span>
       }
-      <p>Total subscribers <span class="text text-lg font-bold">{{ store.totalSubscriptions() }}</span></p>
+      <p>Total subscribers <span class="text text-lg font-bold">{{ store.totalSubscribers() }}</span></p>
     </div>
   </div>
 </section>

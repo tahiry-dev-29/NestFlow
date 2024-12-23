@@ -28,24 +28,30 @@ export const SubscriptionStore = signalStore(
     activeSubscriptions: computed(() => subscriptions().filter((sub) => sub.active)),
     inactiveSubscriptions: computed(() => subscriptions().filter((sub) => !sub.active)),
     filteredSubscriptions: computed(() => (menu: string, search: string | null) => {
+    
       let filtered = subscriptions();
-      if (menu === 'active') {
-        filtered = filtered.filter((sub) => sub.active);
-      } else if (menu === 'inactive') {
-        filtered = filtered.filter((sub) => !sub.active);
+    
+      // Filtrage par menu
+      if (menu && menu !== 'all') {
+        filtered = filtered.filter((sub) => {
+          if (menu === 'active') return sub.active === true;
+          if (menu === 'inactive') return sub.active === false;
+          return true;
+        });
       }
-      if (search && typeof search === 'string') {
-        const lowerSearch = search.toLowerCase();
-        filtered = filtered.filter(
-          (sub) =>
-            sub.fullname.toLowerCase().includes(lowerSearch) ||
-            sub.email.toLowerCase().includes(lowerSearch) ||
-            sub.tel.includes(lowerSearch)
+      // Filtrage par recherche
+      if (search && search.trim() !== '') {
+        const searchLower = search.toLowerCase().trim();
+        filtered = filtered.filter((sub) =>
+          sub.fullname.toLowerCase().includes(searchLower) ||
+          sub.email.toLowerCase().includes(searchLower) ||
+          sub.tel.toLowerCase().includes(searchLower) ||
+          sub.id.toString().includes(searchLower)
         );
       }
       return filtered;
     }),
-    totalSubscriptions: computed(() => subscriptions().length),
+    totalSubscribers: computed(() => subscriptions().length),
     getProgressClasses: computed(() => (progress: number) => {
       if (progress > 90) return 'bg-green-500';
       if (progress > 80) return 'bg-green-400';
@@ -73,6 +79,14 @@ export const SubscriptionStore = signalStore(
   withMethods((store) => ({
     getSubscriptionById(id: number): ISubscription | null {
       return store.subscriptions().find((sub) => sub.id === id) || null;
+    },
+    getRemainingDays(id: number): number {
+      const subscription = this.getSubscriptionById(id);
+      if (!subscription) return 0;
+      const endDate = new Date(subscription.subscriptionEndDate);
+      const today = new Date();
+      const differenceInTime = endDate.getTime() - today.getTime();
+      return Math.max(0, Math.ceil(differenceInTime / (1000 * 3600 * 24)));
     },
     addSubscription(subscription: ISubscription): void {
       patchState(store, { loading: true });
@@ -147,10 +161,6 @@ export const SubscriptionStore = signalStore(
         const parsedState = JSON.parse(storedState);
         patchState(store, { subscriptions: parsedState.subscriptions });
       }
-    },
-    filterAndSearch(menu: string, search: string | null): void {
-      const filtered = store.filteredSubscriptions()(menu, search);
-      patchState(store, { subscriptions: filtered });
     },
     closeExpandedMenu(): void { 
       patchState(store, { expandedMenuId: null });
