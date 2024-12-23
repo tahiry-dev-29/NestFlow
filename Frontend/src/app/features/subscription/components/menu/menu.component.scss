@@ -1,0 +1,9 @@
+@layer {
+  ul {
+    @apply relative flex w-full bg-slate-800/25 rounded-xl;
+
+    li {
+      @apply relative flex-auto text-center cursor-pointer;
+    }
+  }
+}

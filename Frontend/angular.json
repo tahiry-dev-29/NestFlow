@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "stream-box": {
+    "nest-flow": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,8 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/stream-box",
+            "aot": true,
+            "outputPath": "dist/nest-flow",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -32,7 +33,6 @@
               }
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/custom.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -65,10 +65,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "stream-box:build:production"
+              "buildTarget": "nest-flow:build:production"
             },
             "development": {
-              "buildTarget": "stream-box:build:development"
+              "buildTarget": "nest-flow:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -92,7 +92,6 @@
               }
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
             ],
             "scripts": []

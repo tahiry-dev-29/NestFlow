@@ -1,0 +1,26 @@
+<form class="flex items-center max-w-sm mx-auto relative">
+  <div class="relative w-full">
+    <!-- Icône de recherche à gauche -->
+    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+      <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+        fill="none" viewBox="0 0 18 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 5v10M3 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm12 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0V6a3 3 0 0 0-3-3H9m1.5-2-2 2 2 2" />
+      </svg>
+    </div>
+
+    <!-- Champ de recherche -->
+    <input type="search"
+      class="input-theme shadow-dark-blur focus:animate-shadow-pro-pulse block w-full ps-10 p-2.5"
+      placeholder="Search by name or email..."
+      [(ngModel)]="searchTerm" (input)="onSearch()" [ngModelOptions]="{standalone: true}" />
+  </div>
+
+  <!-- Spinner à droite (visible uniquement lorsque isLoading est vrai) -->
+  @if (isLoading()) {
+    <div class="absolute inset-y-0 end-2 flex items-center">
+      <!-- Spinner Tailwind -->
+      <span class="w-5 h-5 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></span>
+    </div>
+  }
+</form>

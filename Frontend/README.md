@@ -67,4 +67,5 @@ src/
   assets/                             # Ressources statiques (images, icônes, etc.)
   environments/                       # Environnements (dev, prod, etc.)
 
-  
+  Revenir a la dernier commit
+  -> git reset --hard HEAD

@@ -1,0 +1,11 @@
+input {
+    &.focus {
+        border-color: #3498db;
+    }
+}
+
+button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

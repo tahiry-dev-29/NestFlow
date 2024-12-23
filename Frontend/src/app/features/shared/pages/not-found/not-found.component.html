@@ -1,16 +1,15 @@
-<main class="h-screen w-full flex flex-col justify-center items-center bg-[#1A2238]">
+<main class="my-20 w-full flex flex-col justify-center items-center">
     <h1 class="text-9xl font-extrabold text-gradient tracking-widest">
         404
     </h1>
-
     <div class="error-badge">
         Page Not Found
     </div>
 
-    <a href="/" role="link">
+    <a (click)="navigateBack()">
         <button
             class="relative mt-5 inline-block text-sm font-medium group active:text-orange-500 focus:outline-none focus:ring btn-gradient-bg">
-            Go Home
+            Go Back
         </button>
     </a>
 </main>

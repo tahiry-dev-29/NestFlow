@@ -1,184 +1,215 @@
-<!-- table 1 -->
+<main class="relative overflow-hidden">
+    <div class="flex flex-wrap -mx-3">
+        <div class="flex-none w-full max-w-full px-3">
+            <div
+                class="relative flex flex-col min-w-0 mb-6 p-2 break-words border-0 border-transparent border-solid bg-slate-850 shadow-dark-xl rounded-2xl bg-clip-border">
+                <div
+                    class="flex justify-between items-center p-3 mb-0 border-b-2 border-gray-600 rounded-t-2xl border-b-transparent">
+                    <h6 class="text-white text-xl font-semibold">Users Table</h6>
+                    <button
+                        class="bg-gradient-to-r from-pink-500/90 to-violet-500/90 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg hover:text transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+                        (click)="showAddUserSidebar.set(true)">
+                        <span class="flex items-center">
+                            <i class="material-icons mr-2">add</i>
+                            Add User
+                        </span>
+                    </button>
+                </div>
+                <div class="flex-auto px-0 pt-0 pb-2">
+                    <div class="p-0 overflow-x-auto">
+                        <div class="h-[65vh] overflow-auto custom-scrolbar">
+                            <table
+                                class="items-center w-full mb-0 align-top border-collapse border-white/40 text-slate-500">
+                                <thead
+                                    class="sticky top-0 z-50 bg-slate-850/25 backdrop-blur-md border-b-2 border-gray-200">
+                                    <tr>
+                                        <th class="p-2 text-left user-th">User</th>
+                                        <th class="p-2 text-left user-th">Email</th>
+                                        <th class="p-2 text-center user-th">Status</th>
+                                        <th class="p-2 text-center user-th">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (user of store.users() | paginate: { itemsPerPage: 5, currentPage: p }; track user.id; let i = $index) {
+                                    <tr>
+                                        <td
+                                            class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
+                                            <div class="flex px-2 py-1">
+                                                <div>
+                                                    <img [src]="user.image ? user.image : defaultImages"
+                                                        [alt]="user.fullname" loading="lazy" decoding="async"
+                                                        class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl">
+                                                </div>
+                                                <div class="flex flex-col justify-center">
+                                                    <h6 class="mb-0 text-sm leading-normal text-white">{{ user.fullname
+                                                        }}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
+                                            <p class="mb-0 text-xs leading-tight text-white opacity-80">{{ user.email }}
+                                            </p>
+                                        </td>
+                                        <td
+                                            class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
+                                            <span [ngClass]="store.userStatusClass()(user.status)"
+                                                class="px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
+                                                {{ user.status }}
+                                            </span>
+                                        </td>
+                                        <td
+                                            class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent text-center">
+                                            <button class="tooltip hover:text text-red-600 mr-2"
+                                                (click)="openPopup(user.id)">
+                                                <span class="material-icons">delete</span>
+                                            </button>
+                                            <button class="tooltip hover:text text-blue-600"
+                                                (click)="openEditSidebar(user)">
+                                                <span class="material-icons">edit</span>
+                                            </button>
+                                            <button class="tooltip hover:text text-blue-600"
+                                                (click)="openSidebar(user)">
+                                                <span class="material-icons">visibility</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-<div class="flex flex-wrap -mx-3">
-    <div class="flex-none w-full max-w-full px-3">
-      <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
-        <div class="p-6 pb-0 mb-0 border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-          <h6 class="dark:text-white">Authors table</h6>
+                <div
+                    class="sticky left-0 bottom-0 border-t-2 border-gray-600 z-50 w-full flex justify-between items-center text-white bg-slate-850 py-2 px-4">
+                    <p>Total users <span class="text text-lg font-bold">{{ store.totalUsers() }}</span></p>
+                    <pagination-controls (pageChange)="p = $event" class="text-white"></pagination-controls>
+                </div>
+
+            </div>
         </div>
-        <div class="flex-auto px-0 pt-0 pb-2">
-          <div class="p-0 overflow-x-auto">
-            <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
-              <thead class="align-bottom">
-                <tr>
-                  <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Author</th>
-                  <th class="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Function</th>
-                  <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Status</th>
-                  <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Employed</th>
-                  <th class="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-collapse border-solid shadow-none dark:border-white/40 dark:text-white tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <div class="flex px-2 py-1">
-                      <div>
-                        <img src="../assets/img/team-2.jpg" class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl" alt="user1" />
-                      </div>
-                      <div class="flex flex-col justify-center">
-                        <h6 class="mb-0 text-sm leading-normal dark:text-white">John Michael</h6>
-                        <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">john@creative-tim.com</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">Manager</p>
-                    <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">Organization</p>
-                  </td>
-                  <td class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="bg-gradient-to-tl from-emerald-500 to-teal-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Online</span>
-                  </td>
-                  <td class="p-2 text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400">23/04/18</span>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <a href="javascript:;" class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400"> Edit </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <div class="flex px-2 py-1">
-                      <div>
-                        <img src="../assets/img/team-3.jpg" class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl" alt="user2" />
-                      </div>
-                      <div class="flex flex-col justify-center">
-                        <h6 class="mb-0 text-sm leading-normal dark:text-white">Alexa Liras</h6>
-                        <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">alexa@creative-tim.com</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">Programator</p>
-                    <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">Developer</p>
-                  </td>
-                  <td class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Offline</span>
-                  </td>
-                  <td class="p-2 text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400">11/01/19</span>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <a href="javascript:;" class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400"> Edit </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <div class="flex px-2 py-1">
-                      <div>
-                        <img src="../assets/img/team-4.jpg" class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl" alt="user3" />
-                      </div>
-                      <div class="flex flex-col justify-center">
-                        <h6 class="mb-0 text-sm leading-normal dark:text-white">Laurent Perrier</h6>
-                        <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">laurent@creative-tim.com</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">Executive</p>
-                    <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">Projects</p>
-                  </td>
-                  <td class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="bg-gradient-to-tl from-emerald-500 to-teal-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Online</span>
-                  </td>
-                  <td class="p-2 text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400">19/09/17</span>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <a href="javascript:;" class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400"> Edit </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <div class="flex px-2 py-1">
-                      <div>
-                        <img src="../assets/img/team-3.jpg" class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl" alt="user4" />
-                      </div>
-                      <div class="flex flex-col justify-center">
-                        <h6 class="mb-0 text-sm leading-normal dark:text-white">Michael Levi</h6>
-                        <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">michael@creative-tim.com</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">Programator</p>
-                    <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">Developer</p>
-                  </td>
-                  <td class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="bg-gradient-to-tl from-emerald-500 to-teal-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Online</span>
-                  </td>
-                  <td class="p-2 text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400">24/12/08</span>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <a href="javascript:;" class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400"> Edit </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <div class="flex px-2 py-1">
-                      <div>
-                        <img src="../assets/img/team-2.jpg" class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl" alt="user5" />
-                      </div>
-                      <div class="flex flex-col justify-center">
-                        <h6 class="mb-0 text-sm leading-normal dark:text-white">Richard Gran</h6>
-                        <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">richard@creative-tim.com</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">Manager</p>
-                    <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">Executive</p>
-                  </td>
-                  <td class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Offline</span>
-                  </td>
-                  <td class="p-2 text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <span class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400">04/10/21</span>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
-                    <a href="javascript:;" class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400"> Edit </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="p-2 align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                    <div class="flex px-2 py-1">
-                      <div>
-                        <img src="../assets/img/team-4.jpg" class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl" alt="user6" />
-                      </div>
-                      <div class="flex flex-col justify-center">
-                        <h6 class="mb-0 text-sm leading-normal dark:text-white">Miriam Eric</h6>
-                        <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">miriam@creative-tim.com</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">Programtor</p>
-                    <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">Developer</p>
-                  </td>
-                  <td class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                    <span class="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Offline</span>
-                  </td>
-                  <td class="p-2 text-center align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                    <span class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400">14/09/20</span>
-                  </td>
-                  <td class="p-2 align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                    <a href="javascript:;" class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400"> Edit </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
+    @if (showAddUserSidebar()) {
+    <div class="fixed top-0 right-0 z-990 h-full w-85 bg-slate-900 shadow-lg flex flex-col" [@slideInOut]>
+        <div class="flex justify-between items-center p-4 border-b border-gray-700">
+            <h2 class="title animate-pulse">Add User</h2>
+            <button (click)="closeSidebar()" class="text-white hover:text-gray-300">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+        <div #sidebarContent class="flex-grow overflow-y-auto p-4 custom-scrolbar">
+            <app-add-user></app-add-user>
+        </div>
+    </div>
+    }
+    @if (showEditUserSidebar()) {
+    <div class="fixed top-0 right-0 z-990 h-full w-85 bg-slate-900 shadow-lg flex flex-col" [@slideInOut]>
+        <div class="flex justify-between items-center p-4 border-b border-gray-700">
+            <h2 class="title animate-pulse">Edit User</h2>
+            <button (click)="closeEditSidebar()" class="text-white hover:text-gray-300">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+        <div #editSidebarContent class="flex-grow overflow-y-auto p-4 custom-scrolbar">
+            <main class="mt-0 transition-all duration-200 ease-in-out">
+                <div class="flex flex-col items-center">
+                    <div class="w-full max-w-md px-3 mx-auto">
+                        <div
+                            class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
+                            <div class="flex-auto p-6 mt-6">
+                                <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left"
+                                    class="flex flex-col">
+                                    <div class="mb-4">
+                                        <input type="text" formControlName="fullname" class="input-theme w-full"
+                                            placeholder="Full Name" />
+                                        <div *ngIf="userForm.get('fullname')?.invalid && userForm.get('fullname')?.touched"
+                                            class="error">
+                                            <small *ngIf="userForm.get('fullname')?.errors?.['required']">Full Name is
+                                                required.</small>
+                                            <small *ngIf="userForm.get('fullname')?.errors?.['minlength']">Full Name
+                                                must contain at
+                                                least 5 characters.</small>
+                                            <small *ngIf="userForm.get('fullname')?.errors?.['maxlength']">Full Name
+                                                must contain at
+                                                most 100 characters.</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <input type="email" formControlName="email" class="input-theme w-full"
+                                            placeholder="Email" />
+                                        <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+                                            class="error">
+                                            <small *ngIf="userForm.get('email')?.errors?.['required']">Email is
+                                                required.</small>
+                                            <small *ngIf="userForm.get('email')?.errors?.['email']">Email is
+                                                invalid.</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <input type="password" formControlName="password" class="input-theme w-full"
+                                            placeholder="Password" />
+                                        <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+                                            class="error">
+                                            <small *ngIf="userForm.get('password')?.errors?.['required']">Password is
+                                                required.</small>
+                                            <small *ngIf="userForm.get('password')?.errors?.['minlength']">Password must
+                                                contain at
+                                                least 4 characters.</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <input type="password" formControlName="confirmPassword"
+                                            class="input-theme w-full" placeholder="Confirm Password" />
+                                        <div *ngIf="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched"
+                                            class="error">
+                                            <small *ngIf="userForm.get('confirmPassword')?.errors?.['required']">Confirm
+                                                Password is
+                                                required.</small>
+                                            <small
+                                                *ngIf="userForm.get('confirmPassword')?.errors?.['passwordMismatch']">Passwords
+                                                do not match.</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <select formControlName="status" class="input-theme w-full">
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-4 relative">
+                                        <button type="button" (click)="triggerFileInput()"
+                                            class="input-theme w-full flex items-center justify-center text-sm font-medium text-gray-300 bg-slate-800/80 hover:bg-slate-700/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500/25">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                            </svg>
+                                            {{ selectedFileName || 'Ajouter une image' }}
+                                        </button>
+                                        <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*"
+                                            class="hidden">
+                                        <div *ngIf="userForm.get('image')?.invalid && userForm.get('image')?.touched"
+                                            class="text-red-500 text-xs mt-1">
+                                            <small>Image requise.</small>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-center">
+                                        <button type="submit" [disabled]="userForm.invalid" class="w-3/4"
+                                            [ngClass]="{'btn-desactived-bg': !userForm.valid, 'btn-gradient-bg': userForm.valid}">
+                                            Modifier
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    }
+</main>
+@if (showPopup()) {
+<app-popups (confirm)="confirmDelete()" (cancel)="closePopup()" />
+}
