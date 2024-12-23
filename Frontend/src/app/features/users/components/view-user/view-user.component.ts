@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IUsers } from '../../store/users.store';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
@@ -7,10 +7,40 @@ import { ImageUrl } from '../../../../../../public/images/constant.images';
   selector: 'app-view-user',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './view-user.component.html',
+  template: `
+    <main class="mt-0 transition-all duration-200 ease-in-out">
+    <div class="flex flex-col items-center">
+        <div class="w-full max-w-md px-3 mx-auto">
+            <div
+                class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
+                <div class="flex-auto p-6 mt-6">
+                    @if (user()) {
+                    <div class="relative w-full max-w-3xl mx-auto text-center">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-48 rounded-t-lg transform hover:scale-105 transition-transform duration-300"></div>
+                        <div class="relative -mt-28 px-6 animate-fadeIn">
+                            <div class="relative inline-block mb-4">
+                                <img [src]="user()?.image ? user()!.image : defaultImages" [alt]="user()?.fullname" class="w-40 h-40 rounded-full border-4 border-white mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
+                                <span [ngClass]="{'bg-green-500': user()?.status === 'active', 'bg-red-500': user()?.status === 'inactive'}"
+                                      class="absolute bottom-2 right-2 w-4 h-4 rounded-full border-2 border-white animate-pulse"></span>
+                            </div>
+                            <h1 class="text-3xl font-bold text mb-2 animate-slideDown">{{ user()?.fullname }}</h1>
+                            <p class="text-gray-300 mb-6 animate-slideUp">{{ user()?.email }}</p>
+                            <div class="mt-6 border-t border-gray-700 pt-4 animate-fadeIn">
+                                <h2 class="text-xl font-semibold text-white mb-3">About</h2>
+                                <p class="text-gray-300 max-w-lg mx-auto">User information and details go here.</p>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+  `,
   styleUrl: './view-user.component.scss'
 })
 export class ViewUserComponent {
   readonly defaultImages = ImageUrl.defaultImages;
-  @Input() user: IUsers | null = null;
+  user = input<IUsers | null | undefined>();
 }

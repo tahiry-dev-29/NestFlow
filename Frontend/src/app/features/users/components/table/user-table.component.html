@@ -24,6 +24,7 @@
                                     class="sticky top-0 z-50 bg-slate-850/25 backdrop-blur-md border-b-2 border-gray-200">
                                     <tr>
                                         <th class="p-2 text-left user-th">User</th>
+                                        <th class="p-2 text-left user-th">Full Name</th>
                                         <th class="p-2 text-left user-th">Email</th>
                                         <th class="p-2 text-center user-th">Status</th>
                                         <th class="p-2 text-center user-th">Actions</th>
@@ -36,16 +37,14 @@
                                         <td
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
                                             <div class="flex px-2 py-1">
-                                                <div>
-                                                    <img [src]="user.image ? user.image : defaultImages"
-                                                        [alt]="user.fullname" loading="lazy" decoding="async"
-                                                        class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl">
-                                                </div>
-                                                <div class="flex flex-col justify-center">
-                                                    <h6 class="mb-0 text-sm leading-normal text-white">{{ user.fullname
-                                                        }}</h6>
-                                                </div>
+                                                <img [src]="user.image ? user.image : defaultImages"
+                                                    [alt]="user.fullname" loading="lazy" decoding="async"
+                                                    class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl">
                                             </div>
+                                        </td>
+                                        <td
+                                            class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
+                                            <p class="mb-0 text-xs leading-tight text-white opacity-80">{{ user.fullname }}</p>
                                         </td>
                                         <td
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
