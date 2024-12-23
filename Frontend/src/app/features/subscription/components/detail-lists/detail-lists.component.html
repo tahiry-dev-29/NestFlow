@@ -3,7 +3,7 @@
     <div
       class="align-middle inline-block min-w-full rounded-t-2xl bg-slate-850 px-6 pt-3 h-[65vh] py-5 overflow-auto custom-scrolbar relative">
       <table class="min-w-full border-collapse text-white">
-        <thead class="sticky top-0 z-50 bg-slate-850/25 backdrop-blur-md border-b-2 border-gray-200">
+        <thead>
           <tr class="text-center">
             <th class="th">ID</th>
             <th class="th hidden sm:table-cell">Nom complet</th>
@@ -15,7 +15,7 @@
         </thead>
         <tbody>
           @if (store.isLoading()) {
-          @defer (on timer(500ms)) {
+            @defer (on timer(500ms)) {
             @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
             <tr class="animate-pulse">
               <td class="td">
@@ -43,18 +43,20 @@
               </td>
             </tr>
             }
-          } @placeholder {
-            <tr>
-              <td colspan="6" class="text-center py-4">
-                <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                  <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
-                </div>
-              </td>
-            </tr>
-          }
-          } @else if (store.filteredSubscriptions()(filter().menu, filter().search).length === 0) {
-          <tr class="h-[50vh]">
-            <td colspan="6" class="text-center align-middle text-gray-400">
+            } @placeholder {
+          <tr>
+            <td colspan="6" class="text-center py-4">
+              <div
+                class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                role="status">
+                <span
+                  class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+              </div>
+            </td>
+          </tr>
+}          } @else if (store.filteredSubscriptions()(filter.menu, filter.search).length === 0) {
+          <tr>
+            <td colspan="6" class="h-[50vh] text-center align-middle text-gray-400">
               <div class="flex flex-col items-center justify-center h-full">
                 <span class="material-icons text-5xl mb-2 animate-bounce">search_off</span>
                 <p class="text-xl">Aucun abonné trouvé</p>
@@ -62,60 +64,72 @@
             </td>
           </tr>
           } @else {
-          @for (abonne of store.filteredSubscriptions()(filter().menu, filter().search) | paginate: { itemsPerPage: 10, currentPage: p }; track abonne.id) {
-          <tr [ngClass]="{'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== abonne.id, 'bg-slate-700': store.expandedId() === abonne.id}">
-            <td class="td">{{ abonne.id }}</td>
-            <td class="td hidden sm:table-cell">{{ abonne.fullname }}</td>
-            <td class="td hidden sm:table-cell">{{ abonne.email }}</td>
+          @for (subscription of store.filteredSubscriptions()(filter.menu, filter.search); track subscription.id) {
+          <tr [ngClass]="{'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== subscription.id, 'bg-slate-700': store.expandedId() === subscription.id}">
+            <td class="td">{{ subscription.id }}</td>
+            <td class="td hidden sm:table-cell">{{ subscription.fullname }}</td>
+            <td class="td hidden sm:table-cell">{{ subscription.email }}</td>
             <td class="td">
-              <div class="relative w-full h-2 bg-gray-700 rounded-full">
-                <div class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500" [class]="store.getProgressClasses()(abonne.progress ?? 0)" [style.width.%]="abonne.progress ?? 0"></div>
+              <div class="relative flex justify-center w-full h-2 bg-gray-700 rounded-full">
+                <div class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
+                  [ngClass]="store.getProgressClasses()(subscription.progress ?? 0)"
+                  [style.width.%]="subscription.progress ?? 0">
+                </div>
+                <span class="block text-sm mt-2 text-gray-400">{{ subscription.progress ?? 0 }}%</span>
               </div>
-              <span class="block text-sm text-gray-400 mt-1">{{ abonne.progress ?? 0 }}%</span>
             </td>
             <td class="td">
               <div class="flex flex-col items-center">
-                <span [ngClass]="{'text-blue-400': abonne.subscriptionType === 'Basique', 'text-green-400': abonne.subscriptionType === 'Classique'}">{{ abonne.subscriptionType }}</span>
-                <span class="text-xs text-gray-400">{{ getRemainingDays(abonne.id) }} jours restants</span>
+                <span
+                  [ngClass]="{'text-blue-400': subscription.subscriptionType === 'Basique', 'text-green-400': subscription.subscriptionType === 'Classique'}">{{
+                  subscription.subscriptionType }}</span>
+                <span class="text-xs text-gray-400">{{ getRemainingDays(subscription.id) }} jours restants</span>
               </div>
             </td>
             <td class="px-6 py-4 text-center">
               <div class="relative inline-block ml-2">
-                <button class="text-gray-100 hover:text-gray-500 relative top-3" (click)="store.toggleMenu(abonne.id)">
-                  <span class="material-icons transition-all duration-300 transform" [ngClass]="{ 'rotate-180': store.expandedMenuId() === abonne.id }">more_vert</span>
+                <button class="text-gray-100 hover:text-gray-500 relative top-3"
+                  (click)="store.toggleMenuExpand(subscription.id)">
+                  <span class="material-icons transition-all duration-300 transform"
+                    [ngClass]="{ 'rotate-180': store.expandedMenuId() === subscription.id }">more_vert</span>
                 </button>
-                @if (store.expandedMenuId() === abonne.id) {
-                <div class="tooltip-container tooltip-container scale-y-0 transition-all" [ngClass]="{ 'scale-y-100': store.expandedMenuId() === abonne.id }" [@expandCollapse]>
+                @if (store.expandedMenuId() === subscription.id) {
+                <div class="tooltip-container tooltip-container transition-all scale-y-100" [@expandCollapse]>
                   <ul>
-                    <li><button class="tooltip hover:text text-red-600" (click)="openPopup(abonne.id)"><span class="material-icons mr-2">delete</span> Supprimer</button></li>
-                    <li><button class="tooltip hover:text text-blue-600" (click)="editSubscriber(abonne.id)"><span class="material-icons mr-2">edit</span> Modifier</button></li>
+                    <li><button class="tooltip hover:text text-red-600" (click)="openPopup(subscription.id)"><span
+                          class="material-icons mr-2">delete</span> Supprimer</button></li>
+                    <li><button class="tooltip hover:text text-blue-600" (click)="editSubscriber(subscription.id)"><span
+                          class="material-icons mr-2">edit</span> Modifier</button></li>
                   </ul>
                 </div>
                 }
               </div>
-              <button class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2" (click)="store.toggleDetails(abonne.id)">
-                <span class="material-icons transition-all duration-300 transform text-8" [ngClass]="{ 'rotate-180': store.expandedId() === abonne.id }">
-                  {{ store.expandedId() === abonne.id ? 'expand_less' : 'expand_more' }}
+              <button class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2"
+                (click)="store.toggleExpand(subscription.id)">
+                <span class="material-icons transition-all duration-300 transform text-8"
+                  [ngClass]="{ 'rotate-180': store.expandedId() === subscription.id }">
+                  {{ store.expandedId() === subscription.id ? 'expand_less' : 'expand_more' }}
                 </span>
               </button>
             </td>
           </tr>
-          @if (store.expandedId() === abonne.id) {
+          @if (store.expandedId() === subscription.id) {
           <tr [@expandCollapse]>
             <td colspan="6" class="px-6 py-4 bg-slate-700/10 border-b border-gray-600">
               <div class="flex flex-wrap text-sm text-white">
                 <div class="w-1/3 p-2">
-                  <p><strong>Adresse :</strong> {{ abonne.adresse }}</p>
-                  <p><strong>Téléphone :</strong> {{ abonne.tel }}</p>
-                  <p><strong>Nombre de chaînes :</strong> {{ abonne.channelCount }}</p>
+                  <p><strong>Adresse :</strong> {{ subscription.adresse }}</p>
+                  <p><strong>Téléphone :</strong> {{ subscription.tel }}</p>
+                  <p><strong>Nombre de chaînes :</strong> {{ subscription.channelCount }}</p>
                 </div>
                 <div class="w-1/3 p-2">
-                  <p><strong>Mot de passe :</strong> {{ abonne.password | hidePassword }}</p>
-                  <p><strong>Date d'inscription :</strong> {{ abonne.subscriptionStartDate | date:'dd/MM/yyyy à HH:mm' }}</p>
-                  <p><strong>Date fin :</strong> {{ abonne.subscriptionEndDate | date:'dd/MM/yyyy à HH:mm' }}</p>
+                  <p><strong>Mot de passe :</strong> {{ subscription.password | hidePassword }}</p>
+                  <p><strong>Date d'inscription :</strong> {{ subscription.subscriptionStartDate | date:'dd/MM/yyyy à
+                    HH:mm' }}</p>
+                  <p><strong>Date fin :</strong> {{ subscription.subscriptionEndDate | date:'dd/MM/yyyy à HH:mm' }}</p>
                 </div>
                 <div class="w-1/3 p-2">
-                  <p><strong>Actif :</strong> {{ abonne.active }}</p>
+                  <p><strong>Actif :</strong> {{ subscription.active }}</p>
                 </div>
               </div>
             </td>
@@ -128,20 +142,16 @@
     </div>
     <div
       class="sticky left-0 bottom-0 border-t border-gray-600 z-50 w-full flex justify-between items-center text-white bg-slate-850 py-2 px-4">
-      @if (filter().search) {
+      @if (filter.search) {
       <div class="text-white mb-4">
-        Find subscription number : {{ (store.filteredSubscriptions()(filter().menu, filter().search) | paginate: {
-        itemsPerPage: 10, currentPage: p }).length }}
+        Find subscription number : {{ (store.filteredSubscriptions()(filter.menu, filter.search) || []).length }}
       </div>
-      }@else {
+      } @else {
       <span class="w-2/12"></span>
       }
-      <pagination-controls (pageChange)="p = $event"></pagination-controls>
       <p>Total subscribers <span class="text text-lg font-bold">{{ store.totalSubscriptions() }}</span></p>
     </div>
   </div>
 </section>
 
-@if (showPopup()) {
-<app-popups (confirm)="confirmDelete()" (cancel)="closePopup()" />
-}
+<app-popups *ngIf="showPopup()" (confirm)="confirmDelete()" (cancel)="closePopup()"></app-popups>

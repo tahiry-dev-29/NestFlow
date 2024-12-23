@@ -11,8 +11,9 @@ export interface ISubscription {
   password: string;
   subscriptionStartDate: string;
   subscriptionEndDate: string;
-  active: boolean;
+  deadline?: string;
   progress: number | null;
+  active: boolean;
   [key: string]: any;
 }
 

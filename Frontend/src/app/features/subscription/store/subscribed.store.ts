@@ -25,21 +25,15 @@ export const SubscriptionStore = signalStore(
   { providedIn: 'root' },
   withState(getInitialState()),
   withComputed(({ subscriptions, loading }) => ({
-    activeSubscriptions: computed(() =>
-      subscriptions().filter((sub) => sub.active)
-    ),
-    inactiveSubscriptions: computed(() =>
-      subscriptions().filter((sub) => !sub.active)
-    ),
+    activeSubscriptions: computed(() => subscriptions().filter((sub) => sub.active)),
+    inactiveSubscriptions: computed(() => subscriptions().filter((sub) => !sub.active)),
     filteredSubscriptions: computed(() => (menu: string, search: string | null) => {
       let filtered = subscriptions();
-
       if (menu === 'active') {
         filtered = filtered.filter((sub) => sub.active);
       } else if (menu === 'inactive') {
         filtered = filtered.filter((sub) => !sub.active);
       }
-
       if (search && typeof search === 'string') {
         const lowerSearch = search.toLowerCase();
         filtered = filtered.filter(
@@ -49,7 +43,6 @@ export const SubscriptionStore = signalStore(
             sub.tel.includes(lowerSearch)
         );
       }
-
       return filtered;
     }),
     totalSubscriptions: computed(() => subscriptions().length),
@@ -66,19 +59,16 @@ export const SubscriptionStore = signalStore(
       return 'bg-red-500';
     }),
     subscriptionProgress: computed(() =>
-      subscriptions().map(sub => {
+      subscriptions().map((sub) => {
         const startDate = new Date(sub.subscriptionStartDate);
         const endDate = new Date(sub.subscriptionEndDate);
-        const deadline = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24);
-        const duration = SUBSCRIPTION_SETTINGS[sub.subscriptionType].duration;
-        const progress = (duration > 0) ? ((duration - deadline) / duration) * 100 : 0;
-        return {
-          id: sub.id,
-          progress: Math.round(progress),
-        };
+        const duration = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24); // Calcule la durée réelle en jours
+        const remainingDays = Math.max(0, Math.ceil((endDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)));
+        const progress = duration > 0 ? Math.max(0, Math.min(100, ((duration - remainingDays) / duration) * 100)) : 0;
+        return { id: sub.id, progress: Math.round(progress) };
       })
     ),
-    isLoading: computed(() => loading())
+    isLoading: computed(() => loading),
   })),
   withMethods((store) => ({
     getSubscriptionById(id: number): ISubscription | null {
@@ -88,57 +78,52 @@ export const SubscriptionStore = signalStore(
       patchState(store, { loading: true });
       const newId = Math.max(0, ...store.subscriptions().map((s) => s.id)) + 1;
       const startDate = new Date();
+      let endDate: Date;
+
+      if (subscription.deadline) {
+        endDate = new Date(subscription.deadline);
+      } else {
+        const duration = SUBSCRIPTION_SETTINGS[subscription.subscriptionType]?.duration || 30; // Récupère la durée depuis la configuration ou utilise 30 par défaut
+        endDate = new Date(startDate.getTime() + duration * 24 * 60 * 60 * 1000);
+      }
 
       const newSubscription: ISubscription = {
         ...subscription,
         id: newId,
         subscriptionStartDate: startDate.toISOString(),
-        subscriptionEndDate: new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        subscriptionEndDate: endDate.toISOString(),
       };
-
-      setTimeout(() => {
-        patchState(store, { 
-          subscriptions: [...store.subscriptions(), newSubscription],
-          loading: false 
-        });
-        this.saveToLocalStorage();
-      }, 1000);
+      patchState(store, { subscriptions: [...store.subscriptions(), newSubscription], loading: false });
+      this.saveToLocalStorage();
     },
     update(id: number, updates: Partial<ISubscription>): void {
       patchState(store, { loading: true });
-      const existingSubscription = store.subscriptions().find((sub) => sub.id === id);
-      if (!existingSubscription) {
-        patchState(store, { loading: false });
-        return;
-      }
+      const updatedSubscriptions = store.subscriptions().map((sub) => {
+        if (sub.id === id) {
+          const updatedSubscription = { ...sub, ...updates };
+          let endDate: Date;
 
-      const updatedSubscription = {
-        ...existingSubscription,
-        ...updates,
-      };
-
-      if (updates.subscriptionType) {
-        const startDate = new Date(updatedSubscription.subscriptionStartDate);
-        updatedSubscription.subscriptionEndDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
-      }
-
-      setTimeout(() => {
-        patchState(store, {
-          subscriptions: store.subscriptions().map((sub) => (sub.id === id ? updatedSubscription : sub)),
-          loading: false
-        });
-        this.saveToLocalStorage();
-      }, 1000);
+          if (updates.deadline) {
+            endDate = new Date(updates.deadline);
+          } else if (updates.subscriptionStartDate) { // Recalcule si la date de début est modifiée
+            const startDate = new Date(updates.subscriptionStartDate);
+            const duration = SUBSCRIPTION_SETTINGS[updatedSubscription.subscriptionType]?.duration || 30;
+            endDate = new Date(startDate.getTime() + duration * 24 * 60 * 60 * 1000);
+          } else {
+            endDate = new Date(updatedSubscription.subscriptionEndDate); // Garde l'ancienne date de fin si rien n'est changé
+          }
+          updatedSubscription.subscriptionEndDate = endDate.toISOString();
+          return updatedSubscription;
+        }
+        return sub;
+      });
+      patchState(store, { subscriptions: updatedSubscriptions, loading: false });
+      this.saveToLocalStorage();
     },
     deleteSubscription(id: number): void {
       patchState(store, { loading: true });
-      setTimeout(() => {
-        patchState(store, {
-          subscriptions: store.subscriptions().filter((sub) => sub.id !== id),
-          loading: false
-        });
-        this.saveToLocalStorage();
-      }, 1000);
+      patchState(store, { subscriptions: store.subscriptions().filter((sub) => sub.id !== id), loading: false });
+      this.saveToLocalStorage();
     },
     toggleExpand(id: number | null): void {
       patchState(store, { expandedId: store.expandedId() === id ? null : id });
@@ -147,27 +132,6 @@ export const SubscriptionStore = signalStore(
     toggleMenuExpand(id: number | null): void {
       patchState(store, { expandedMenuId: store.expandedMenuId() === id ? null : id });
       this.saveToLocalStorage();
-    },
-    setLoading(isLoading: boolean): void {
-      patchState(store, { loading: isLoading });
-      this.saveToLocalStorage();
-    },
-    setError(error: string | null): void {
-      patchState(store, { error });
-      this.saveToLocalStorage();
-    },
-    resetError(): void {
-      patchState(store, { error: null });
-      this.saveToLocalStorage();
-    },
-    toggleDetails(id: number): void {
-      this.toggleExpand(id);
-    },
-    toggleMenu(id: number): void {
-      this.toggleMenuExpand(id);
-    },
-    closeExpandedMenu() {
-      this.toggleMenuExpand(null);
     },
     saveToLocalStorage(): void {
       localStorage.setItem('subscriptionState', JSON.stringify({
@@ -178,29 +142,23 @@ export const SubscriptionStore = signalStore(
       }));
     },
     loadSubscriptions(): void {
-      patchState(store, { loading: true });
-      setTimeout(() => {
-        const storedState = localStorage.getItem('subscriptionState');
-        if (storedState) {
-          const parsedState = JSON.parse(storedState);
-          patchState(store, { 
-            subscriptions: parsedState.subscriptions,
-            loading: true 
-          });
-        } else {
-          patchState(store, { loading: false });
-        }
-      }, 1000);
+      const storedState = localStorage.getItem('subscriptionState');
+      if (storedState) {
+        const parsedState = JSON.parse(storedState);
+        patchState(store, { subscriptions: parsedState.subscriptions });
+      }
     },
     filterAndSearch(menu: string, search: string | null): void {
-      patchState(store, { loading: true });
-      setTimeout(() => {
-        const filtered = store.filteredSubscriptions()(menu, search);
-        patchState(store, { 
-          subscriptions: filtered,
-          loading: true 
-        });
-      }, 500);
-    }
+      const filtered = store.filteredSubscriptions()(menu, search);
+      patchState(store, { subscriptions: filtered });
+    },
+    closeExpandedMenu(): void { 
+      patchState(store, { expandedMenuId: null });
+      this.saveToLocalStorage();
+    },
+    toggleDetails(id: number | null): void {
+      patchState(store, { expandedId: store.expandedId() === id ? null : id });
+      this.saveToLocalStorage();
+    },
   }))
 );
