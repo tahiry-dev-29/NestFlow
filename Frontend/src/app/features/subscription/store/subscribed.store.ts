@@ -3,8 +3,8 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { ISubscription, SubscriptionState, SubscriptionType } from '../models/subscription.interface';
 
 export const SUBSCRIPTION_SETTINGS: Record<SubscriptionType, { duration: number; channels: number }> = {
-  Basique: { duration: 30, channels: 250 },
-  Classique: { duration: 30, channels: 500 },
+  Basique: { duration: 31, channels: 300 },
+  Classique: { duration: 31, channels: 500 },
 };
 
 const getInitialState = (): SubscriptionState => {
@@ -69,9 +69,9 @@ export const SubscriptionStore = signalStore(
       subscriptions().map(sub => {
         const startDate = new Date(sub.subscriptionStartDate);
         const endDate = new Date(sub.subscriptionEndDate);
-        const duration = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24);
-        const remainingDays = Math.max(0, (endDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-        const progress = (duration > 0) ? ((duration - remainingDays) / duration) * 100 : 0;
+        const deadline = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24);
+        const duration = SUBSCRIPTION_SETTINGS[sub.subscriptionType].duration;
+        const progress = (duration > 0) ? ((duration - deadline) / duration) * 100 : 0;
         return {
           id: sub.id,
           progress: Math.round(progress),
@@ -94,7 +94,6 @@ export const SubscriptionStore = signalStore(
         id: newId,
         subscriptionStartDate: startDate.toISOString(),
         subscriptionEndDate: new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        active: true,
       };
 
       setTimeout(() => {
@@ -173,7 +172,6 @@ export const SubscriptionStore = signalStore(
     saveToLocalStorage(): void {
       localStorage.setItem('subscriptionState', JSON.stringify({
         subscriptions: store.subscriptions(),
-        loading: store.loading(),
         error: store.error(),
         expandedId: store.expandedId(),
         expandedMenuId: store.expandedMenuId(),
@@ -187,7 +185,7 @@ export const SubscriptionStore = signalStore(
           const parsedState = JSON.parse(storedState);
           patchState(store, { 
             subscriptions: parsedState.subscriptions,
-            loading: false 
+            loading: true 
           });
         } else {
           patchState(store, { loading: false });
@@ -200,7 +198,7 @@ export const SubscriptionStore = signalStore(
         const filtered = store.filteredSubscriptions()(menu, search);
         patchState(store, { 
           subscriptions: filtered,
-          loading: false 
+          loading: true 
         });
       }, 500);
     }
