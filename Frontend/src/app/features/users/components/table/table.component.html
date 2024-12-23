@@ -30,7 +30,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for (user of store.users() | paginate: { itemsPerPage: 5, currentPage: p }; track user.id; let i = $index) {
+                                    @for (user of store.users() | paginate: { itemsPerPage: 10, currentPage: p }; track user.id; let i = $index) {
                                     <tr>
                                         <td
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">

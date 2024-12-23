@@ -1,21 +1,22 @@
+import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { patchState } from '@ngrx/signals';
 import { ToastrService } from 'ngx-toastr';
 import { interval, Subscription } from 'rxjs'; // Importez Subscription
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 
+import { DirectiveModule } from "../../../../modules";
 import { expandCollapse } from '../../../shared/animations/animations';
 import { SubscriptionStore } from '../../store/subscribed.store';
-import { DirectiveModule } from "../../../../modules";
+import { ISubscription } from '../../models/subscription.interface';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
   templateUrl: './detail-lists.component.html', // Lien vers le template HTML
   styleUrls: ['./detail-lists.component.scss'],
-  imports: [PopupsComponent, CommonModule, DirectiveModule],
+  imports: [PopupsComponent, CommonModule, DirectiveModule, ScrollingModule, CdkVirtualScrollViewport],
   animations: [expandCollapse],
 })
 export class DetailListsComponent implements OnInit, OnDestroy {
@@ -41,13 +42,13 @@ export class DetailListsComponent implements OnInit, OnDestroy {
   }
 
 
-  getRemainingDays(abonneId: number): number {
-    const subscription = this.store.getSubscriptionById(abonneId);
+  getRemainingDays(id: number): number {
+    const subscription = this.store.getSubscriptionById(id);
     if (!subscription) return 0;
     const endDate = new Date(subscription.subscriptionEndDate);
     const today = new Date();
     const differenceInTime = endDate.getTime() - today.getTime();
-    return Math.max(0, Math.ceil(differenceInTime / (1000 * 3600 * 24))); //Retourne 0 si la date est dépassée
+    return Math.max(0, Math.ceil(differenceInTime / (1000 * 3600 * 24)));
   }
 
   openPopup(subscriberId: number) {
@@ -75,8 +76,8 @@ export class DetailListsComponent implements OnInit, OnDestroy {
     this.router.navigate(['dashboard/subscriptions/edit', id]);
   }
 
-  trackById(item: any): number {
-    return item.id;
+  trackById(index: number, subscription: ISubscription): number {
+    return subscription.id;
   }
 
   @HostListener('document:click', ['$event'])
