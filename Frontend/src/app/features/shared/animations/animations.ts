@@ -42,10 +42,14 @@ export const expandCollapse = trigger('expandCollapse', [
 
 export const slideInOut = trigger('slideInOut', [
   transition(':enter', [
-    style({ transform: 'translateX(100%)' }),
-    animate('300ms ease-in', style({ transform: 'translateX(0%)' })),
+    style({ transform: 'translateX(100%)', opacity: 0 }),
+    animate('400ms cubic-bezier(0.25, 0.8, 0.25, 1)', 
+      style({ transform: 'translateX(0)', opacity: 1 })
+    ),
   ]),
   transition(':leave', [
-    animate('300ms ease-in', style({ transform: 'translateX(100%)' })),
+    animate('300ms cubic-bezier(0.25, 0.8, 0.25, 1)', 
+      style({ transform: 'translateX(100%)', opacity: 0 })
+    ),
   ]),
 ]);

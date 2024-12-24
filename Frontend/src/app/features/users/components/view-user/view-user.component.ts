@@ -10,10 +10,10 @@ import { ImageUrl } from '../../../../../../public/images/constant.images';
   template: `
     <main class="mt-0 transition-all duration-200 ease-in-out">
     <div class="flex flex-col items-center">
-        <div class="w-full max-w-md px-3 mx-auto">
+        <div class="px-3 mx-auto">
             <div
                 class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
-                <div class="flex-auto p-6 mt-6">
+                <div class="w-80 min-h-120  flex-auto p-6 mt-6">
                     @if (user()) {
                     <div class="relative w-full max-w-3xl mx-auto text-center">
                         <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-48 rounded-t-lg transform hover:scale-105 transition-transform duration-300"></div>
