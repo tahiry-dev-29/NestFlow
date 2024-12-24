@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from '../shared/pages/not-found/not-found.component';
+import { adminGuard } from '../auth/guards/admin.guard';
 
 export const DashboardRouter: Routes = [
   {
@@ -23,7 +24,8 @@ export const DashboardRouter: Routes = [
       },
       {
         path: "users",
-        loadChildren: () => import('../users/users.routes').then(m => m.UsersRoutes)
+        loadChildren: () => import('../users/users.routes').then(m => m.UsersRoutes),
+        canActivate: [adminGuard]
       },
       {
         path: 'settings',

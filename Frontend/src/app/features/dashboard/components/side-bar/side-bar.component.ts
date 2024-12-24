@@ -8,6 +8,7 @@ import {
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { sideLeftBarState } from '../../store/signal.store';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-side-bar',
@@ -18,6 +19,12 @@ import { sideLeftBarState } from '../../store/signal.store';
 })
 export class SideBarComponent {
   private readonly router = inject(Router);
+  private readonly auhtService = inject(AuthService);
+
+  logout() {
+    this.auhtService.logout();
+    this.router.navigate(['/login']);
+  }
 
   sideLeftBarState = sideLeftBarState;
   sideRightbarState = signal(false);
@@ -50,7 +57,6 @@ export class SideBarComponent {
     },
   ];
   
-
   toggleDropdownState(index: number) {
     this.activeDropdown.update((prev) => (prev === index ? null : index));
   }
@@ -84,7 +90,6 @@ export class SideBarComponent {
     };
     
   });
-
 
   // Classes dynamiques spécifiques pour Settings
   readonly dropdownClasses = computed(() => {
