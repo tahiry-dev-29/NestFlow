@@ -87,6 +87,10 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
     @apply cursor-help bg-gray-700/25 inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all border-0 rounded-3xl leading-normal text-sm ease-in shadow-md focus:ring-2 ring-offset-2;
   }
 
+  .cancel-btn {
+    @apply w-25 px-5 py-2.5 mt-6 mb-2 text-sm font-medium text-gray-300 bg-transparent border border-gray-300 rounded-3xl hover:bg-gray-700/65 hover:text-[#a855f7] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-100 ease-in-out;
+  }
+
   .text {
     @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] text-transparent bg-clip-text;
   }

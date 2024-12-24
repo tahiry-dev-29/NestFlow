@@ -87,15 +87,15 @@
                                 </div>
                             </div>
                         </section>
-                        <div class="flex gap-5 justify-end w-full">
-                            <button type="submit" [disabled]="editForm.invalid"
-                                class="bg-gradient-to-tl from-blue-500 to-violet-500 text-white px-8 py-2 rounded-lg">
-                                Modifier
-                            </button>
+                        <div class="text-center flex justify-end gap-5">
                             <button type="button"
-                                class="bg-gradient-to-tl from-blue-500 to-violet-500 text-white px-8 py-2 rounded-lg"
+                                class="cancel-btn"
                                 (click)="redirectToList()">
-                                Annuler
+                                Cancel
+                            </button>
+                            <button type="submit" [disabled]="editForm.invalid" class="w-25"
+                                [ngClass]="{'btn-desactived-bg': !editForm.valid, 'btn-gradient-bg': editForm.valid}">
+                                Edit
                             </button>
                         </div>
                     </form>

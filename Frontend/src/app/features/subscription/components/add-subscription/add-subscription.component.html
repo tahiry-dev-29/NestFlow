@@ -75,9 +75,7 @@
               </div>
             </section>
             <div class="text-center flex justify-end gap-5">
-              <button type="button"
-                class="w-25 inline-block text-sm font-medium active:text-orange-500 focus:outline-none focus:ring btn-gradient-bg bg-opacity-30"
-                (click)="redirectToList()">
+              <button type="button" class="cancel-btn" (click)="redirectToList()">
                 Cancel
               </button>
               <button type="submit" [disabled]="subscriptionForm.invalid"
