@@ -25,8 +25,6 @@ export const SubscriptionStore = signalStore(
   { providedIn: 'root' },
   withState(getInitialState()),
   withComputed(({ subscriptions, loading }) => ({
-    activeSubscriptions: computed(() => subscriptions().filter((sub) => sub.active)),
-    inactiveSubscriptions: computed(() => subscriptions().filter((sub) => !sub.active)),
     filteredSubscriptions: computed(() => (menu: string, search: string | null) => {
     
       let filtered = subscriptions();
@@ -68,9 +66,10 @@ export const SubscriptionStore = signalStore(
       subscriptions().map((sub) => {
         const startDate = new Date(sub.subscriptionStartDate);
         const endDate = new Date(sub.subscriptionEndDate);
-        const duration = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24); // Calcule la durée réelle en jours
-        const remainingDays = Math.max(0, Math.ceil((endDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)));
-        const progress = duration > 0 ? Math.max(0, Math.min(100, ((duration - remainingDays) / duration) * 100)) : 0;
+        const now = new Date();
+        const duration = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24);
+        const elapsed = (now.getTime() - startDate.getTime()) / (1000 * 3600 * 24);
+        const progress = duration > 0 ? Math.max(0, Math.min(100, (elapsed / duration) * 100)) : 0;
         return { id: sub.id, progress: Math.round(progress) };
       })
     ),
@@ -97,7 +96,7 @@ export const SubscriptionStore = signalStore(
       if (subscription.deadline) {
         endDate = new Date(subscription.deadline);
       } else {
-        const duration = SUBSCRIPTION_SETTINGS[subscription.subscriptionType]?.duration || 30; // Récupère la durée depuis la configuration ou utilise 30 par défaut
+        const duration = SUBSCRIPTION_SETTINGS[subscription.subscriptionType]?.duration || 30;
         endDate = new Date(startDate.getTime() + duration * 24 * 60 * 60 * 1000);
       }
 
@@ -119,12 +118,15 @@ export const SubscriptionStore = signalStore(
 
           if (updates.deadline) {
             endDate = new Date(updates.deadline);
-          } else if (updates.subscriptionStartDate) { // Recalcule si la date de début est modifiée
+          } else if (updates.subscriptionStartDate) {
             const startDate = new Date(updates.subscriptionStartDate);
             const duration = SUBSCRIPTION_SETTINGS[updatedSubscription.subscriptionType]?.duration || 30;
             endDate = new Date(startDate.getTime() + duration * 24 * 60 * 60 * 1000);
           } else {
-            endDate = new Date(updatedSubscription.subscriptionEndDate); // Garde l'ancienne date de fin si rien n'est changé
+            const now = new Date();
+            const currentEndDate = new Date(updatedSubscription.subscriptionEndDate);
+            const remainingDays = Math.max(0, Math.ceil((currentEndDate.getTime() - now.getTime()) / (1000 * 3600 * 24)));
+            endDate = new Date(now.getTime() + remainingDays * 24 * 60 * 60 * 1000);
           }
           updatedSubscription.subscriptionEndDate = endDate.toISOString();
           return updatedSubscription;
