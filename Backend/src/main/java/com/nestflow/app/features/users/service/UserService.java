@@ -16,6 +16,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserEntity createUser(UserEntity user, String verificationPassword) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        if (user.getMail() == null) {
+            throw new IllegalArgumentException("User email cannot be null");
+        }
+
         if (userRepository.findByMail(user.getMail()).isPresent()) {
             throw new UserAlreadyExistsException("User with this email already exists");
         }

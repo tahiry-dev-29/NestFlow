@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserStore } from '../../store/users.store';
 import { ViewUserComponent } from '../view-user/view-user.component';
@@ -17,28 +16,33 @@ import { ViewUserComponent } from '../view-user/view-user.component';
             <div class="flex flex-col items-center">
                 <div class="w-85 max-w-md px-3 mx-auto">
                     <div class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
-                        <div class="flex-auto p-6 mt-6">
+                        <button type="button" (click)="userForm.reset()" class="text-gray-300 hover:text-white flex flex-row-reverse items-center pt-4 pr-4">
+                            <i class="material-icons">refresh</i>
+                        </button>
+                        <div class="flex-auto p-6">
                             <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left" class="flex flex-col">
                                 <div class="mb-4">
                                     <input type="text" formControlName="fullname" class="input-theme w-full" placeholder="Full Name" />
                                     <div *ngIf="userForm.get('fullname')?.invalid && userForm.get('fullname')?.touched" class="error">
-                                        <small *ngIf="userForm.get('fullname')?.errors?.['required']">Full Name is required.</small>
-                                        <small *ngIf="userForm.get('fullname')?.errors?.['minlength']">Full Name must contain at least 5 characters.</small>
-                                        <small *ngIf="userForm.get('fullname')?.errors?.['maxlength']">Full Name must contain at most 100 characters.</small>
+                                        {{ getErrorMessage('fullname') }}
                                     </div>
                                 </div>
                                 <div class="mb-4">
                                     <input type="email" formControlName="email" class="input-theme w-full" placeholder="Email" />
                                     <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="error">
-                                        <small *ngIf="userForm.get('email')?.errors?.['required']">Email is required.</small>
-                                        <small *ngIf="userForm.get('email')?.errors?.['email']">Email is invalid.</small>
+                                        {{ getErrorMessage('email') }}
                                     </div>
                                 </div>
                                 <div class="mb-4">
                                     <input type="password" formControlName="password" class="input-theme w-full" placeholder="Password" />
                                     <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="error">
-                                        <small *ngIf="userForm.get('password')?.errors?.['required']">Password is required.</small>
-                                        <small *ngIf="userForm.get('password')?.errors?.['minlength']">Password must contain at least 4 characters.</small>
+                                        {{ getErrorMessage('password') }}
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <input type="password" formControlName="confirmPassword" class="input-theme w-full" placeholder="Confirm Password" />
+                                    <div *ngIf="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched" class="error">
+                                        {{ getErrorMessage('confirmPassword') }}
                                     </div>
                                 </div>
                                 <div class="mb-4">
@@ -73,18 +77,28 @@ import { ViewUserComponent } from '../view-user/view-user.component';
 })
 export class AddUserComponent implements OnInit {
     @ViewChild('fileInput') fileInput!: ElementRef;
+    userAdded = output();
 
     private fb = inject(FormBuilder);
     private store = inject(UserStore);
     private readonly toastr = inject(ToastrService);
+    // private readonly authService = inject(AuthService);
+
+    errorMessages: { [key: string]: string } = {
+        fullname: 'Full name must contain at least 5 characters.',
+        email: 'Please enter a valid email address.',
+        password: 'Password must contain at least 4 characters.',
+        confirmPassword: 'Passwords do not match.',
+    };
 
     userForm: FormGroup = this.fb.group({
         fullname: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(4)]],
+        confirmPassword: ['', Validators.required],
         status: ['active', Validators.required],
         image: ['']
-    });
+    }, { validator: this.passwordMatchValidator });
 
     selectedFileName: string | null = null;
     previewUser: any = null;
@@ -116,7 +130,25 @@ export class AddUserComponent implements OnInit {
             this.selectedFileName = null;
             this.initializePreview();
             this.toastr.success(`Utilisateur <span class="msg-class">${fullname}</span> ajouté avec succès`);
+            this.userAdded.emit();
         }
+    }
+
+    passwordMatchValidator(form: FormGroup) {
+        const password = form.get('password');
+        const confirmPassword = form.get('confirmPassword');
+        if (password && confirmPassword && password.value !== confirmPassword.value) {
+            confirmPassword.setErrors({ mismatch: true });
+        } else {
+            confirmPassword?.setErrors(null);
+        }
+    }
+
+    getErrorMessage(field: string): string {
+        if (field === 'confirmPassword' && this.userForm.get('confirmPassword')?.hasError('mismatch')) {
+            return this.errorMessages[field];
+        }
+        return this.userForm.get(field)?.hasError('required') ? `${field} est requis.` : this.errorMessages[field] || '';
     }
 
     triggerFileInput(): void {

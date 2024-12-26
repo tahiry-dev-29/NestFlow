@@ -93,11 +93,11 @@
     <app-side-bar-right [isOpen]="showAddUserSidebar()" [title]="'Add User'"
         (closeEvent)="showAddUserSidebar.set(false)" (clickOutside)="showAddUserSidebar.set(false)">
         <div class="min-w-full">
-            <app-add-user></app-add-user>
+            <app-add-user (userAdded)="showAddUserSidebar.set(false)"></app-add-user>
         </div>
     </app-side-bar-right>
 
-    <app-side-bar-right *ngIf="userToEdit" [isOpen]="showEditUserSidebar()" [title]="'Edit User'"
+    <app-side-bar-right [isOpen]="showEditUserSidebar()" [title]="'Edit User'"
         (closeEvent)="closeEditSidebar()" (clickOutside)="closeEditSidebar()">
         <div class="w-85">
             <app-edit-user [user]="userToEdit"></app-edit-user>

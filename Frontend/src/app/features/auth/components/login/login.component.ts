@@ -37,7 +37,7 @@ import { AuthService } from '../../services/auth.service';
                       <small *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters long</small>
                     </div>
                   </div>
-                  <div class="mb-4 flex items-center text-gray-400">
+                  <div class="mb-4 flex items-center gap-2 px-3 text-gray-400">
                     <input type="checkbox" formControlName="rememberMe" class="mr-2 text-sm font-medium text-gray-300">
                     Remember me
                   </div>
@@ -45,8 +45,6 @@ import { AuthService } from '../../services/auth.service';
                     <button type="submit" [disabled]="loginForm.invalid" class="focus:outline-none right-blue-400" [ngClass]="{'btn-desactived-bg': loginForm.invalid, 'btn-gradient-bg': !loginForm.invalid}">Login</button>
                   </div>
                 </form>
-                <p class="mt-4 mb-0 leading-normal text-sm flex justify-center text-gray-400">Don't have an account? <a routerLink="/register"
-                    class="text ml-2">Sign up</a></p>
                 <a routerLink="/dashboard" class="text ml-2">Dashboard</a>
               </div>
             </div>
