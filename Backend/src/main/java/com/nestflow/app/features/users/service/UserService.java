@@ -1,9 +1,8 @@
 package com.nestflow.app.features.users.service;
 
-import com.nestflow.app.features.users.model.UserEntity;
+import com.nestflow.app.exception.UserServiceException;
 import com.nestflow.app.features.users.controller.UserUpdateRequest;
-import com.nestflow.app.features.users.exceptions.UserAlreadyExistsException;
-import com.nestflow.app.exception.PasswordMismatchException;
+import com.nestflow.app.features.users.model.UserEntity;
 import com.nestflow.app.features.users.repository.UserRepository;
 import com.nestflow.app.features.users.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -31,27 +30,36 @@ public class UserService {
             encodePassword(user);
             UserEntity createdUser = saveUser(user);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        } catch (UserServiceException.UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (UserServiceException.PasswordMismatchException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
+            // Logging important ici !
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred during signup: " + e.getMessage());
+                    .body("Une erreur est survenue lors de l'inscription : " + e.getMessage());
         }
     }
 
     public ResponseEntity<?> getToken(UserEntity user) {
         try {
             if (user == null || user.getMail() == null) {
-                return ResponseEntity.badRequest().body("Invalid login request");
+                return ResponseEntity.badRequest().body("Requête de connexion invalide.");
             }
             Optional<UserEntity> userFound = userRepository.findByMail(user.getMail());
             if (userFound.isPresent() && passwordEncoder.matches(user.getPassword(), userFound.get().getPassword())) {
                 String token = jwtService.generateToken(user.getMail());
-                return ResponseEntity.ok("Login successful. Token: " + token);
+                return ResponseEntity.ok("Connexion réussie. Token : " + token);
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+                throw new UserServiceException.InvalidCredentialsException(); // Utilisation de l'exception spécifique
             }
+        } catch (UserServiceException.InvalidCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred during login: " + e.getMessage());
+                    .body("Une erreur est survenue lors de la connexion : " + e.getMessage());
         }
     }
 
@@ -60,87 +68,88 @@ public class UserService {
             List<UserEntity> users = userRepository.findAll();
             return ResponseEntity.ok(users);
         } catch (Exception e) {
+            // Logging crucial ici pour diagnostiquer l'erreur
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while retrieving users: " + e.getMessage());
+                    .body("Une erreur est survenue lors de la récupération des utilisateurs : " + e.getMessage());
         }
     }
 
     public ResponseEntity<?> getUser(String userId) {
         try {
-            Optional<UserEntity> user = userRepository.findById(userId);
-            if (user.isPresent()) {
-                return ResponseEntity.ok(user.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("User with ID: " + userId + " does not exist");
-            }
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
+            return ResponseEntity.ok(user);
+        } catch (UserServiceException.UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            // Logging crucial ici
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while retrieving the user: " + e.getMessage());
+                    .body("Une erreur est survenue lors de la récupération de l'utilisateur : " + e.getMessage());
         }
     }
 
     public ResponseEntity<?> deleteUser(String userId) {
         try {
-            Optional<UserEntity> userToDelete = userRepository.findById(userId);
-            if (userToDelete.isPresent()) {
-                userRepository.deleteById(userId);
-                return ResponseEntity.ok("User with ID: " + userId + " deleted successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("User with ID: " + userId + " does not exist");
-            }
+            userRepository.findById(userId).orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
+            userRepository.deleteById(userId);
+            return ResponseEntity.ok("Utilisateur avec l'ID : " + userId + " supprimé avec succès.");
+        } catch (UserServiceException.UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            // Logging crucial ici
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while deleting the user: " + e.getMessage());
+                    .body("Une erreur est survenue lors de la suppression de l'utilisateur : " + e.getMessage());
         }
     }
 
     public ResponseEntity<?> updateUser(String userId, UserUpdateRequest updateRequest) {
         try {
             Optional<UserEntity> existingUserOpt = userRepository.findById(userId);
-            if (existingUserOpt.isPresent()) {
-                UserEntity existingUser = existingUserOpt.get();
-                if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), existingUser.getPassword())) {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Current password is incorrect");
-                }
-                UserEntity updatedUser = updateRequest.getUpdatedUser();
-                existingUser.setName(updatedUser.getName());
-                existingUser.setFirstName(updatedUser.getFirstName());
-                existingUser.setMail(updatedUser.getMail());
-                existingUser.setImageUrl(updatedUser.getImageUrl());
-                if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                    existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-                }
-                UserEntity savedUser = userRepository.save(existingUser);
-                return ResponseEntity.ok(savedUser);
-            } else {
-                return ResponseEntity.notFound().build();
+            UserEntity existingUser = existingUserOpt
+                    .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
+
+            if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), existingUser.getPassword())) {
+                throw new UserServiceException.CurrentPasswordIncorrectException();
             }
+
+            UserEntity updatedUser = updateRequest.getUpdatedUser();
+            existingUser.setName(updatedUser.getName());
+            existingUser.setFirstName(updatedUser.getFirstName());
+            existingUser.setMail(updatedUser.getMail());
+            existingUser.setImageUrl(updatedUser.getImageUrl());
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
+            UserEntity savedUser = userRepository.save(existingUser);
+            return ResponseEntity.ok(savedUser);
+        } catch (UserServiceException.UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UserServiceException.CurrentPasswordIncorrectException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while updating the user: " + e.getMessage());
+                    .body("Une erreur est survenue lors de la mise à jour de l'utilisateur : " + e.getMessage());
         }
     }
-    
+
     private void validateUser(UserEntity user) {
         if (user == null) {
-            throw new IllegalArgumentException("User cannot be null");
+            throw new IllegalArgumentException("L'utilisateur ne peut pas être null.");
         }
         if (user.getMail() == null) {
-            throw new IllegalArgumentException("User email cannot be null");
+            throw new IllegalArgumentException("L'email de l'utilisateur ne peut pas être null.");
         }
     }
 
     private void checkUserExists(String email) {
         if (userRepository.findByMail(email).isPresent()) {
-            throw new UserAlreadyExistsException("User with this email already exists");
+            throw new UserServiceException.UserAlreadyExistsException(email);
         }
     }
 
     private void validatePasswords(String password, String verificationPassword) {
         if (!password.equals(verificationPassword)) {
-            throw new PasswordMismatchException("Passwords do not match");
+            throw new UserServiceException.PasswordMismatchException();
         }
     }
 
