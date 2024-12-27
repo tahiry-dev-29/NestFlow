@@ -38,7 +38,7 @@ export const SubscriptionStore = signalStore(
         });
       }
       // Filtrage par recherche
-      if (search && search.trim() !== '') {
+      if (search && typeof search === 'string' && search.trim() !== '') {
         const searchLower = search.toLowerCase().trim();
         filtered = filtered.filter((sub) =>
           sub.fullname.toLowerCase().includes(searchLower) ||
