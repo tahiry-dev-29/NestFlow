@@ -2,56 +2,54 @@ package com.nestflow.app.features.users.controller;
 
 import com.nestflow.app.features.users.model.UserEntity;
 import com.nestflow.app.features.users.service.UserService;
-import com.nestflow.app.features.users.security.JwtService;
-import com.nestflow.app.features.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
 
-    @PostMapping("/signup")
+    @PostMapping("/create")
     public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) {
-        try {
-            if (signupRequest == null || signupRequest.getUser() == null) {
-                return ResponseEntity.badRequest().body("Invalid request: user data is missing");
-            }
-            UserEntity createdUser = userService.createUser(signupRequest.getUser(), signupRequest.getVerificationPassword());
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred during signup: " + e.getMessage());
+        if (signupRequest == null || signupRequest.getUser() == null) {
+            return ResponseEntity.badRequest().body("Invalid request: user data is missing");
         }
+        return userService.createUser(signupRequest.getUser(), signupRequest.getVerificationPassword());
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserEntity user) {
-        try {
-            if (user == null || user.getMail() == null) {
-                return ResponseEntity.badRequest().body("Invalid login request");
-            }
-            Optional<UserEntity> userFound = userRepository.findByMail(user.getMail());
-            if (userFound.isPresent() && passwordEncoder.matches(user.getPassword(), userFound.get().getPassword())) {
-                String token = jwtService.generateToken(user.getMail());
-                return ResponseEntity.ok(token);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred during login: " + e.getMessage());
-        }
+    @PostMapping("/getToken")
+    public ResponseEntity<?> getToken(@RequestBody UserEntity user) {
+        return userService.getToken(user);
+    }
+
+    @GetMapping("/lists")
+    public ResponseEntity<?> listUsers() {
+        return userService.getAll();
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getUser(@PathVariable String id) {
+        return userService.getUser(id);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+        return userService.deleteUser(id);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody UserUpdateRequest updateRequest) {
+        return userService.updateUser(id, updateRequest);
     }
 }
