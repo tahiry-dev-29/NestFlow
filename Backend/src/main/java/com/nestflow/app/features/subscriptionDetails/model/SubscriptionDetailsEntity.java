@@ -1,17 +1,19 @@
 package com.nestflow.app.features.subscriptionDetails.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "subscriptions")
-public class SubscriptionDetails {
+public class SubscriptionDetailsEntity {
     @Id
     private String id;
     private String fullname;
@@ -20,9 +22,8 @@ public class SubscriptionDetails {
     private String adresse;
     private SubscriptionType subscriptionType;
     private int channelCount;
-    private String subscriptionStartDate;
-    private String subscriptionEndDate;
-    private String deadline;
+    private LocalDateTime subscriptionStartDate;
+    private LocalDateTime subscriptionEndDate;
     private Double progress;
     private Status status;
     private String password;
@@ -30,7 +31,16 @@ public class SubscriptionDetails {
     public enum SubscriptionType {
         Basique, Classique
     }
+
     public enum Status {
         active, expired
+    }
+
+    public long getRemainingDays() {
+        return ChronoUnit.DAYS.between(LocalDateTime.now(), subscriptionEndDate);
+    }
+
+    public long getRemainingHours(){
+        return ChronoUnit.HOURS.between(LocalDateTime.now(), subscriptionEndDate);
     }
 }

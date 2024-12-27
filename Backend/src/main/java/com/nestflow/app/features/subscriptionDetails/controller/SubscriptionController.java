@@ -1,46 +1,51 @@
 package com.nestflow.app.features.subscriptionDetails.controller;
 
-import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetails;
+import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity;
 import com.nestflow.app.features.subscriptionDetails.service.SubscriptionService;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/subscriptions")
 public class SubscriptionController {
-    @Autowired
-    private SubscriptionService subscriptionService;
 
-    @PostMapping
-    public ResponseEntity<SubscriptionDetails> createSubscription(@RequestBody SubscriptionDetails details) {
-        SubscriptionDetails created = subscriptionService.createSubscription(details);
+    private final SubscriptionService subscriptionService;
+
+    @Autowired
+    public SubscriptionController(SubscriptionService subscriptionService) {
+        this.subscriptionService = subscriptionService;
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<SubscriptionDetailsEntity> createSubscription(
+            @RequestBody SubscriptionDetailsEntity details) {
+        SubscriptionDetailsEntity created = subscriptionService.createSubscription(details);
         return ResponseEntity.ok(created);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<SubscriptionDetails>> getAllSubscriptions() {
-        List<SubscriptionDetails> subscriptions = subscriptionService.getAllSubscriptions();
+    public ResponseEntity<List<SubscriptionDetailsEntity>> getAllSubscriptions() {
+        List<SubscriptionDetailsEntity> subscriptions = subscriptionService.getAllSubscriptions();
         return ResponseEntity.ok(subscriptions);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<SubscriptionDetails> getSubscriptionById(@PathVariable String id) {
-        Optional<SubscriptionDetails> subscription = subscriptionService.getSubscriptionById(id);
-        return subscription.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<SubscriptionDetailsEntity> getSubscriptionById(@PathVariable String id) {
+        SubscriptionDetailsEntity subscription = subscriptionService.getSubscriptionById(id);
+        return ResponseEntity.ok(subscription);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<SubscriptionDetails> updateSubscription(@PathVariable String id, @RequestBody SubscriptionDetails details) {
-        SubscriptionDetails updated = subscriptionService.updateSubscription(id, details);
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<SubscriptionDetailsEntity> updateSubscription(@PathVariable String id,
+            @RequestBody SubscriptionDetailsEntity details) {
+        SubscriptionDetailsEntity updated = subscriptionService.updateSubscription(id, details);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -49,9 +54,21 @@ public class SubscriptionController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/renew/{id}")
-    public ResponseEntity<Void> renewSubscription(@PathVariable String id) {
-        subscriptionService.renewSubscription(id);
-        return ResponseEntity.ok().build();
+    
+    @SuppressWarnings("null")
+    @PatchMapping("/{id}/renew")
+    public ResponseEntity<SubscriptionDetailsEntity> renewSubscription(
+            @PathVariable String id,
+            @RequestBody RenewalRequest renewalRequest) {
+
+        try {
+            ChronoUnit unit = renewalRequest.getUnitAsChronoUnit(); // Convert unit to ChronoUnit
+            SubscriptionDetailsEntity renewedSubscription = subscriptionService.renewSubscription(
+                    id, renewalRequest.getRenewalPeriod(), unit);
+            return new ResponseEntity<>(renewedSubscription, HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(null, e.getStatusCode());
+        }
     }
+
 }
