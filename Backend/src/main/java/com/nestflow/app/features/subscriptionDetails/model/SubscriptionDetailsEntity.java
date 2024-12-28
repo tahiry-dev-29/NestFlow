@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -15,18 +16,18 @@ import java.time.temporal.ChronoUnit;
 @Document(collection = "subscriptions")
 public class SubscriptionDetailsEntity {
     @Id
-    private String id;
+    private String id = UUID.randomUUID().toString();
     private String fullname;
     private String email;
     private String tel;
     private String adresse;
+    private String code;
+
     private SubscriptionType subscriptionType;
     private int channelCount;
     private LocalDateTime subscriptionStartDate;
     private LocalDateTime subscriptionEndDate;
-    private Double progress;
     private Status status;
-    private String password;
 
     public enum SubscriptionType {
         Basique, Classique

@@ -5,25 +5,18 @@ import java.time.temporal.ChronoUnit;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+@Data
 public class RenewalRequest {
-    private int renewalPeriod;
+    @NotNull(message = "La période de renouvellement ne peut pas être nulle")
+    private Integer renewalPeriod;
+
+    @NotBlank(message = "L'unité de temps ne peut pas être vide")
     private String unit; // Représentation textuelle de l'unité (ex: "MONTHS", "YEARS")
 
-    public int getRenewalPeriod() {
-        return renewalPeriod;
-    }
-
-    public void setRenewalPeriod(int renewalPeriod) {
-        this.renewalPeriod = renewalPeriod;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
 
     public ChronoUnit getUnitAsChronoUnit() {
         try {
