@@ -1,6 +1,15 @@
 package com.nestflow.app.features.subscriptionDetails.service;
 
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,22 +19,16 @@ import org.springframework.web.server.ResponseStatusException;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity;
 import com.nestflow.app.features.subscriptionDetails.repository.SubscriptionRepository;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
+import reactor.core.publisher.Mono;
 
 @Service
 public class SubscriptionService {
 
-    private final SubscriptionRepository subscriptionRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    public SubscriptionService(SubscriptionRepository subscriptionRepository,
-            BCryptPasswordEncoder subscriptionPasswordEncoder) {
-        this.subscriptionRepository = subscriptionRepository;
-        this.passwordEncoder = subscriptionPasswordEncoder;
-    }
+    private BCryptPasswordEncoder passwordEncoder;
 
     public SubscriptionDetailsEntity createSubscription(SubscriptionDetailsEntity details) {
         LocalDateTime now = LocalDateTime.now();
@@ -33,15 +36,14 @@ public class SubscriptionService {
         details.setSubscriptionEndDate(now.plusDays(31));
 
         if (details.getSubscriptionType() == SubscriptionDetailsEntity.SubscriptionType.Classique) {
-            details.setChannelCount(520);
+            details.setChannelCount(200);
         } else if (details.getSubscriptionType() == SubscriptionDetailsEntity.SubscriptionType.Basique) {
-            details.setChannelCount(310);
+            details.setChannelCount(100);
         }
 
-        String encodedPassword = passwordEncoder.encode(details.getPassword());
-        details.setPassword(encodedPassword);
+        String encodedPassword = passwordEncoder.encode(details.getCode());
+        details.setCode(encodedPassword);
 
-        details.setProgress(100.0);
         details.setStatus(SubscriptionDetailsEntity.Status.active);
         return subscriptionRepository.save(details);
     }
@@ -55,12 +57,8 @@ public class SubscriptionService {
     }
 
     public SubscriptionDetailsEntity updateSubscriptionStatus(SubscriptionDetailsEntity details) {
-        long remainingHours = details.getRemainingHours();
-        long totalHours = 31 * 24; // Nombre total d'heures dans 31 jours
-        double progress = (double) remainingHours / totalHours * 100;
-        details.setProgress(progress);
-
-        if (progress <= 90) {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(details.getSubscriptionEndDate())) {
             details.setStatus(SubscriptionDetailsEntity.Status.expired);
         } else {
             details.setStatus(SubscriptionDetailsEntity.Status.active);
@@ -76,37 +74,23 @@ public class SubscriptionService {
     public SubscriptionDetailsEntity updateSubscription(String id, SubscriptionDetailsEntity details) {
         return subscriptionRepository.findById(id)
                 .map(existingSubscription -> {
-                    // Mettre à jour les champs optionnels seulement s'ils sont présents dans
-                    // 'details'
                     if (details.getFullname() != null) {
                         existingSubscription.setFullname(details.getFullname());
                     }
                     if (details.getEmail() != null) {
                         existingSubscription.setEmail(details.getEmail());
                     }
-                    if (details.getTel() != null) {
-                        existingSubscription.setTel(details.getTel());
-                    }
                     if (details.getAdresse() != null) {
                         existingSubscription.setAdresse(details.getAdresse());
                     }
-                    if (details.getSubscriptionType() != null) {
-                        existingSubscription.setSubscriptionType(details.getSubscriptionType());
-                        // Recalculer channelCount si subscriptionType est modifié
-                        if (details.getSubscriptionType() == SubscriptionDetailsEntity.SubscriptionType.Classique) {
-                            existingSubscription.setChannelCount(520);
-                        } else if (details
-                                .getSubscriptionType() == SubscriptionDetailsEntity.SubscriptionType.Basique) {
-                            existingSubscription.setChannelCount(310);
-                        }
-                    }
-                    // GESTION DU MOT DE PASSE (IMPORTANT)
-                    if (details.getPassword() != null && !details.getPassword().isEmpty()) {
-                        // Hacher le nouveau mot de passe AVANT de l'enregistrer
-                        String encodedPassword = passwordEncoder.encode(details.getPassword());
-                        existingSubscription.setPassword(encodedPassword);
+                    if (details.getTel() != null) {
+                        existingSubscription.setTel(details.getTel());
                     }
 
+                    if (details.getCode() != null && !details.getCode().isEmpty()) {
+                        String encodedPassword = passwordEncoder.encode(details.getCode());
+                        existingSubscription.setCode(encodedPassword);
+                    }
                     return subscriptionRepository.save(existingSubscription);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found"));
@@ -122,36 +106,106 @@ public class SubscriptionService {
         return subscriptionRepository.findAll();
     }
 
-    public SubscriptionDetailsEntity renewSubscription(String id, int renewalPeriod, ChronoUnit unit) {
-        return subscriptionRepository.findById(id)
-                .map(existingSubscription -> {
+    public Mono<Map<String, Object>> getSubscriptionStatus(String id) {
+        return Mono.fromCallable(() -> subscriptionRepository.findById(id))
+                .flatMap(optionalSubscription -> {
+                    if (optionalSubscription.isEmpty()) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found"));
+                    }
+
+                    SubscriptionDetailsEntity subscription = optionalSubscription.get();
                     LocalDateTime now = LocalDateTime.now();
+                    LocalDateTime endDate = subscription.getSubscriptionEndDate();
+                    LocalDateTime startDate = subscription.getSubscriptionStartDate();
 
-                    // Validation : L'abonnement doit être actif ou expiré mais renouvelable (à
-                    // définir)
-                    if (existingSubscription.getStatus() != SubscriptionDetailsEntity.Status.active &&
-                            existingSubscription.getStatus() != SubscriptionDetailsEntity.Status.expired) { // Exemple
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                "Subscription cannot be renewed in its current state.");
+                    if (startDate == null || endDate == null) {
+                        return Mono.error(new IllegalStateException("Subscription start or end date is null"));
+                    }
+                    if (endDate.isBefore(startDate)) {
+                        return Mono.error(new IllegalStateException("End date is before start date"));
                     }
 
-                    LocalDateTime newEndDate;
+                    long remainingDays = ChronoUnit.DAYS.between(now, endDate);
+                    long totalDays;
+                    Object progressPercentage;
 
-                    if (existingSubscription.getStatus() == SubscriptionDetailsEntity.Status.active) {
-                        // Renouvellement d'un abonnement ACTIF : on ajoute la période à la date de fin
-                        // actuelle
-                        newEndDate = existingSubscription.getSubscriptionEndDate().plus(renewalPeriod, unit);
+                    if (remainingDays <= 0) {
+                        totalDays = 1;
+                        progressPercentage = 0.0;
                     } else {
-                        // Renouvellement d'un abonnement EXPIRE : on ajoute la période à la date du
-                        // jour
-                        newEndDate = now.plus(renewalPeriod, unit);
+                        Period totalDuration = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
+                        totalDays = totalDuration.getDays();
+
+                        if (totalDays == 0) {
+                            progressPercentage = "Infinity";
+                        } else {
+                            progressPercentage = (double) remainingDays / totalDays * 100;
+                        }
                     }
 
-                    existingSubscription.setSubscriptionEndDate(newEndDate);
-                    existingSubscription.setStatus(SubscriptionDetailsEntity.Status.active); // Important : Réactiver
-                                                                                             // l'abonnement
-                    return subscriptionRepository.save(existingSubscription);
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found"));
+                    Map<String, Object> status = new HashMap<>();
+                    status.put("remainingDays", remainingDays);
+                    status.put("progressPercentage", progressPercentage);
+                    status.put("isExpired", remainingDays <= 0);
+                    status.put("daysUntilExpiration", remainingDays);
+
+                    return Mono.just(status);
+                });
     }
+
+    public SubscriptionDetailsEntity renewSubscription(String id, int renewalPeriod, String unitString) {
+        try {
+            Optional<SubscriptionDetailsEntity> optionalSubscription = subscriptionRepository.findById(id);
+
+            if (optionalSubscription.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Abonnement non trouvé");
+            }
+            SubscriptionDetailsEntity existingSubscription = optionalSubscription.get();
+            if (existingSubscription.getStatus() != SubscriptionDetailsEntity.Status.active &&
+                    existingSubscription.getStatus() != SubscriptionDetailsEntity.Status.expired) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Statut invalide.");
+            }
+
+            LocalDateTime newEndDate;
+            ChronoUnit unit = null;
+            if (unitString == null || unitString.isEmpty()) { // Vérification de nullité et de chaîne vide
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "L'unité de temps ne peut pas être nulle ou vide.");
+            }
+
+            try {
+                unit = ChronoUnit.valueOf(unitString.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unité invalide : " + unitString);
+            }
+
+            if (existingSubscription.getSubscriptionEndDate() == null) {
+                throw new IllegalStateException("subscriptionEndDate ne peut pas être null.");
+            }
+
+            try {
+                if (existingSubscription.getStatus() == SubscriptionDetailsEntity.Status.active) {
+                    newEndDate = existingSubscription.getSubscriptionEndDate().plus(renewalPeriod, unit);
+                } else {
+                    newEndDate = LocalDateTime.now().plus(renewalPeriod, unit);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Erreur lors du calcul de la nouvelle date", e);
+            }
+
+            existingSubscription.setSubscriptionEndDate(newEndDate);
+            existingSubscription.setStatus(SubscriptionDetailsEntity.Status.active);
+
+            try {
+                SubscriptionDetailsEntity savedSubscription = subscriptionRepository.save(existingSubscription);
+                return savedSubscription;
+            } catch (DataAccessException e) {
+                throw new RuntimeException("Erreur lors de la sauvegarde de l'abonnement", e);
+            }
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne.");
+        }
+    }
+
 }

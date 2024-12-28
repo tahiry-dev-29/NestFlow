@@ -1,4 +1,4 @@
-package com.nestflow.app.exception;
+package com.nestflow.app.features.common.exceptions;
 
 public class UserServiceException extends RuntimeException {
     public UserServiceException(String message) {

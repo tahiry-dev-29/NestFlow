@@ -1,6 +1,6 @@
 package com.nestflow.app.features.users.service;
 
-import com.nestflow.app.exception.UserServiceException;
+import com.nestflow.app.features.common.exceptions.UserServiceException;
 import com.nestflow.app.features.users.controller.UserUpdateRequest;
 import com.nestflow.app.features.users.model.UserEntity;
 import com.nestflow.app.features.users.repository.UserRepository;
