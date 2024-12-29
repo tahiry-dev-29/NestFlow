@@ -33,11 +33,11 @@ public class SubscriptionDetailsEntity {
     private BigDecimal price; // Ajout du champ price en BigDecimal
 
     public enum SubscriptionType {
-        Basique, Classique
+        BASIC, CLASSIC
     }
 
     public enum Status {
-        active, expired
+        ACTIVE, EXPIRED
     }
 
     public long getRemainingDays() {

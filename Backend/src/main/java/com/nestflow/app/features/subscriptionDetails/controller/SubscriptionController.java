@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity;
+import com.nestflow.app.features.subscriptionDetails.model.SubscriptionStatusResponse;
 import com.nestflow.app.features.subscriptionDetails.service.SubscriptionService;
 
 import jakarta.validation.Valid;
@@ -31,7 +32,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/subscriptions")
 public class SubscriptionController {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
 
     @Autowired
@@ -68,13 +69,13 @@ public class SubscriptionController {
         subscriptionService.deleteSubscription(id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping("/get/{id}/status")
-    public Mono<ResponseEntity<Map<String, Object>>> getSubscriptionStatus(@PathVariable String id) {
+    public Mono<ResponseEntity<SubscriptionStatusResponse>> getSubscriptionStatus(@PathVariable String id) {
         return subscriptionService.getSubscriptionStatus(id)
-                .map(status -> ResponseEntity.ok(status)) // Map the status to a ResponseEntity
-                .onErrorResume(ResponseStatusException.class, e -> Mono.just(new ResponseEntity<>(e.getStatusCode()))) 
-                .onErrorResume(IllegalStateException.class, e -> Mono.just(ResponseEntity.status(500).build()));
+                .map(status -> ResponseEntity.ok(status))
+                .onErrorResume(ResponseStatusException.class,
+                        e -> Mono.just(ResponseEntity.status(e.getStatusCode()).build()));
     }
 
     @PatchMapping("/set/{id}/renew")

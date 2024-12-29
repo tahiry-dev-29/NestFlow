@@ -4,22 +4,23 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.nestflow.app.features.common.exceptions.InvalidTimeUnitException;
 import com.nestflow.app.features.subscriptionDetails.controller.RenewalRequest;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity;
+import com.nestflow.app.features.subscriptionDetails.model.SubscriptionStatusResponse;
 import com.nestflow.app.features.subscriptionDetails.repository.SubscriptionRepository;
 
 import reactor.core.publisher.Mono;
@@ -35,9 +36,9 @@ public class SubscriptionService {
 
     private BigDecimal getBasePrice(SubscriptionDetailsEntity.SubscriptionType subscriptionType) {
         switch (subscriptionType) {
-            case Basique:
+            case BASIC:
                 return new BigDecimal("30000");
-            case Classique:
+            case CLASSIC:
                 return new BigDecimal("50000");
             default:
                 throw new IllegalArgumentException("Type d'abonnement inconnu : " + subscriptionType);
@@ -46,9 +47,9 @@ public class SubscriptionService {
 
     private int calculateChannelCount(SubscriptionDetailsEntity.SubscriptionType subscriptionType) {
         switch (subscriptionType) {
-            case Basique:
+            case BASIC:
                 return 250;
-            case Classique:
+            case CLASSIC:
                 return 500;
             default:
                 throw new IllegalArgumentException("Type d'abonnement inconnu : " + subscriptionType);
@@ -59,18 +60,16 @@ public class SubscriptionService {
         LocalDateTime now = LocalDateTime.now();
         details.setSubscriptionStartDate(now);
         details.setSubscriptionEndDate(now.plusMonths(1));
-
         details.setChannelCount(calculateChannelCount(details.getSubscriptionType()));
-        details.setPrice(calculateRenewalPrice(details, 1, ChronoUnit.MONTHS)); // Utilisation de calculateRenewalPrice
-                                                                                // pour la création
+        details.setPrice(calculateRenewalPrice(details, 1, ChronoUnit.MONTHS));
 
         String encodedPassword = passwordEncoder.encode(details.getCode());
         details.setCode(encodedPassword);
 
-        details.setStatus(SubscriptionDetailsEntity.Status.active);
+        details.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
         return subscriptionRepository.save(details);
     }
-    
+
     private BigDecimal calculateRenewalPrice(SubscriptionDetailsEntity subscription, int renewalPeriod,
             ChronoUnit unit) {
         BigDecimal basePrice = getBasePrice(subscription.getSubscriptionType());
@@ -92,56 +91,61 @@ public class SubscriptionService {
 
     public SubscriptionDetailsEntity renewSubscription(String id, int renewalPeriod, String unitString,
             RenewalRequest renewalRequest) {
+        SubscriptionDetailsEntity existingSubscription;
         try {
-            Optional<SubscriptionDetailsEntity> optionalSubscription = subscriptionRepository.findById(id);
+            existingSubscription = subscriptionRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription introuvable"));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Identifiant invalide", e);
+        }
 
-            if (optionalSubscription.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Abonnement introuvable");
+        validateSubscriptionStatus(existingSubscription);
+        ChronoUnit unit = parseChronoUnit(unitString);
+
+        LocalDateTime newEndDate = calculateNewEndDate(existingSubscription, renewalPeriod, unit);
+        existingSubscription.setSubscriptionEndDate(newEndDate);
+
+        updateSubscriptionDetails(existingSubscription, renewalRequest);
+        existingSubscription.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
+
+        BigDecimal renewalPrice = calculateRenewalPrice(existingSubscription, renewalPeriod, unit);
+        existingSubscription.setPrice(existingSubscription.getPrice() == null ? renewalPrice
+                : existingSubscription.getPrice().add(renewalPrice));
+
+        return subscriptionRepository.save(existingSubscription);
+    }
+
+    private void validateSubscriptionStatus(SubscriptionDetailsEntity subscription) {
+        if (subscription.getStatus() != SubscriptionDetailsEntity.Status.ACTIVE &&
+                subscription.getStatus() != SubscriptionDetailsEntity.Status.EXPIRED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Statut invalide.");
+        }
+    }
+
+    private LocalDateTime calculateNewEndDate(SubscriptionDetailsEntity subscription, int renewalPeriod,
+            ChronoUnit unit) {
+        LocalDateTime currentEndDate = subscription.getSubscriptionEndDate();
+        if (currentEndDate == null) {
+            return subscription.getSubscriptionStartDate().plus(renewalPeriod, unit);
+        } else {
+            return currentEndDate.plus(renewalPeriod, unit);
+        }
+    }
+
+    private void updateSubscriptionDetails(SubscriptionDetailsEntity subscription, RenewalRequest renewalRequest) {
+        if (renewalRequest != null) {
+            if (renewalRequest.getNewType() != null) {
+                subscription.setSubscriptionType(renewalRequest.getNewType());
+                subscription.setChannelCount(calculateChannelCount(renewalRequest.getNewType()));
             }
+        }
+    }
 
-            SubscriptionDetailsEntity existingSubscription = optionalSubscription.get();
-
-            if (existingSubscription.getStatus() != SubscriptionDetailsEntity.Status.active &&
-                    existingSubscription.getStatus() != SubscriptionDetailsEntity.Status.expired) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Statut invalide.");
-            }
-
-            ChronoUnit unit;
-            try {
-                unit = ChronoUnit.valueOf(unitString.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unité invalide : " + unitString);
-            }
-
-            LocalDateTime newEndDate;
-            if (existingSubscription.getStatus() == SubscriptionDetailsEntity.Status.active) {
-                newEndDate = existingSubscription.getSubscriptionEndDate().plus(renewalPeriod, unit);
-            } else {
-                newEndDate = LocalDateTime.now().plus(renewalPeriod, unit);
-            }
-
-            existingSubscription.setSubscriptionEndDate(newEndDate);
-
-            if (renewalRequest != null && renewalRequest.getNewType() != null) {
-                existingSubscription.setSubscriptionType(renewalRequest.getNewType());
-                existingSubscription.setChannelCount(calculateChannelCount(existingSubscription.getSubscriptionType()));
-            }
-
-            existingSubscription.setStatus(SubscriptionDetailsEntity.Status.active);
-
-            // Calcul du prix du RENOUVELLEMENT et ajout au prix existant
-            BigDecimal renewalPrice = calculateRenewalPrice(existingSubscription, renewalPeriod, unit);
-            if (existingSubscription.getPrice() == null) {
-                existingSubscription.setPrice(renewalPrice);
-            } else {
-                existingSubscription.setPrice(existingSubscription.getPrice().add(renewalPrice));
-            }
-
-            return subscriptionRepository.save(existingSubscription);
-
-        } catch (DataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Erreur lors de la sauvegarde de l'abonnement", e);
+    private ChronoUnit parseChronoUnit(String unitString) {
+        try {
+            return ChronoUnit.valueOf(unitString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidTimeUnitException("Unité invalide : " + unitString);
         }
     }
 
@@ -156,9 +160,9 @@ public class SubscriptionService {
     public SubscriptionDetailsEntity updateSubscriptionStatus(SubscriptionDetailsEntity details) {
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(details.getSubscriptionEndDate())) {
-            details.setStatus(SubscriptionDetailsEntity.Status.expired);
+            details.setStatus(SubscriptionDetailsEntity.Status.EXPIRED);
         } else {
-            details.setStatus(SubscriptionDetailsEntity.Status.active);
+            details.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
         }
         return subscriptionRepository.save(details);
     }
@@ -203,7 +207,7 @@ public class SubscriptionService {
         return subscriptionRepository.findAll();
     }
 
-    public Mono<Map<String, Object>> getSubscriptionStatus(String id) {
+    public Mono<SubscriptionStatusResponse> getSubscriptionStatus(String id) {
         return Mono.fromCallable(() -> subscriptionRepository.findById(id))
                 .flatMap(optionalSubscription -> {
                     if (optionalSubscription.isEmpty()) {
@@ -211,9 +215,8 @@ public class SubscriptionService {
                     }
 
                     SubscriptionDetailsEntity subscription = optionalSubscription.get();
-                    LocalDateTime now = LocalDateTime.now();
-                    LocalDateTime endDate = subscription.getSubscriptionEndDate();
                     LocalDateTime startDate = subscription.getSubscriptionStartDate();
+                    LocalDateTime endDate = subscription.getSubscriptionEndDate();
 
                     if (startDate == null || endDate == null) {
                         return Mono.error(new IllegalStateException("Subscription start or end date is null"));
@@ -222,24 +225,27 @@ public class SubscriptionService {
                         return Mono.error(new IllegalStateException("End date is before start date"));
                     }
 
+                    ZoneId zoneId = ZoneId.of("UTC");
+                    LocalDateTime now = LocalDateTime.now(zoneId);
+                    startDate = startDate.atZone(zoneId).toLocalDateTime();
+                    endDate = endDate.atZone(zoneId).toLocalDateTime();
+
+                    long totalDays = ChronoUnit.DAYS.between(startDate, endDate);
                     long remainingDays = ChronoUnit.DAYS.between(now, endDate);
-                    long totalDays = Period.between(startDate.toLocalDate(), endDate.toLocalDate()).getDays();
 
                     double progressPercentage;
-                    if (totalDays == 0) {
-                        // Handle the case where the total duration is 0 days
-                        progressPercentage = 100.0; // Set progress to 100% if total duration is 0
+                    if (totalDays <= 0) {
+                        progressPercentage = 100.0; // Considérer 100 % si les dates sont invalides
                     } else {
-                        progressPercentage = (double) remainingDays / totalDays * 100;
+                        long elapsedDays = ChronoUnit.DAYS.between(startDate, now);
+                        progressPercentage = (double) elapsedDays / totalDays * 100; // Calcul du pourcentage classique
                     }
 
-                    Map<String, Object> status = new HashMap<>();
-                    status.put("remainingDays", remainingDays);
-                    status.put("progressPercentage", progressPercentage);
-                    status.put("isExpired", remainingDays <= 0);
-                    status.put("daysUntilExpiration", remainingDays);
+                    // Calculer le taux inversé (100 - progression)
+                    double reversedPercentage = 100.0 - progressPercentage;
 
-                    return Mono.just(status);
+                    return Mono.just(
+                            new SubscriptionStatusResponse(remainingDays, reversedPercentage, remainingDays <= 0));
                 });
     }
 
