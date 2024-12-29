@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,7 @@ import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEn
 import com.nestflow.app.features.subscriptionDetails.repository.SubscriptionRepository;
 
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Mono;
 
 @Service
 public class SubscriptionService {
@@ -29,6 +31,7 @@ public class SubscriptionService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     public SubscriptionDetailsEntity createSubscription(SubscriptionDetailsEntity details) {
         LocalDateTime now = LocalDateTime.now();
@@ -37,10 +40,14 @@ public class SubscriptionService {
 
         if (details.getSubscriptionType() == SubscriptionDetailsEntity.SubscriptionType.Classique) {
             details.setChannelCount(200);
+            details.setChannelCount(200);
         } else if (details.getSubscriptionType() == SubscriptionDetailsEntity.SubscriptionType.Basique) {
+            details.setChannelCount(100);
             details.setChannelCount(100);
         }
 
+        String encodedPassword = passwordEncoder.encode(details.getCode());
+        details.setCode(encodedPassword);
         String encodedPassword = passwordEncoder.encode(details.getCode());
         details.setCode(encodedPassword);
 
@@ -57,6 +64,8 @@ public class SubscriptionService {
     }
 
     public SubscriptionDetailsEntity updateSubscriptionStatus(SubscriptionDetailsEntity details) {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(details.getSubscriptionEndDate())) {
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(details.getSubscriptionEndDate())) {
             details.setStatus(SubscriptionDetailsEntity.Status.expired);
@@ -83,6 +92,13 @@ public class SubscriptionService {
                     if (details.getAdresse() != null) {
                         existingSubscription.setAdresse(details.getAdresse());
                     }
+                    if (details.getTel() != null) {
+                        existingSubscription.setTel(details.getTel());
+                    }
+
+                    if (details.getCode() != null && !details.getCode().isEmpty()) {
+                        String encodedPassword = passwordEncoder.encode(details.getCode());
+                        existingSubscription.setCode(encodedPassword);
                     if (details.getTel() != null) {
                         existingSubscription.setTel(details.getTel());
                     }
