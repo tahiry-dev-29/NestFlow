@@ -1,4 +1,4 @@
-package com.nestflow.app.features.email.service;
+/* package com.nestflow.app.features.email.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,4 +52,4 @@ public class EmailServiceImpl implements EmailService {
                         "Sincerely,<br>The Nestflow Team",
                 customerName);
     }
-}
+} */

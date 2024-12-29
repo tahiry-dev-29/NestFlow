@@ -1,4 +1,4 @@
-package com.nestflow.app.features.email.controller;
+/* package com.nestflow.app.features.email.controller;
 
 import com.nestflow.app.features.email.service.TestEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,4 +26,4 @@ public class TestController {
             return "Erreur lors de l'envoi de l'email HTML : " + e.getMessage();
         }
     }
-}
+} */

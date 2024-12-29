@@ -10,11 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
-@Data
 public class RenewalRequest {
     @NotNull(message = "La période de renouvellement ne peut pas être nulle")
     private Integer renewalPeriod;
