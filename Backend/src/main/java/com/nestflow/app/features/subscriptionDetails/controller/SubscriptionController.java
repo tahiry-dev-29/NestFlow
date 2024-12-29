@@ -77,7 +77,6 @@ public class SubscriptionController {
                 .onErrorResume(IllegalStateException.class, e -> Mono.just(ResponseEntity.status(500).build()));
     }
 
-    @SuppressWarnings("null")
     @PatchMapping("/set/{id}/renew")
     public ResponseEntity<SubscriptionDetailsEntity> renewSubscription(
             @PathVariable String id,
@@ -89,11 +88,15 @@ public class SubscriptionController {
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
                     .collect(Collectors.toList());
             logger.error("Erreurs de validation : {}", errors);
-            throw new MethodArgumentNotValidException(null, bindingResult);
-        }   
+            return ResponseEntity.badRequest().body(null);
+        }
 
         try {
-            SubscriptionDetailsEntity renewedSubscription = subscriptionService.renewSubscription(id, renewalRequest.getRenewalPeriod(), renewalRequest.getUnit());
+            SubscriptionDetailsEntity renewedSubscription = subscriptionService.renewSubscription(
+                    id,
+                    renewalRequest.getRenewalPeriod(),
+                    renewalRequest.getUnit(),
+                    renewalRequest);
             return ResponseEntity.ok(renewedSubscription);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(null);
