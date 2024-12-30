@@ -8,11 +8,18 @@ import com.nestflow.app.features.users.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +30,7 @@ public class UserService {
     private final JwtService jwtService;
 
     public ResponseEntity<?> createUser(UserEntity user, String verificationPassword) {
+
         try {
             validateUser(user);
             checkUserExists(user.getMail());
@@ -48,12 +56,19 @@ public class UserService {
             if (user == null || user.getMail() == null) {
                 return ResponseEntity.badRequest().body("Requête de connexion invalide.");
             }
+
             Optional<UserEntity> userFound = userRepository.findByMail(user.getMail());
             if (userFound.isPresent() && passwordEncoder.matches(user.getPassword(), userFound.get().getPassword())) {
-                String token = jwtService.generateToken(user.getMail());
+                String email = userFound.get().getMail();
+                UserDetails userDetails = new User(email, userFound.get().getPassword(), Collections.emptyList());
+                String token = jwtService.generateToken(userDetails); // Pass UserDetails to generateToken
+                UserEntity existingUser = userFound.get();
+                existingUser.setOnline(true);
+                userRepository.save(existingUser);
+
                 return ResponseEntity.ok("Connexion réussie. Token : " + token);
             } else {
-                throw new UserServiceException.InvalidCredentialsException(); // Utilisation de l'exception spécifique
+                throw new UserServiceException.InvalidCredentialsException();
             }
         } catch (UserServiceException.InvalidCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -63,31 +78,68 @@ public class UserService {
         }
     }
 
+    private Optional<UserEntity> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()
+                && !authentication.getPrincipal().equals("anonymousUser")) {
+            String userEmail = authentication.getName();
+            return userRepository.findByMail(userEmail); // Retourne un Optional<UserEntity>
+        }
+        return Optional.empty();
+    }
+
     public ResponseEntity<?> getAll() {
         try {
-            List<UserEntity> users = userRepository.findAll();
-            return ResponseEntity.ok(users);
+            Optional<UserEntity> currentUser = getCurrentUser();
+            if (currentUser.isPresent()) {
+                List<UserEntity> users = userRepository.findAll();
+                List<Map<String, Object>> userListWithStatus = users.stream().map(user -> {
+                    Map<String, Object> userMap = new HashMap<>();
+                    userMap.put("id", user.getId());
+                    userMap.put("name", user.getName());
+                    userMap.put("firstName", user.getFirstName());
+                    userMap.put("mail", user.getMail());
+                    userMap.put("imageUrl", user.getImageUrl());
+                    userMap.put("isActive", user.isActive());
+                    if (user.isOnline()) {
+                        userMap.put("status", "online");
+                    } else {
+                        userMap.put("status", "offline");
+                    }
+                    return userMap;
+                }).collect(Collectors.toList());
+                return ResponseEntity.ok(userListWithStatus);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Vous devez être connecté pour voir les utilisateurs.");
+            }
         } catch (Exception e) {
-            // Logging crucial ici pour diagnostiquer l'erreur
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur est survenue lors de la récupération des utilisateurs : " + e.getMessage());
+                    .body("Erreur lors de la récupération des utilisateurs : " + e.getMessage());
         }
     }
 
-    public ResponseEntity<?> getUser(String userId) {
+    public ResponseEntity<?> getPublicUserInfo(String userId) {
         try {
             UserEntity user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
-            return ResponseEntity.ok(user);
+
+            Map<String, Object> publicUserInfo = new HashMap<>();
+            publicUserInfo.put("name", user.getName());
+            publicUserInfo.put("firstName", user.getFirstName());
+            publicUserInfo.put("imageUrl", user.getImageUrl());
+            publicUserInfo.put("email", user.getMail()); // Si l'email est considéré comme public
+            publicUserInfo.put("status", user.isOnline() ? "online" : "offline"); // Ajout du statut
+
+            return ResponseEntity.ok(publicUserInfo);
         } catch (UserServiceException.UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            // Logging crucial ici
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur est survenue lors de la récupération de l'utilisateur : " + e.getMessage());
+                    .body("Erreur lors de la récupération des informations publiques de l'utilisateur : "
+                            + e.getMessage());
         }
     }
-
     public ResponseEntity<?> deleteUser(String userId) {
         try {
             userRepository.findById(userId).orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
@@ -107,7 +159,6 @@ public class UserService {
             Optional<UserEntity> existingUserOpt = userRepository.findById(userId);
             UserEntity existingUser = existingUserOpt
                     .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
-
             if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), existingUser.getPassword())) {
                 throw new UserServiceException.CurrentPasswordIncorrectException();
             }
@@ -136,6 +187,7 @@ public class UserService {
         if (user == null) {
             throw new IllegalArgumentException("L'utilisateur ne peut pas être null.");
         }
+
         if (user.getMail() == null) {
             throw new IllegalArgumentException("L'email de l'utilisateur ne peut pas être null.");
         }
@@ -155,6 +207,24 @@ public class UserService {
 
     private void encodePassword(UserEntity user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+    }
+
+    public ResponseEntity<?> logout(String userId) {
+        try {
+            Optional<UserEntity> userOptional = userRepository.findById(userId);
+            if (userOptional.isPresent()) {
+                UserEntity user = userOptional.get();
+                user.setOnline(false);
+                userRepository.save(user);
+                return ResponseEntity.ok("Déconnexion réussie pour l'utilisateur : " + userId);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur non trouvé.");
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur est survenue lors de la déconnexion : " + e.getMessage());
+        }
     }
 
     private UserEntity saveUser(UserEntity user) {

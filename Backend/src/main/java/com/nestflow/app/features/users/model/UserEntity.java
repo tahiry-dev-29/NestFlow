@@ -14,4 +14,6 @@ public class UserEntity {
     private String mail;
     private String password;
     private String imageUrl; // Champ pour l'URL de l'image (optionnel)
+    private boolean isOnline;
+    private boolean isActive;
 }

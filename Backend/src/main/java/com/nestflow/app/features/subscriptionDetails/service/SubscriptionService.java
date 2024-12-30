@@ -235,13 +235,12 @@ public class SubscriptionService {
 
                     double progressPercentage;
                     if (totalDays <= 0) {
-                        progressPercentage = 100.0; // Considérer 100 % si les dates sont invalides
+                        progressPercentage = 100.0;
                     } else {
                         long elapsedDays = ChronoUnit.DAYS.between(startDate, now);
-                        progressPercentage = (double) elapsedDays / totalDays * 100; // Calcul du pourcentage classique
+                        progressPercentage = (double) elapsedDays / totalDays * 100;
                     }
 
-                    // Calculer le taux inversé (100 - progression)
                     double reversedPercentage = 100.0 - progressPercentage;
 
                     return Mono.just(

@@ -39,8 +39,8 @@ public class UserController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> getUser(@PathVariable String id) {
-        return userService.getUser(id);
+    public ResponseEntity<?> getUserById(@PathVariable String id) {
+        return userService.getPublicUserInfo(id);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -51,5 +51,10 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody UserUpdateRequest updateRequest) {
         return userService.updateUser(id, updateRequest);
+    }
+
+    @PostMapping("/logout/{id}")
+    public ResponseEntity<?> logout(@PathVariable String id) {
+        return userService.logout(id);
     }
 }
