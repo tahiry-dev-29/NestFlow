@@ -5,6 +5,10 @@ import com.nestflow.app.features.users.controller.UserUpdateRequest;
 import com.nestflow.app.features.users.model.UserEntity;
 import com.nestflow.app.features.users.repository.UserRepository;
 import com.nestflow.app.features.users.security.JwtService;
+import com.nestflow.app.features.users.security.TokenBlacklistService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +32,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     public ResponseEntity<?> createUser(UserEntity user, String verificationPassword) {
 
@@ -140,6 +145,7 @@ public class UserService {
                             + e.getMessage());
         }
     }
+
     public ResponseEntity<?> deleteUser(String userId) {
         try {
             userRepository.findById(userId).orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
@@ -209,18 +215,27 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
-    public ResponseEntity<?> logout(String userId) {
+    public ResponseEntity<?> logout(String userId, HttpServletRequest request, HttpServletResponse response) {
         try {
             Optional<UserEntity> userOptional = userRepository.findById(userId);
             if (userOptional.isPresent()) {
                 UserEntity user = userOptional.get();
                 user.setOnline(false);
                 userRepository.save(user);
+
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    String jwt = authHeader.substring(7);
+                    tokenBlacklistService.blacklistToken(jwt);
+                }
+
+                String cookieValue = "jwt-token=; Max-Age=0; HttpOnly; Path=/; Secure; SameSite=Lax; Domain=localhost";
+                response.setHeader("Set-Cookie", cookieValue);
+
                 return ResponseEntity.ok("Déconnexion réussie pour l'utilisateur : " + userId);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur non trouvé.");
             }
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur est survenue lors de la déconnexion : " + e.getMessage());

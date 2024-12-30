@@ -2,6 +2,9 @@ package com.nestflow.app.features.users.controller;
 
 import com.nestflow.app.features.users.model.UserEntity;
 import com.nestflow.app.features.users.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,7 +57,7 @@ public class UserController {
     }
 
     @PostMapping("/logout/{id}")
-    public ResponseEntity<?> logout(@PathVariable String id) {
-        return userService.logout(id);
+    public ResponseEntity<?> logout(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+        return userService.logout(id, request, response);
     }
 }
