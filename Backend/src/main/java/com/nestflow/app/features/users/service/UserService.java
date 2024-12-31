@@ -10,12 +10,16 @@ import com.nestflow.app.features.users.security.TokenBlacklistService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,18 +33,26 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class UserService {
 
+    @Autowired
+    private ImageUploadService imageUploadService;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final TokenBlacklistService tokenBlacklistService;
 
-    public ResponseEntity<?> createUser(UserEntity user, String verificationPassword) {
+
+    public ResponseEntity<?> createUser(UserEntity user, MultipartFile imageFile) {
 
         try {
             validateUser(user);
             checkUserExists(user.getMail());
-            validatePasswords(user.getPassword(), verificationPassword);
             encodePassword(user);
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imageUrl = imageUploadService.uploadImage(imageFile);
+                user.setImageUrl(imageUrl);
+            }
+
             UserEntity createdUser = saveUser(user);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (UserServiceException.UserAlreadyExistsException e) {
@@ -50,7 +62,6 @@ public class UserService {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            // Logging important ici !
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur est survenue lors de l'inscription : " + e.getMessage());
         }
@@ -160,23 +171,37 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<?> updateUser(String userId, UserUpdateRequest updateRequest) {
+    public ResponseEntity<?> updateUser(String userId, UserUpdateRequest updateRequest, MultipartFile imageFile) {
         try {
             Optional<UserEntity> existingUserOpt = userRepository.findById(userId);
             UserEntity existingUser = existingUserOpt
                     .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
+
             if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), existingUser.getPassword())) {
                 throw new UserServiceException.CurrentPasswordIncorrectException();
             }
 
             UserEntity updatedUser = updateRequest.getUpdatedUser();
+
             existingUser.setName(updatedUser.getName());
             existingUser.setFirstName(updatedUser.getFirstName());
             existingUser.setMail(updatedUser.getMail());
-            existingUser.setImageUrl(updatedUser.getImageUrl());
-            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imageUrl = imageUploadService.uploadImage(imageFile);
+                existingUser.setImageUrl(imageUrl);
             }
+
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                try {
+                    validatePasswords(updatedUser.getPassword(), updateRequest.getVerificationPassword()); 
+                    existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                } catch (UserServiceException.PasswordMismatchException e) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Les nouveaux mots de passe ne correspondent pas."); 
+                }
+            }
+
             UserEntity savedUser = userRepository.save(existingUser);
             return ResponseEntity.ok(savedUser);
         } catch (UserServiceException.UserNotFoundException e) {
@@ -202,12 +227,6 @@ public class UserService {
     private void checkUserExists(String email) {
         if (userRepository.findByMail(email).isPresent()) {
             throw new UserServiceException.UserAlreadyExistsException(email);
-        }
-    }
-
-    private void validatePasswords(String password, String verificationPassword) {
-        if (!password.equals(verificationPassword)) {
-            throw new UserServiceException.PasswordMismatchException();
         }
     }
 
@@ -244,5 +263,11 @@ public class UserService {
 
     private UserEntity saveUser(UserEntity user) {
         return userRepository.save(user);
+    }
+
+    private void validatePasswords(String password, String verificationPassword) {
+        if (!password.equals(verificationPassword)) {
+            throw new UserServiceException.PasswordMismatchException();
+        }
     }
 }

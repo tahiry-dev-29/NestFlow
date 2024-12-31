@@ -1,11 +1,5 @@
 package com.nestflow.app.features.users.controller;
 
-import com.nestflow.app.features.users.model.UserEntity;
-import com.nestflow.app.features.users.service.UserService;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +8,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.nestflow.app.features.users.model.UserEntity;
+import com.nestflow.app.features.users.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,11 +27,20 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) {
-        if (signupRequest == null || signupRequest.getUser() == null) {
-            return ResponseEntity.badRequest().body("Invalid request: user data is missing");
-        }
-        return userService.createUser(signupRequest.getUser(), signupRequest.getVerificationPassword());
+    public ResponseEntity<?> createUser(
+        @RequestParam("name") String name,
+        @RequestParam("firstName") String firstName,
+        @RequestParam("mail") String mail,
+        @RequestParam("password") String password,
+        @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
+        
+        UserEntity user = new UserEntity();
+        user.setName(name);
+        user.setFirstName(firstName);
+        user.setMail(mail);
+        user.setPassword(password);
+        
+        return userService.createUser(user, imageFile);
     }
 
     @PostMapping("/getToken")
@@ -52,8 +64,9 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody UserUpdateRequest updateRequest) {
-        return userService.updateUser(id, updateRequest);
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody UserUpdateRequest updateRequest, 
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
+        return userService.updateUser(id, updateRequest, imageFile);
     }
 
     @PostMapping("/logout/{id}")
