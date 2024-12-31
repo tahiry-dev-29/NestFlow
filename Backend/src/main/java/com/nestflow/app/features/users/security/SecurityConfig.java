@@ -32,7 +32,14 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/users/create", "/api/users/getToken")
+                .requestMatchers(
+                        "/api/users/create",
+                        "/api/users/getToken",
+                        "/v3/api-docs/**", // OpenAPI 3
+                        "/swagger-ui/**", // Swagger UI
+                        "/swagger-resources/**", // Swagger resources
+                        "/webjars/**" // Webjars (pour les ressources statiques de Swagger UI)
+                )
                 .permitAll()
                 .anyRequest()
                 .authenticated()
