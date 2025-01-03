@@ -37,10 +37,12 @@ public class UserServiceImpl implements UserService {
             validateUser(user);
             checkUserExists(user.getMail());
             encodePassword(user);
+
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imageUrl = imageUploadService.uploadImage(imageFile);
                 user.setImageUrl(imageUrl);
             }
+
             UserEntity createdUser = userRepository.save(user);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (UserServiceException.UserAlreadyExistsException e) {
@@ -86,7 +88,10 @@ public class UserServiceImpl implements UserService {
                 Map<String, Object> userMap = new HashMap<>();
                 userMap.put("id", user.getId());
                 userMap.put("name", user.getName());
+                userMap.put("firstName", user.getFirstName());
                 userMap.put("mail", user.getMail());
+                userMap.put("role", user.getRole());
+                userMap.put("imageUrl", user.getImageUrl());
                 userMap.put("status", user.isOnline() ? "online" : "offline");
                 return userMap;
             }).collect(Collectors.toList());

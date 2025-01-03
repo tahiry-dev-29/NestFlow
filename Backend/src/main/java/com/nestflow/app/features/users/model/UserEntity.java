@@ -33,14 +33,17 @@ public class UserEntity {
     @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères.")
     private String password;
 
-    private String imageUrl; // URL de l'image de profil
+    private String imageUrl;
 
-    private boolean online; // Supprimé "is" pour respecter les conventions Java
+    private boolean online; 
     private boolean active;
+        
+    public enum ROLE {
+        ADMIN,
+        USER
+    }
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    @NotNull(message = "Le role est obligatoire.")
+    private ROLE role;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 }

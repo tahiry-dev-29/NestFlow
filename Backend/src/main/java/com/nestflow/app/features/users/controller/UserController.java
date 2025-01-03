@@ -54,6 +54,7 @@ public class UserController {
             @RequestParam("firstName") String firstName,
             @RequestParam("mail") String mail,
             @RequestParam("password") String password,
+            @RequestParam("role") String roleString,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
 
         UserEntity user = new UserEntity();
@@ -62,7 +63,14 @@ public class UserController {
         user.setMail(mail);
         user.setPassword(password);
 
-        return userService.createUser(user, imageFile); // Type corrigé
+        try {
+            UserEntity.ROLE role = UserEntity.ROLE.valueOf(roleString.toUpperCase()); 
+            user.setRole(role);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        return userService.createUser(user, imageFile);
     }
 
     
@@ -75,7 +83,6 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur", content = @Content(schema = @Schema(type = "string")))
     })
     public ResponseEntity<String> getToken(@RequestBody UserEntity userFromJson) {
-        // Si les données JSON sont fournies
         if (userFromJson != null) {
             return userService.getToken(userFromJson);
         }
