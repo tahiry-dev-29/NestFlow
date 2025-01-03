@@ -59,16 +59,13 @@ public class UserServiceImpl implements UserService {
             if (userFound.isPresent() && passwordEncoder.matches(user.getPassword(), userFound.get().getPassword())) {
                 UserEntity existingUser = userFound.get();
 
-                // Créer un UserDetails à partir des données de l'utilisateur
                 UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                         existingUser.getMail(),
                         existingUser.getPassword(),
                         Collections.emptyList());
 
-                // Générer le token en utilisant UserDetails
                 String token = jwtService.generateToken(userDetails);
 
-                // Mettre à jour le statut en ligne de l'utilisateur
                 existingUser.setOnline(true);
                 userRepository.save(existingUser);
 
@@ -135,38 +132,32 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<UserEntity> updateUser(String userId, UserUpdateRequest updateRequest,
             MultipartFile imageFile) {
         try {
-            // Récupérer l'utilisateur depuis la base de données
             UserEntity user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
 
-            // Vérifier si le mot de passe actuel est correct
             if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), user.getPassword())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Retourner un corps nul en cas
-                                                                                  // d'erreur
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
 
-            // Mettre à jour les champs de l'utilisateur
-            user.setName(updateRequest.getUpdatedUser().getName());
-            user.setMail(updateRequest.getUpdatedUser().getMail());
+            Optional<String> newName = Optional.ofNullable(updateRequest.getUpdatedUser().getName());
+            newName.ifPresent(user::setName);
+
+            Optional<String> newMail = Optional.ofNullable(updateRequest.getUpdatedUser().getMail());
+            newMail.ifPresent(user::setMail);
+
             if (imageFile != null && !imageFile.isEmpty()) {
-                user.setImageUrl(imageUploadService.uploadImage(imageFile)); // Télécharger et définir l'URL de l'image
-            }
-            if (updateRequest.getUpdatedUser().getPassword() != null) {
-                user.setPassword(passwordEncoder.encode(updateRequest.getUpdatedUser().getPassword())); // Encoder le
-                                                                                                        // nouveau mot
-                                                                                                        // de passe
+                user.setImageUrl(imageUploadService.uploadImage(imageFile));
             }
 
-            // Sauvegarder l'utilisateur mis à jour dans la base de données
+            Optional<String> newPassword = Optional.ofNullable(updateRequest.getUpdatedUser().getPassword());
+            newPassword.ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
             UserEntity updatedUser = userRepository.save(user);
 
-            // Retourner l'utilisateur mis à jour
             return ResponseEntity.ok(updatedUser);
         } catch (UserServiceException.UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Retourner un corps nul en cas d'erreur
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Retourner un corps nul en cas
-                                                                                       // d'erreur
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

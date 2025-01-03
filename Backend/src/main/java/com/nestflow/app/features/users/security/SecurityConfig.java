@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers(
                         "/api/users/create",
-                        "/api/users/getToken",
+                        "/api/users/login",
                         "/v3/api-docs/**", // OpenAPI 3
                         "/swagger-ui/**", // Swagger UI
                         "/swagger-resources/**", // Swagger resources

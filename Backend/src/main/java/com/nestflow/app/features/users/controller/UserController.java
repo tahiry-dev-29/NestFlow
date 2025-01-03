@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -74,23 +75,13 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Utilisateur non autorisé", content = @Content(schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur", content = @Content(schema = @Schema(type = "string")))
     })
-    public ResponseEntity<String> getToken(
-            @RequestParam(required = false) String mail,
-            @RequestParam(required = false) String password,
-            @RequestBody(required = false) UserEntity userFromJson) {
+    public ResponseEntity<String> getToken(@RequestBody UserEntity userFromJson) {
         // Si les données JSON sont fournies
         if (userFromJson != null) {
             return userService.getToken(userFromJson);
         }
-        // Si les données de formulaire sont fournies
-        if (mail != null && password != null) {
-            UserEntity userFromForm = new UserEntity();
-            userFromForm.setMail(mail);
-            userFromForm.setPassword(password);
-            return userService.getToken(userFromForm);
-        }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Requête invalide : données manquantes");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Requête invalide : données JSON manquantes");
     }
 
     @GetMapping("/lists")
@@ -130,7 +121,7 @@ public class UserController {
         return userService.deleteUser(id); // Type corrigé
     }
 
-    @PutMapping("/update/{id}")
+    @PatchMapping("/update/{id}")
     @Operation(summary = "Mettre à jour un utilisateur", security = @SecurityRequirement(name = "bearerAuth"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
