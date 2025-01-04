@@ -162,14 +162,16 @@ public class UserController {
 
     @PostMapping("/logout/{id}")
     @Operation(summary = "Se déconnecter", security = @SecurityRequirement(name = "bearerAuth"))
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Déconnecté avec succès", content = @Content(schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé", content = @Content(schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "400", description = "Token manquant ou invalide", content = @Content(schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur", content = @Content(schema = @Schema(type = "string")))
     })
-    public ResponseEntity<String> logout(@PathVariable String id, HttpServletRequest request,
+    public ResponseEntity<Map<String, String>> logout(@PathVariable String id, HttpServletRequest request,
             HttpServletResponse response) {
         return userService.logout(id, request, response);
     }
+
 }

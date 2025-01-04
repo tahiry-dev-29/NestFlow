@@ -28,5 +28,5 @@ public interface UserService {
 
     ResponseEntity<UserEntity> updateUser(String userId, UserUpdateRequest updateRequest, MultipartFile imageFile);
 
-    ResponseEntity<String> logout(String userId, HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<Map<String, String>> logout(String userId, HttpServletRequest request, HttpServletResponse response);
 }

@@ -1,15 +1,14 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
+  computed,
   inject,
   signal,
-  computed,
   WritableSignal,
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { sideLeftBarState } from '../../store/signal.store';
-import { AuthService } from '../../../auth/services/auth.service';
 import { UserStore } from '../../../users/store/users.store';
+import { sideLeftBarState } from '../../store/signal.store';
 
 @Component({
   selector: 'app-side-bar',
@@ -20,16 +19,10 @@ import { UserStore } from '../../../users/store/users.store';
 })
 export class SideBarComponent {
   private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
   private readonly userStore = inject(UserStore);
 
-  onLogoutClick() {
-    const userId = this.userStore.currentUser()?.id; // Get userId from the store
-    if (userId) {
-      this.authService.logout(userId).subscribe();
-    } else {
-      console.error("No user id found")
-    }
+  logout(): void {
+    this.userStore.logout();
   }
 
   sideLeftBarState = sideLeftBarState;

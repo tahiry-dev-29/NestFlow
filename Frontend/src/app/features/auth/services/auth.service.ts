@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service'; // Import de ngx-cookie-service
 import { Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { IUsers } from '../../users/store/users.store'; // Supposons que vous ayez un modèle User
 
 @Injectable({
@@ -61,14 +61,53 @@ export class AuthService {
     );
   }
 
-  logout(userId: string): Observable<Object> {
-    return this.http.post(`${this.apiUrl}/logout/${userId}`, {}).pipe(
-      tap(() => {
-        this.deleteToken();
+  logout(userId: string): Observable<{ message: string }> {
+    const token = this.getToken();
+    return this.http.post<{ message: string }>(`${this.apiUrl}/logout/${userId}`, null, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    }).pipe(
+      catchError((error) => this.handleError(error)) // Gestion améliorée des erreurs
+    );
+  }
+
+
+  getCurrentUser(): Observable<IUsers | null> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('Token manquant ou expiré.'));
+    }
+    return this.http.get<IUsers>(`${this.apiUrl}/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  logoutUser(): Observable<Object> {
+    return this.getCurrentUser().pipe(
+      switchMap((user) => {
+        if (user?.id) {
+          return this.logout(user.id).pipe(
+            tap(() => {
+              this.deleteToken();
+            }),
+          );
+        } else {
+          return throwError(() => new Error('Impossible de déconnecter l’utilisateur (ID manquant).'));
+        }
       }),
       catchError(this.handleError)
     );
   }
+
+  isAuthenticated(): boolean {
+    const token = this.getToken();
+    return !!token;
+  }
+
 
   getUserByToken(token: string): Observable<IUsers | null> {
     return this.http.get<IUsers>(`${this.apiUrl}/me`, { headers: { Authorization: `Bearer ${token}` } })

@@ -26,9 +26,9 @@ import { AuthService } from '../../services/auth.service';
                 <h5 class="title">Login</h5>
               </div>
               <div class="flex-auto p-6">
-                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" role="form text-left" autocomplete="true">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" role="form text-left" [autocomplete]="true">
                   <div class="mb-4">
-                    <input type="mail" formControlName="mail" class="input-theme" placeholder="mail" />
+                    <input type="mail" formControlName="mail" class="input-theme" placeholder="email" />
                     <div *ngIf="loginForm.get('mail')?.invalid && loginForm.get('mail')?.touched" class="text-red-500">
                       <small *ngIf="loginForm.get('mail')?.errors?.['required']">mail is required</small>
                       <small *ngIf="loginForm.get('mail')?.errors?.['email']">Invalid mail format</small>
@@ -88,6 +88,4 @@ export class LoginComponent implements OnInit {
       this.loginForm.reset();
     }
   }
-
-
 }

@@ -26,13 +26,10 @@ export const appConfig: ApplicationConfig = {
     // Configure ngx-toastr pour afficher des notifications élégantes
     provideToastr({
       positionClass: 'toast-bottom-right',
-      preventDuplicates: true,
       timeOut: 3000,
       enableHtml: true,
       extendedTimeOut: 1000,
       closeButton: true,
-      progressAnimation: 'increasing',
-      progressBar: true,
     }),
   ],
 };

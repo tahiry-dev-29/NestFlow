@@ -162,7 +162,7 @@ export const UserStore = signalStore(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((credentials) =>
           authService.login(credentials).pipe(
-            switchMap((token) => { // Use switchMap to chain the getUserByToken call
+            switchMap((token) => {
               if (token) {
                 return authService.getUserByToken(token).pipe(
                   tap((user) => {
@@ -172,12 +172,12 @@ export const UserStore = signalStore(
                   }),
                   catchError((error) => {
                     patchState(store, { error: error.message, loading: false, isAuthenticated: false, currentUser: null });
-                    return of(null); // Important: Return of(null) to complete the outer observable
+                    return of(null);
                   })
                 );
               } else {
                 patchState(store, { error: 'Invalid credentials', loading: false, isAuthenticated: false, currentUser: null });
-                return of(null); // Important: Return of(null) to complete the outer observable
+                return of(null);
               }
             }),
             catchError((error) => {
@@ -192,30 +192,48 @@ export const UserStore = signalStore(
     logout: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
-        switchMap(() => {
-          const userId = store.currentUser()?.id;
-          if (userId) {
-            return authService.logout(userId).pipe(
-              tap(() => {
-                patchState(store, { isAuthenticated: false, loading: false, token: null, currentUser: null });
-                router.navigate(['/login']);
-              }),
-              catchError((error) => {
-                patchState(store, { error: error.message, loading: false });
+        switchMap(() =>
+          authService.getUserByToken(authService.getToken()!).pipe(
+            switchMap((currentUser) => {
+              if (currentUser) {
+                return authService.logout(currentUser.id).pipe(
+                  tap(() => {
+                    patchState(store, {
+                      isAuthenticated: false,
+                      token: null,
+                      currentUser: null,
+                      loading: false,
+                    });
+                    authService.deleteToken();
+                    toastr.success('Déconnexion réussie 👋');
+                    router.navigate(['/login']);
+                  }),
+                  catchError((error) => {
+                    patchState(store, { error: error.message, loading: false });
+                    toastr.error('Échec de la déconnexion : ' + error.message);
+                    return of(null);
+                  })
+                );
+              } else {
+                const error = 'Utilisateur non trouvé';
+                patchState(store, { error, loading: false });
+                toastr.error(error);
                 return of(null);
-              })
-            );
-          } else {
-            patchState(store, { error: 'Utilisateur non trouvé', loading: false });
-            return of(null);
-          }
-        }),
-        catchError((error) => {
-          patchState(store, { error: error.message, loading: false });
-          return of(null);
-        })
+              }
+            }),
+            catchError((error) => {
+              patchState(store, { error: error.message, loading: false });
+              toastr.error('Erreur lors de la récupération de l’utilisateur : ' + error.message);
+              return of(null);
+            })
+          )
+        )
       )
     ),
+
+
+
+
 
     checkAuthStatus: () => {
       const token = authService.getToken();

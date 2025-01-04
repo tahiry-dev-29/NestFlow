@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from '../shared/pages/not-found/not-found.component';
 import { adminGuard } from '../auth/guards/admin.guard';
+import { AuthGuard } from '../auth/guards/auth-guard.guard';
 
 export const DashboardRouter: Routes = [
   {
     path: '',
     title: 'Dashboard',
     loadComponent: () => import('../dashboard/components/dashboard-overview/dashboard-overview.component').then((m) => m.DashboardOverviewComponent),
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',

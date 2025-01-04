@@ -188,7 +188,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<String> logout(String userId, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Map<String, String>> logout(String userId, HttpServletRequest request,
+            HttpServletResponse response) {
         try {
             UserEntity user = userRepository.findById(userId)
                     .orElseThrow(
@@ -199,7 +200,8 @@ public class UserServiceImpl implements UserService {
 
             String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token manquant ou invalide.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Token manquant ou invalide."));
             }
 
             String token = authHeader.substring(7);
@@ -207,16 +209,17 @@ public class UserServiceImpl implements UserService {
 
             Cookie cookie = new Cookie("authToken", null);
             cookie.setHttpOnly(true);
-            cookie.setSecure(false);
+            cookie.setSecure(false); // Utilisez `true` en production
             cookie.setPath("/");
             cookie.setMaxAge(0);
             response.addCookie(cookie);
 
-            return ResponseEntity.ok("Déconnexion réussie.");
+            return ResponseEntity.ok(Map.of("message", "Déconnexion réussie."));
         } catch (UserServiceException.UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur interne du serveur.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Erreur interne du serveur."));
         }
     }
 
