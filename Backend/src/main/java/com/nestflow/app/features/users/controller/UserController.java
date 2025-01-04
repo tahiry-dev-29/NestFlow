@@ -1,5 +1,6 @@
 package com.nestflow.app.features.users.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class UserController {
         user.setPassword(password);
 
         try {
-            UserEntity.ROLE role = UserEntity.ROLE.valueOf(roleString.toUpperCase()); 
+            UserEntity.ROLE role = UserEntity.ROLE.valueOf(roleString.toUpperCase());
             user.setRole(role);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -77,17 +78,33 @@ public class UserController {
     @PostMapping(value = "/login")
     @Operation(summary = "Obtenir un jeton d'authentification")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Jeton d'authentification", content = @Content(schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "400", description = "Requête de connexion invalide", content = @Content(schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "401", description = "Utilisateur non autorisé", content = @Content(schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "200", description = "Jeton d'authentification renvoyé avec succès"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "401", description = "Identifiants invalides"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne")
+    })
+    public ResponseEntity<?> login(
+            @RequestBody(required = false) UserEntity user,
+            HttpServletResponse response) {
+
+        if (user == null || user.getMail() == null || user.getPassword() == null) {
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("error", "Requête invalide : email ou mot de passe manquant."));
+        }
+        return userService.login(user, response);
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Récupérer les informations de l'utilisateur connecté", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Informations de l'utilisateur récupérées avec succès", content = @Content(schema = @Schema(implementation = UserEntity.class))),
+            @ApiResponse(responseCode = "401", description = "Non autorisé (token invalide ou manquant)", content = @Content(schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé", content = @Content(schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur", content = @Content(schema = @Schema(type = "string")))
     })
-    public ResponseEntity<String> getToken(@RequestBody UserEntity userFromJson) {
-        if (userFromJson != null) {
-            return userService.getToken(userFromJson);
-        }
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Requête invalide : données JSON manquantes");
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<UserEntity> getCurrentUser() {
+        return userService.getByToken();
     }
 
     @GetMapping("/lists")
@@ -112,7 +129,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur", content = @Content(schema = @Schema(type = "string")))
     })
     public ResponseEntity<Map<String, Object>> getUserById(@PathVariable String id) {
-        return userService.getPublicUserInfo(id); // Type corrigé
+        return userService.getPublicUserInfo(id);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -124,7 +141,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur", content = @Content(schema = @Schema(type = "string")))
     })
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
-        return userService.deleteUser(id); // Type corrigé
+        return userService.deleteUser(id);
     }
 
     @PatchMapping("/update/{id}")
@@ -153,6 +170,6 @@ public class UserController {
     })
     public ResponseEntity<String> logout(@PathVariable String id, HttpServletRequest request,
             HttpServletResponse response) {
-        return userService.logout(id, request, response); // Type corrigé
+        return userService.logout(id, request, response);
     }
 }

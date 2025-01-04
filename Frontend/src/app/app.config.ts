@@ -1,4 +1,3 @@
-import { animate } from '@angular/animations';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
@@ -9,11 +8,22 @@ import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Optimise les cycles de détection de changement
     provideZoneChangeDetection({ eventCoalescing: true }),
+    
+    // Fournit le routeur avec les routes configurées
     provideRouter(routes),
+
+    // Fournit les animations Angular avec une gestion asynchrone
     provideAnimationsAsync(),
+
+    // Fournit le Store NgRx (assurez-vous de l'avoir configuré ailleurs si nécessaire)
     provideStore(),
+
+    // Fournit le client HTTP pour gérer les requêtes
     provideHttpClient(),
+
+    // Configure ngx-toastr pour afficher des notifications élégantes
     provideToastr({
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,

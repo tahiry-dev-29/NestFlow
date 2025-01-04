@@ -1,95 +1,237 @@
-import { computed } from '@angular/core';
+import { computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { catchError, Observable, of, pipe, switchMap, tap } from 'rxjs';
+import { AuthService } from '../../auth/services/auth.service';
+import { UsersService } from '../services/users.service';
+import { ToastrService } from 'ngx-toastr';
 
 export interface IUsers {
-  id: number;
-  fullname: string;
-  email: string;
-  status: 'active' | 'inactive';
-  image: string;
+  id: string;
+  name: string;
+  firstName: string;
+  mail: string;
   password: string;
+  imageUrl?: string;
+  online: boolean;
+  active: boolean;
+  role: UserEntity.ROLE;
+}
+
+export namespace UserEntity {
+  export enum ROLE {
+    ADMIN,
+    USER,
+  }
 }
 
 export interface UserState {
   users: IUsers[];
   loading: boolean;
   error: string | null;
+  isAuthenticated: boolean;
+  token: string | null;
+  currentUser: IUsers | null | undefined;
 }
 
-const getInitialState = (): UserState => {
-  const storedState = localStorage.getItem('UserState');
-  if (storedState) {
-    return JSON.parse(storedState);
-  }
-  return {
-    users: [],
-    loading: false,
-    error: null,
-  };
-};
+const getInitialState = (): UserState => ({
+  users: [],
+  loading: false,
+  error: null,
+  isAuthenticated: false,
+  token: null,
+  currentUser: null,
+});
 
 export const UserStore = signalStore(
   { providedIn: 'root' },
   withState(getInitialState()),
   withComputed(({ users }) => ({
-    activeUsers: computed(() => users().filter((user) => user.status === 'active')),
-    inactiveUsers: computed(() => users().filter((user) => user.status === 'inactive')),
-    filteredUsers: computed(() => (search: string | null) => {
-      if (!search) return users();
-      const lowerSearch = search.toLowerCase();
-      return users().filter(
-        (user) =>
-          user.fullname.toLowerCase().includes(lowerSearch) ||
-          user.email.toLowerCase().includes(lowerSearch)
-      );
-    }),
+    activeUsers: computed(() => users().filter((user) => user.online)),
+    inactiveUsers: computed(() => users().filter((user) => !user.online)),
     totalUsers: computed(() => users().length),
-    userStatusClass: computed(() => (status: 'active' | 'inactive') => 
-      status === 'active' ? 'online' : 'offline'
-    ),
+    userStatusClass: computed(() => (status: boolean) => (status ? 'online' : 'offline')),
+    selectLoading: computed(() => loading()),
+    selectError: computed(() => error()),
   })),
-  withMethods((store) => ({
-    getUserById(id: number): IUsers | null {
-      return store.users().find((user) => user.id === id) || null;
+  withMethods((store, userService = inject(UsersService), authService = inject(AuthService), router = inject(Router), toastr = inject(ToastrService)) => ({
+    getUserById: (userId: string): IUsers | undefined => {
+      return store.users().find((user) => user.id === userId);
     },
-    addUser(user: Omit<IUsers, 'id'>): void {
-      const newId = Math.max(0, ...store.users().map((u) => u.id)) + 1;
-      const newUser: IUsers = { ...user, id: newId };
-      patchState(store, { users: [...store.users(), newUser] });
-      this.saveToLocalStorage();
-    },
-    updateUser(id: number, updates: Partial<IUsers>): void {
-      const user = this.getUserById(id);
-      if (user) {
-        const newUsers = store.users().map((u) => (u.id === id ? { ...u, ...updates } : u));
-        patchState(store, { users: newUsers });
-        this.saveToLocalStorage();
+    loadUsers: rxMethod<Observable<void>>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap(() => {
+          return userService.getAll().pipe(
+            tap((users) => patchState(store, { users, loading: false })),
+            catchError((error) => {
+              patchState(store, { error: error.message, loading: false });
+              return of(undefined);
+            })
+          );
+        })
+      )
+    ),
+
+    addUser: rxMethod<Omit<IUsers, 'id'>>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap((user) =>
+          userService.addUser(user).pipe(
+            tap((newUser: IUsers | null) => {
+              if (newUser) {
+                patchState(store, { users: [...store.users(), newUser], loading: false });
+              } else {
+                patchState(store, { error: 'Failed to add user',
+                  loading: false });
+              }
+            }),
+            catchError((error) => {
+              patchState(store, { error: error.message, loading: false });
+              return of(null);
+            })
+          )
+        )
+      )
+    ),
+    updateUser: rxMethod<{ userId: string; updates: Partial<IUsers> }>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap(({ userId, updates }) =>
+          userService.updateUser(userId, updates).pipe(
+            tap((updatedUser) => {
+              if (updatedUser) {
+                patchState(store, {
+                  users: store.users().map((user) => (user.id === userId ? updatedUser : user)),
+                  loading: false,
+                });
+              } else {
+                patchState(store, { error: 'Failed to update user', loading: false });
+              }
+            }),
+            catchError((error) => {
+              patchState(store, { error: error.message, loading: false });
+              return of(null);
+            })
+          )
+        )
+      )
+    ),
+    deleteUser: rxMethod<string>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap((userId) =>
+          userService.deleteUser(userId).pipe(
+            tap((success) => {
+              if (success) {
+                patchState(store, { users: store.users().filter((user) => user.id !== userId), loading: false });
+              } else {
+                patchState(store, { error: 'Failed to delete user', loading: false });
+              }
+            }),
+            catchError((error) => {
+              patchState(store, { error: error.message, loading: false });
+              return of(false);
+            })
+          )
+        )
+      )
+    ),
+
+    signup: rxMethod<Omit<IUsers, 'id' | 'online' | 'active' | 'role'>>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap((user) =>
+          authService.signUp(user).pipe(
+            tap(() => {
+              patchState(store, { loading: false });
+              router.navigate(['/login']);
+            }),
+            catchError((error) => {
+              patchState(store, { error: error.message, loading: false });
+              return of(null);
+            })
+          )
+        )
+      )
+    ),
+
+    login: rxMethod<{ mail: string; password: string }>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap((credentials) =>
+          authService.login(credentials).pipe(
+            switchMap((token) => { // Use switchMap to chain the getUserByToken call
+              if (token) {
+                return authService.getUserByToken(token).pipe(
+                  tap((user) => {
+                    patchState(store, { isAuthenticated: true, loading: false, token, currentUser: user });
+                    router.navigate(['/dashboard/overview']);
+                    toastr.success('Connexion réussie ! Bienvenue 👋');
+                  }),
+                  catchError((error) => {
+                    patchState(store, { error: error.message, loading: false, isAuthenticated: false, currentUser: null });
+                    return of(null); // Important: Return of(null) to complete the outer observable
+                  })
+                );
+              } else {
+                patchState(store, { error: 'Invalid credentials', loading: false, isAuthenticated: false, currentUser: null });
+                return of(null); // Important: Return of(null) to complete the outer observable
+              }
+            }),
+            catchError((error) => {
+              patchState(store, { error: error.message, loading: false, isAuthenticated: false, currentUser: null });
+              return of(null);
+            })
+          )
+        )
+      )
+    ),
+
+    logout: rxMethod<void>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap(() => {
+          const userId = store.currentUser()?.id;
+          if (userId) {
+            return authService.logout(userId).pipe(
+              tap(() => {
+                patchState(store, { isAuthenticated: false, loading: false, token: null, currentUser: null });
+                router.navigate(['/login']);
+              }),
+              catchError((error) => {
+                patchState(store, { error: error.message, loading: false });
+                return of(null);
+              })
+            );
+          } else {
+            patchState(store, { error: 'Utilisateur non trouvé', loading: false });
+            return of(null);
+          }
+        }),
+        catchError((error) => {
+          patchState(store, { error: error.message, loading: false });
+          return of(null);
+        })
+      )
+    ),
+
+    checkAuthStatus: () => {
+      const token = authService.getToken();
+      if (token) {
+        patchState(store, { isAuthenticated: true, token: token });
       }
-      else {
-        console.error(`User with id ${id} not found`);
-      }
-    },
-    deleteUser(id: number): void {
-      patchState(store, {
-        users: store.users().filter((user) => user.id !== id),
-      });
-      this.saveToLocalStorage();
-    },
-    setLoading(isLoading: boolean): void {
-      patchState(store, { loading: isLoading });
-    },
-    setError(error: string | null): void {
-      patchState(store, { error });
-    },
-    resetError(): void {
-      patchState(store, { error: null });
-    },
-    saveToLocalStorage(): void {
-      localStorage.setItem('UserState', JSON.stringify({
-        users: store.users(),
-        loading: store.loading(),
-        error: store.error(),
-      }));
     },
   }))
 );
+
+function loading(): boolean {
+  const store = inject(UserStore);
+  return store.selectLoading();
+}
+
+function error(): boolean {
+  const store = inject(UserStore);
+  return store.selectError();
+}

@@ -16,7 +16,9 @@ public interface UserService {
 
     ResponseEntity<UserEntity> createUser(UserEntity user, MultipartFile imageFile);
 
-    ResponseEntity<String> getToken(UserEntity user);
+    ResponseEntity<Map<String, String>> login(UserEntity user, HttpServletResponse response);
+
+    ResponseEntity<UserEntity> getByToken();
 
     ResponseEntity<List<Map<String, Object>>> getAll();
 

@@ -28,6 +28,24 @@ import { of } from 'rxjs';
                     </div>
                   </div>
                   <div class="mb-4">
+                    <input type="text" formControlName="name" class="input-theme" placeholder="Name" />
+                    <div *ngIf="signupForm.get('name')?.invalid && signupForm.get('name')?.touched" class="text-red-500 text-xs mt-1">
+                      {{ getErrorMessage('name') }}
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <input type="text" formControlName="firstName" class="input-theme" placeholder="First Name" />
+                    <div *ngIf="signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched" class="text-red-500 text-xs mt-1">
+                      {{ getErrorMessage('firstName') }}
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <input type="email" formControlName="mail" class="input-theme" placeholder="Mail" />
+                    <div *ngIf="signupForm.get('mail')?.invalid && signupForm.get('mail')?.touched" class="text-red-500 text-xs mt-1">
+                      {{ getErrorMessage('mail') }}
+                    </div>
+                  </div>
+                  <div class="mb-4">
                     <input type="password" formControlName="password" class="input-theme" placeholder="Password" />
                     <div *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" class="text-red-500 text-xs mt-1">
                       {{ getErrorMessage('password') }}
@@ -67,6 +85,9 @@ export class RegisterComponent {
     email: 'Veuillez entrer une adresse e-mail valide.',
     password: 'Le mot de passe doit contenir au moins 6 caractères.',
     confirmPassword: 'Les mots de passe ne correspondent pas.',
+    name: 'Veuillez entrer un nom.',
+    firstName: 'Veuillez entrer un prénom.',
+    mail: 'Veuillez entrer une adresse e-mail valide.',
   };
 
   constructor() {
@@ -74,6 +95,9 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
+      name: ['', Validators.required],
+      firstName: ['', Validators.required],
+      mail: ['', [Validators.required, Validators.email]],
       agreeTerms: [false]
     }, { validator: this.passwordMatchValidator });
   }
@@ -95,7 +119,10 @@ export class RegisterComponent {
     if (this.signupForm.valid) {
       const userData = {
         email: this.signupForm.get('email')?.value,
-        password: this.signupForm.get('password')?.value
+        password: this.signupForm.get('password')?.value,
+        name: this.signupForm.get('name')?.value,
+        firstName: this.signupForm.get('firstName')?.value,
+        mail: this.signupForm.get('mail')?.value
       };
       this.authService.signUp(userData).pipe(
         tap(response => {

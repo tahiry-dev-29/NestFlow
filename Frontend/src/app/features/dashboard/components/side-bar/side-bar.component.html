@@ -71,9 +71,6 @@
             </div>
           </div>
         </li>
-
-
-
       </ul>
 
       <!-- Settings -->
@@ -83,10 +80,10 @@
             <div class="transition-all duration-300" [class.hidden]="!sideRightbarState()">
               <ul class="flex flex-col gap-2 text-white">
                 <li class="flex items-center group-hover:shadow-dark-blur group rounded-3 transition mb-3">
-                  <a (click)="logout()" class="flex w-full justify-around gap-2 p-2 items-center space-x-3">
+                  <button (click)="onLogoutClick()" class="flex w-full justify-around gap-2 p-2 items-center space-x-3">
                     <span class="font-semibold group-hover:text">Logout</span>
                     <span class="material-icons text-5 group-hover:text">logout</span>
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>

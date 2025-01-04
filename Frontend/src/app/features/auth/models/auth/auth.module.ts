@@ -1,12 +1,9 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { IUsers } from "../../../users/store/users.store";
 
-
-
-@NgModule({
-  declarations: [],
-  imports: [
-    CommonModule
-  ]
-})
-export class AuthModule { }
+export interface AuthState {
+  isAuthenticated: boolean;
+  user?: IUsers; 
+  loading: boolean;
+  error?: string | null; // Make error nullable
+  token: string | null;
+}

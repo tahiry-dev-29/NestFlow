@@ -1,66 +1,91 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service'; // Import de ngx-cookie-service
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
+import { IUsers } from '../../users/store/users.store'; // Supposons que vous ayez un modèle User
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://api.example.com';
-  private tokenKey = 'auth_token';
+  private apiUrl = 'http://localhost:8080/api/users';
 
-  // private router = inject(Router);
-  private http = inject(HttpClient);
-  private cookieService = inject(CookieService);
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService,
+  ) { }
 
-  signUp(user: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/signup`, user).pipe(
-      catchError(this.handleError)
-    );
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'An unknown error occurred!';
+
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      if (error.status === 0) {
+        errorMessage = "Unable to contact the server. Please check your internet connection.";
+      } else if (error.status === 400) {
+        errorMessage = error.error?.message || "Invalid request.";
+      } else if (error.status === 401) {
+        errorMessage = error.error?.message || "Unauthorized. Please check your credentials.";
+      } else if (error.status === 404) {
+        errorMessage = error.error?.message || "Resource not found.";
+      } else if (error.status === 500) {
+        errorMessage = "Internal server error.";
+      } else {
+        errorMessage = `Error code: ${error.status}\nMessage: ${error.message}`;
+      }
+    }
+    return throwError(() => new Error(errorMessage));
   }
 
-  login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
-      map((response: any) => {
-        if (response.token) {
+  login(credentials: { mail: string; password: string }): Observable<string | null> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials).pipe(
+      map(response => {
+        if (response && response.token) {
           this.setToken(response.token);
+          return response.token;
         }
-        return response;
+        return null;
       }),
       catchError(this.handleError)
     );
   }
 
-  logout(): void {
-    this.cookieService.delete(this.tokenKey);
+  signUp(user: Omit<IUsers, 'id' | 'online' | 'active' | 'role'>): Observable<any> {
+    return this.http.post(`${this.apiUrl}/signup`, user).pipe(
+      map(() => {
+        return null;
+      }),
+      catchError(this.handleError)
+    );
   }
 
-  isAuthenticated(): boolean {
-    return this.cookieService.check(this.tokenKey);
+  logout(userId: string): Observable<Object> {
+    return this.http.post(`${this.apiUrl}/logout/${userId}`, {}).pipe(
+      tap(() => {
+        this.deleteToken();
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  getUserByToken(token: string): Observable<IUsers | null> {
+    return this.http.get<IUsers>(`${this.apiUrl}/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   getToken(): string | null {
-    return this.cookieService.get(this.tokenKey);
+    return this.cookieService.get('authToken') || null;
   }
 
-  private setToken(token: string): void {
-    this.cookieService.set(this.tokenKey, token, {
-      expires: 1, // 1 day
-      secure: true,
-      sameSite: 'Strict',
-      path: '/'
-    });
+  setToken(token: string): void {
+    this.cookieService.set('authToken', token, 1, '/', 'localhost', true, 'Strict');
   }
 
-  private handleError(error: any): Observable<never> {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    return throwError(() => new Error(errorMessage));
+  deleteToken(): void {
+    this.cookieService.delete('authToken');
   }
 }

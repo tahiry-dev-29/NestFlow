@@ -1,6 +1,11 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { Observable, of, Subject } from 'rxjs';
+import { catchError, tap, takeUntil, switchMap } from 'rxjs/operators';
+import { UserStore } from '../../../users/store/users.store';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 
@@ -8,9 +13,8 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-login',
   standalone: true,
   imports: [
-    RouterLink,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
   ],
   template: `
     <main class="mt-0 transition-all duration-200 ease-in-out flex justify-center items-center min-h-screen">
@@ -22,16 +26,16 @@ import { AuthService } from '../../services/auth.service';
                 <h5 class="title">Login</h5>
               </div>
               <div class="flex-auto p-6">
-                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" role="form text-left">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" role="form text-left" autocomplete="true">
                   <div class="mb-4">
-                    <input type="email" formControlName="email" class="input-theme" placeholder="Email" />
-                    <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-red-500">
-                      <small *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</small>
-                      <small *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email format</small>
+                    <input type="mail" formControlName="mail" class="input-theme" placeholder="mail" />
+                    <div *ngIf="loginForm.get('mail')?.invalid && loginForm.get('mail')?.touched" class="text-red-500">
+                      <small *ngIf="loginForm.get('mail')?.errors?.['required']">mail is required</small>
+                      <small *ngIf="loginForm.get('mail')?.errors?.['email']">Invalid mail format</small>
                     </div>
                   </div>
                   <div class="mb-4">
-                    <input type="password" formControlName="password" class="input-theme" placeholder="Password"/>
+                    <input type="password" formControlName="password" class="input-theme" placeholder="Password" />
                     <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-red-500">
                       <small *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</small>
                       <small *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters long</small>
@@ -42,10 +46,15 @@ import { AuthService } from '../../services/auth.service';
                     Remember me
                   </div>
                   <div class="text-center">
-                    <button type="submit" [disabled]="loginForm.invalid" class="focus:outline-none right-blue-400" [ngClass]="{'btn-desactived-bg': loginForm.invalid, 'btn-gradient-bg': !loginForm.invalid}">Login</button>
+                    <button type="submit" [disabled]="loginForm.invalid || store.loading()" class="focus:outline-none right-blue-400" [ngClass]="{'btn-desactived-bg': loginForm.invalid || store.loading(), 'btn-gradient-bg': !loginForm.invalid && !store.loading()}">Login</button>
                   </div>
                 </form>
                 <a routerLink="/dashboard" class="text ml-2">Dashboard</a>
+                <div *ngIf="store.loading()" class="flex justify-center items-center gap-3">
+                  <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+                  <span class="ml-2 text-white animate-pulse duration-75">Chargement...</span>
+                </div>
+                <div *ngIf="store.error()" class="error">{{ store.error() }}</div>
               </div>
             </div>
           </div>
@@ -53,35 +62,32 @@ import { AuthService } from '../../services/auth.service';
       </section>
     </main>
   `,
-  styleUrl: './login.component.scss',
+  styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent {
-  private fb = inject(FormBuilder);
-  private authService = inject(AuthService);
-  private router = inject(Router);
 
-  loginForm: FormGroup;
+export class LoginComponent implements OnInit {
+  loginForm!: FormGroup;
+  readonly store = inject(UserStore);
+  readonly fb = inject(FormBuilder);
+  readonly router = inject(Router);
+  readonly toastr = inject(ToastrService);
+  readonly authService = inject(AuthService);
 
-  constructor() {
+  ngOnInit(): void {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      mail: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
+      rememberMe: [false],
     });
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-      this.authService.login({ email, password }).subscribe({
-        next: () => {
-          this.router.navigate(['/dashboard']);
-        },
-        error: (error) => {
-          console.error('Login failed', error);
-          // Handle login error (e.g., show error message)
-        }
-      });
+      const { mail, password } = this.loginForm.value;
+      this.store.login({ mail, password });
+      this.loginForm.reset();
     }
   }
+
+
 }

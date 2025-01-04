@@ -1,21 +1,19 @@
 package com.nestflow.app.features.users.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @Document(collection = "users")
 public class UserEntity {
+
     @Id
     private String id;
 
@@ -35,9 +33,9 @@ public class UserEntity {
 
     private String imageUrl;
 
-    private boolean online; 
-    private boolean active;
-        
+    private boolean online;
+    // private boolean active = true;
+
     public enum ROLE {
         ADMIN,
         USER
@@ -46,4 +44,5 @@ public class UserEntity {
     @NotNull(message = "Le role est obligatoire.")
     private ROLE role;
 
+    
 }

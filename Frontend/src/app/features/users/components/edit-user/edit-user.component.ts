@@ -94,17 +94,18 @@ export class EditUserComponent {
 
   initForm(user: IUsers | null): void {
     this.userForm = this.fb.group({
-      fullname: [user?.fullname || '', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-      email: [user?.email || '', [Validators.required, Validators.email]],
-      status: [user?.status || 'active', Validators.required],
-      image: [user?.image || null]
+      fullname: [user?.name || '', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
+      email: [user?.mail || '', [Validators.required, Validators.email]],
+      status: [user?.online || 'active', Validators.required],
+      image: [user?.imageUrl || null]
     });
   }
 
   onSubmit(): void {
     if (this.userForm.valid && this.user) {
       const updatedUser = { ...this.user, ...this.userForm.value };
-      this.store.updateUser(this.user.id, updatedUser);
+      const { id: userId, ...userUpdates } = updatedUser; 
+      this.store.updateUser(userId, userUpdates);
       this.toastr.success(`User <span class="msg-class">${updatedUser.fullname}</span> updated successfully`);
     } else {
       this.toastr.error('Please fill in all fields correctly');

@@ -19,12 +19,12 @@ import { ImageUrl } from '../../../../../../public/images/constant.images';
                         <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-48 rounded-t-lg transform hover:scale-105 transition-transform duration-300"></div>
                         <div class="relative -mt-28 px-6 animate-fadeIn">
                             <div class="relative inline-block mb-4">
-                                <img [src]="user()?.image ? user()!.image : defaultImages" [alt]="user()?.fullname" class="w-40 h-40 rounded-full border-4 border-white mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                <span [ngClass]="{'bg-green-500': user()?.status === 'active', 'bg-red-500': user()?.status === 'inactive'}"
+                                <img [src]="user()?.imageUrl ? user()!.imageUrl : defaultImages" [alt]="user()?.name" class="w-40 h-40 rounded-full border-4 border-white mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
+                                <span [ngClass]="{'bg-green-500': user()?.online , 'bg-red-500': user()?.online === false}"
                                       class="absolute bottom-2 right-2 w-4 h-4 rounded-full border-2 border-white animate-pulse"></span>
                             </div>
-                            <h1 class="text-3xl font-bold text mb-2 animate-slideDown">{{ user()?.fullname }}</h1>
-                            <p class="text-gray-300 mb-6 animate-slideUp">{{ user()?.email }}</p>
+                            <h1 class="text-3xl font-bold text mb-2 animate-slideDown">{{ user()?.name }}</h1>
+                            <p class="text-gray-300 mb-6 animate-slideUp">{{ user()?.mail }}</p>
                             <div class="mt-6 border-t border-gray-700 pt-4 animate-fadeIn">
                                 <h2 class="text-xl font-semibold text-white mb-3">About</h2>
                                 <p class="text-gray-300 max-w-lg mx-auto">User information and details go here.</p>

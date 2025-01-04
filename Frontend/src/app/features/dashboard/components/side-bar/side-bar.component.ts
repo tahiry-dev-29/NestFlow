@@ -9,6 +9,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { sideLeftBarState } from '../../store/signal.store';
 import { AuthService } from '../../../auth/services/auth.service';
+import { UserStore } from '../../../users/store/users.store';
 
 @Component({
   selector: 'app-side-bar',
@@ -19,11 +20,16 @@ import { AuthService } from '../../../auth/services/auth.service';
 })
 export class SideBarComponent {
   private readonly router = inject(Router);
-  private readonly auhtService = inject(AuthService);
+  private readonly authService = inject(AuthService);
+  private readonly userStore = inject(UserStore);
 
-  logout() {
-    this.auhtService.logout();
-    this.router.navigate(['/login']);
+  onLogoutClick() {
+    const userId = this.userStore.currentUser()?.id; // Get userId from the store
+    if (userId) {
+      this.authService.logout(userId).subscribe();
+    } else {
+      console.error("No user id found")
+    }
   }
 
   sideLeftBarState = sideLeftBarState;
@@ -66,7 +72,6 @@ export class SideBarComponent {
   }
   
   readonly classes = computed(() => {
-
     return {
       menuIconClass: (route: string) =>
         this.isActive(route) ? 'menu-icon-solid text' : 'menu-icon-outline text-gray-500',
@@ -88,7 +93,6 @@ export class SideBarComponent {
           ? 'rotate-90 text'
           : 'rotate-0 text-gray-300',
     };
-    
   });
 
   // Classes dynamiques spécifiques pour Settings
