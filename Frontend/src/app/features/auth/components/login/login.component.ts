@@ -49,7 +49,6 @@ import { AuthService } from '../../services/auth.service';
                     <button type="submit" [disabled]="loginForm.invalid || store.loading()" class="focus:outline-none right-blue-400" [ngClass]="{'btn-desactived-bg': loginForm.invalid || store.loading(), 'btn-gradient-bg': !loginForm.invalid && !store.loading()}">Login</button>
                   </div>
                 </form>
-                <a routerLink="/dashboard" class="text ml-2">Dashboard</a>
                 <div *ngIf="store.loading()" class="flex justify-center items-center gap-3">
                   <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
                   <span class="ml-2 text-white animate-pulse duration-75">Chargement...</span>

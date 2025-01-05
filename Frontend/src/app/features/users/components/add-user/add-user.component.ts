@@ -125,7 +125,7 @@ export class AddUserComponent implements OnInit {
     onSubmit(): void {
         if (this.userForm.valid) {
             const fullname = this.userForm.get('fullname')?.value;
-            this.store.addUser(this.userForm.value);
+            this.store.signup(this.userForm.value);
             this.userForm.reset();
             this.selectedFileName = null;
             this.initializePreview();

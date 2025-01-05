@@ -3,7 +3,8 @@ import { Component, ElementRef, Input, ViewChild, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { slideInOut } from '../../../shared/animations/animations';
-import { IUsers, UserStore } from '../../store/users.store';
+import { UserStore } from '../../store/users.store';
+import { IUsers } from '../../models/users/users.module';
 
 @Component({
   selector: 'app-edit-user',

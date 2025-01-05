@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IUsers } from '../../store/users.store';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
+import { IUsers } from '../../models/users/users.module';
 
 @Component({
   selector: 'app-view-user',

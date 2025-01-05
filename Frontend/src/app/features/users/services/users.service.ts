@@ -1,51 +1,54 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { catchError, of } from 'rxjs';
-import { IUsers } from '../store/users.store';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError, Observable, of, throwError } from 'rxjs';
+import { AuthService } from '../../auth/services/auth.service';
+import { IUsers } from '../models/users/users.module';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
-  private readonly baseUrl = "http://localhost:8080/api";
+  private readonly baseUrl = 'http://localhost:8080/api/users';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService // Injection de AuthService
+  ) { }
 
-  getAll() {
-    return this.http.get<IUsers[]>(`${this.baseUrl}/users/lists`).pipe(
+  getAll(): Observable<IUsers[]> {
+    const token = this.authService.getToken();  // Récupérer le jeton
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<IUsers[]>(`${this.baseUrl}/lists`, { headers }).pipe(
       catchError((error) => {
         console.error('Error while fetching users:', error);
-        return of([]); // Retourne un tableau vide en cas d'erreur
-      })
-    );
-  }
-
-  
-
-  addUser(user: Omit<IUsers, 'id'>) {
-    return this.http.post<IUsers>(`${this.baseUrl}/users/create`, user).pipe(
-      catchError((error) => {
-        console.error('Error while adding user:', error);
-        return of(null); // Retourne null en cas d'erreur
+        return throwError(() => new Error('Failed to load users.'));
       })
     );
   }
 
   updateUser(userId: string, updates: Partial<IUsers>) {
-    return this.http.patch<IUsers>(`${this.baseUrl}/users/update/${userId}`, updates).pipe(
+    const token = this.authService.getToken();  // Récupérer le jeton
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.patch<IUsers>(`${this.baseUrl}/update/${userId}`, updates, { headers }).pipe(
       catchError((error) => {
         console.error('Error while updating user:', error);
-        return of(null); // Retourne null en cas d'erreur
+        return throwError(() => new Error('Failed to update user.'));
       })
     );
   }
 
   deleteUser(userId: string) {
-    return this.http.delete<boolean>(`${this.baseUrl}/users/delete/${userId}`).pipe(
+    const token = this.authService.getToken();  // Récupérer le jeton
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.delete(`${this.baseUrl}/delete/${userId}`, { headers, responseType: 'text' }).pipe(
       catchError((error) => {
         console.error('Error while deleting user:', error);
-        return of(false); // Retourne false en cas d'erreur
+        return throwError(() => new Error('Failed to delete user.'));
       })
     );
   }
+
 }

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.nestflow.app.features.common.exceptions.UserServiceException;
 import com.nestflow.app.features.users.dto.UserUpdateRequest;
+import com.nestflow.app.features.users.exceptions.ApiRep;
 import com.nestflow.app.features.users.model.UserEntity;
 import com.nestflow.app.features.users.repository.UserRepository;
 import com.nestflow.app.features.users.security.JwtService;
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
     private final ImageUploadService imageUploadService;
 
     @Override
-    public ResponseEntity<UserEntity> createUser(UserEntity user, MultipartFile imageFile) {
+    public ResponseEntity<UserEntity> signup(UserEntity user, MultipartFile imageFile) {
         try {
             validateUser(user);
             checkUserExists(user.getMail());
@@ -141,16 +142,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<String> deleteUser(String userId) {
+    public ResponseEntity<ApiRep> deleteUser(String userId) {
         try {
             UserEntity user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
+
             userRepository.delete(user);
-            return ResponseEntity.ok("User deleted successfully.");
+
+            ApiRep response = new ApiRep("User deleted successfully.", true);
+            return ResponseEntity.ok(response);
         } catch (UserServiceException.UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            ApiRep response = new ApiRep(e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            ApiRep response = new ApiRep("Error: " + e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -222,7 +228,7 @@ public class UserServiceImpl implements UserService {
                     .body(Map.of("message", "Erreur interne du serveur."));
         }
     }
-
+    
     private void validateUser(UserEntity user) {
         if (user.getMail() == null || user.getMail().isEmpty()) {
             throw new IllegalArgumentException("Email cannot be null or empty.");

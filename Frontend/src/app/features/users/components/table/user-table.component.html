@@ -33,6 +33,16 @@
                                 <tbody>
                                     @for (user of store.users() | paginate: { itemsPerPage: 10, currentPage: p }; track
                                     user.id; let i = $index) {
+                                    <tr *ngIf="store.loading()">
+                                        <td colspan="5" class="text-center p-4">
+                                            <div class="flex items-center justify-center">
+                                                <div class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                                                    role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
@@ -44,7 +54,8 @@
                                         </td>
                                         <td
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
-                                            <p class="mb-0 text-xs leading-tight text-white opacity-80">{{ user.name }}</p>
+                                            <p class="mb-0 text-xs leading-tight text-white opacity-80">{{ user.name }}
+                                            </p>
                                         </td>
                                         <td
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
@@ -65,11 +76,11 @@
                                                 <span class="material-icons">delete</span>
                                             </button>
                                             <button class="tooltip hover:text text-blue-600 mr-2"
-                                                (click)="openEditSidebar(user)">
+                                                (click)="openSidebar('edit', user)">
                                                 <span class="material-icons">edit</span>
                                             </button>
                                             <button class="tooltip hover:text text-slate-600"
-                                                (click)="openViewSidebar(user)">
+                                                (click)="openSidebar('view',user)">
                                                 <span class="material-icons">visibility</span>
                                             </button>
                                         </td>
@@ -96,20 +107,21 @@
             <app-add-user (userAdded)="showAddUserSidebar.set(false)"></app-add-user>
         </div>
     </app-side-bar-right>
-
-    <app-side-bar-right [isOpen]="showEditUserSidebar()" [title]="'Edit User'"
-        (closeEvent)="closeEditSidebar()" (clickOutside)="closeEditSidebar()">
+    
+    <app-side-bar-right [isOpen]="showEditUserSidebar()" [title]="'Edit User'" (closeEvent)="closeSidebar('edit')"
+        (clickOutside)="closeSidebar('edit')">
         <div class="w-85">
             <app-edit-user [user]="userToEdit"></app-edit-user>
         </div>
     </app-side-bar-right>
-
-    <app-side-bar-right [isOpen]="showViewUserSidebar()" [title]="'View User'"
-        (closeEvent)="closeViewSidebar()" (clickOutside)="closeViewSidebar()">
+    
+    <app-side-bar-right [isOpen]="showViewUserSidebar()" [title]="'View User'" (closeEvent)="closeSidebar('view')"
+        (clickOutside)="closeSidebar('view')">
         <div class="w-85">
             <app-view-user [user]="userToView"></app-view-user>
         </div>
     </app-side-bar-right>
+
 </main>
 
 <app-popups *ngIf="showPopup()" (confirm)="confirmDelete()" (cancel)="closePopup()" />

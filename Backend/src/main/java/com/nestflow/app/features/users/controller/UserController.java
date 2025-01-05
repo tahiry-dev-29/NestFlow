@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nestflow.app.features.users.dto.UserUpdateRequest;
+import com.nestflow.app.features.users.exceptions.ApiRep;
 import com.nestflow.app.features.users.model.UserEntity;
 import com.nestflow.app.features.users.service.UserService;
 
@@ -41,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Créer un nouvel utilisateur")
@@ -71,7 +73,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        return userService.createUser(user, imageFile);
+        return userService.signup(user, imageFile);
     }
 
     
@@ -136,11 +138,11 @@ public class UserController {
     @Operation(summary = "Supprimer un utilisateur", security = @SecurityRequirement(name = "bearerAuth"))
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Utilisateur supprimé avec succès", content = @Content(schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé", content = @Content(schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur", content = @Content(schema = @Schema(type = "string")))
+            @ApiResponse(responseCode = "200", description = "Utilisateur supprimé avec succès", content = @Content(schema = @Schema(type = "object", implementation = ApiResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé", content = @Content(schema = @Schema(type = "object", implementation = ApiResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur", content = @Content(schema = @Schema(type = "object", implementation = ApiResponse.class)))
     })
-    public ResponseEntity<String> deleteUser(@PathVariable String id) {
+    public ResponseEntity<ApiRep> deleteUser(@PathVariable String id) {
         return userService.deleteUser(id);
     }
 
@@ -173,5 +175,4 @@ public class UserController {
             HttpServletResponse response) {
         return userService.logout(id, request, response);
     }
-
 }

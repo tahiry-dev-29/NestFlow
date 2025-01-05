@@ -2,38 +2,12 @@ import { computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, Observable, of, pipe, switchMap, tap } from 'rxjs';
+import { catchError, of, pipe, switchMap, tap } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
 import { UsersService } from '../services/users.service';
 import { ToastrService } from 'ngx-toastr';
-
-export interface IUsers {
-  id: string;
-  name: string;
-  firstName: string;
-  mail: string;
-  password: string;
-  imageUrl?: string;
-  online: boolean;
-  active: boolean;
-  role: UserEntity.ROLE;
-}
-
-export namespace UserEntity {
-  export enum ROLE {
-    ADMIN,
-    USER,
-  }
-}
-
-export interface UserState {
-  users: IUsers[];
-  loading: boolean;
-  error: string | null;
-  isAuthenticated: boolean;
-  token: string | null;
-  currentUser: IUsers | null | undefined;
-}
+import { UserState, IUsers, IUserUpdateResponse, IUserUpdateRequest, TSignUp } from '../models/users/users.module';
+import { IAuthCredentials } from '../../auth/models/auth/auth.module';
 
 const getInitialState = (): UserState => ({
   users: [],
@@ -47,7 +21,7 @@ const getInitialState = (): UserState => ({
 export const UserStore = signalStore(
   { providedIn: 'root' },
   withState(getInitialState()),
-  withComputed(({ users }) => ({
+  withComputed(({ users, loading, error }) => ({
     activeUsers: computed(() => users().filter((user) => user.online)),
     inactiveUsers: computed(() => users().filter((user) => !user.online)),
     totalUsers: computed(() => users().length),
@@ -59,7 +33,7 @@ export const UserStore = signalStore(
     getUserById: (userId: string): IUsers | undefined => {
       return store.users().find((user) => user.id === userId);
     },
-    loadUsers: rxMethod<Observable<void>>(
+    loadUsers: rxMethod<IUsers[]>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap(() => {
@@ -73,73 +47,48 @@ export const UserStore = signalStore(
         })
       )
     ),
+    updateUser: rxMethod<IUserUpdateRequest>(pipe(
+      tap(() => patchState(store, { loading: true, error: null })),
+      switchMap(({ userId, updates }) =>
+        userService.updateUser(userId, updates).pipe(
+          tap((updatedUser) => {
+            if (updatedUser) {
+              patchState(store, {
+                users: store.users().map((user) => (user.id === userId ? updatedUser : user)),
+                loading: false,
+              });
+            } else {
+              patchState(store, { error: 'Failed to update user', loading: false });
+            }
+          }),
+          catchError((error) => {
+            patchState(store, { error: error.message, loading: false });
+            return of(null);
+          })
+        )
+      )
+    )),
 
-    addUser: rxMethod<Omit<IUsers, 'id'>>(
-      pipe(
-        tap(() => patchState(store, { loading: true, error: null })),
-        switchMap((user) =>
-          userService.addUser(user).pipe(
-            tap((newUser: IUsers | null) => {
-              if (newUser) {
-                patchState(store, { users: [...store.users(), newUser], loading: false });
-              } else {
-                patchState(store, { error: 'Failed to add user',
-                  loading: false });
-              }
-            }),
-            catchError((error) => {
-              patchState(store, { error: error.message, loading: false });
-              return of(null);
-            })
-          )
+    deleteUser: rxMethod<string>(pipe(
+      tap(() => patchState(store, { loading: true, error: null })),
+      switchMap((userId) =>
+        userService.deleteUser(userId).pipe(
+          tap((response) => {
+            // Ici, on suppose que `response` est le message de succès renvoyé par le backend
+            if (response === "User deleted successfully.") {
+              patchState(store, { users: store.users().filter((user) => user.id !== userId), loading: false });
+            } else {
+              patchState(store, { error: 'Failed to delete user', loading: false });
+            }
+          }),
+          catchError((error) => {
+            patchState(store, { error: error.message, loading: false });
+            return of("Failed");
+          })
         )
       )
-    ),
-    updateUser: rxMethod<{ userId: string; updates: Partial<IUsers> }>(
-      pipe(
-        tap(() => patchState(store, { loading: true, error: null })),
-        switchMap(({ userId, updates }) =>
-          userService.updateUser(userId, updates).pipe(
-            tap((updatedUser) => {
-              if (updatedUser) {
-                patchState(store, {
-                  users: store.users().map((user) => (user.id === userId ? updatedUser : user)),
-                  loading: false,
-                });
-              } else {
-                patchState(store, { error: 'Failed to update user', loading: false });
-              }
-            }),
-            catchError((error) => {
-              patchState(store, { error: error.message, loading: false });
-              return of(null);
-            })
-          )
-        )
-      )
-    ),
-    deleteUser: rxMethod<string>(
-      pipe(
-        tap(() => patchState(store, { loading: true, error: null })),
-        switchMap((userId) =>
-          userService.deleteUser(userId).pipe(
-            tap((success) => {
-              if (success) {
-                patchState(store, { users: store.users().filter((user) => user.id !== userId), loading: false });
-              } else {
-                patchState(store, { error: 'Failed to delete user', loading: false });
-              }
-            }),
-            catchError((error) => {
-              patchState(store, { error: error.message, loading: false });
-              return of(false);
-            })
-          )
-        )
-      )
-    ),
-
-    signup: rxMethod<Omit<IUsers, 'id' | 'online' | 'active' | 'role'>>(
+    )),
+    signup: rxMethod<TSignUp>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((user) =>
@@ -156,8 +105,7 @@ export const UserStore = signalStore(
         )
       )
     ),
-
-    login: rxMethod<{ mail: string; password: string }>(
+    login: rxMethod<IAuthCredentials>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((credentials) =>
@@ -188,7 +136,6 @@ export const UserStore = signalStore(
         )
       )
     ),
-
     logout: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
@@ -230,11 +177,6 @@ export const UserStore = signalStore(
         )
       )
     ),
-
-
-
-
-
     checkAuthStatus: () => {
       const token = authService.getToken();
       if (token) {
@@ -243,13 +185,3 @@ export const UserStore = signalStore(
     },
   }))
 );
-
-function loading(): boolean {
-  const store = inject(UserStore);
-  return store.selectLoading();
-}
-
-function error(): boolean {
-  const store = inject(UserStore);
-  return store.selectError();
-}
