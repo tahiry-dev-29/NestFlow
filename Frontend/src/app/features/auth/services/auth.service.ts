@@ -5,12 +5,13 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router'; // Pour la redirection
 import { IUsers } from '../../users/models/users/users.module';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/users';
+  private apiUrl = environment.apiUrl + '/users';
 
   constructor(
     private http: HttpClient,
