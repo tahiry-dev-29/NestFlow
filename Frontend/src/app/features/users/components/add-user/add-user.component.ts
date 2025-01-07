@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { UserStore } from '../../store/users.store';
+import { AuthStore } from '../../../auth/store/auth.store';
 import { ViewUserComponent } from '../view-user/view-user.component';
+import { UserStore } from '../../store/users.store';
 
 @Component({
     selector: 'app-add-user',
@@ -80,9 +81,9 @@ export class AddUserComponent implements OnInit {
     userAdded = output();
 
     private fb = inject(FormBuilder);
-    private store = inject(UserStore);
+    private store = inject(AuthStore);
+    private userStore = inject(UserStore);
     private readonly toastr = inject(ToastrService);
-    // private readonly authService = inject(AuthService);
 
     errorMessages: { [key: string]: string } = {
         fullname: 'Full name must contain at least 5 characters.',
@@ -131,6 +132,7 @@ export class AddUserComponent implements OnInit {
             this.initializePreview();
             this.toastr.success(`Utilisateur <span class="msg-class">${fullname}</span> ajouté avec succès`);
             this.userAdded.emit();
+            this.userStore.loadUsers([]);
         }
     }
 

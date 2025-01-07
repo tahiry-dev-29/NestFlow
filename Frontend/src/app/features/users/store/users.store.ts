@@ -1,13 +1,11 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, of, pipe, switchMap, tap } from 'rxjs';
+import { catchError, pipe, switchMap, tap, throwError } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../auth/services/auth.service';
-import { UsersService } from '../services/users.service';
-import { ToastrService } from 'ngx-toastr';
-import { UserState, IUsers, IUserUpdateResponse, IUserUpdateRequest, TSignUp } from '../models/users/users.module';
-import { IAuthCredentials } from '../../auth/models/auth/auth.module';
+import { IUsers, UserState } from '../models/users/users.module';
 
 const getInitialState = (): UserState => ({
   users: [],
@@ -29,159 +27,59 @@ export const UserStore = signalStore(
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
   })),
-  withMethods((store, userService = inject(UsersService), authService = inject(AuthService), router = inject(Router), toastr = inject(ToastrService)) => ({
-    getUserById: (userId: string): IUsers | undefined => {
-      return store.users().find((user) => user.id === userId);
-    },
+  withMethods((store, http = inject(HttpClient), authService = inject(AuthService)) => ({
     loadUsers: rxMethod<IUsers[]>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap(() => {
-          return userService.getAll().pipe(
+          const token = authService.getToken();
+          const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+          return http.get<IUsers[]>(`${environment.apiUrl}/users/lists`, { headers }).pipe(
             tap((users) => patchState(store, { users, loading: false })),
             catchError((error) => {
               patchState(store, { error: error.message, loading: false });
-              return of(undefined);
+              return throwError(() => new Error('Failed to load users.'));
             })
           );
         })
       )
     ),
-    updateUser: rxMethod<IUserUpdateRequest>(pipe(
-      tap(() => patchState(store, { loading: true, error: null })),
-      switchMap(({ userId, updates }) =>
-        userService.updateUser(userId, updates).pipe(
-          tap((updatedUser) => {
-            if (updatedUser) {
+
+    deleteUser: rxMethod<string>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap((userId) => {
+          const token = authService.getToken();
+          const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+          return http.delete(`${environment.apiUrl}/users/delete/${userId}`, { headers, responseType: 'text' }).pipe(
+            tap(() => {
               patchState(store, {
-                users: store.users().map((user) => (user.id === userId ? updatedUser : user)),
+                users: store.users().filter((user) => user.id !== userId),
                 loading: false,
               });
-            } else {
-              patchState(store, { error: 'Failed to update user', loading: false });
-            }
-          }),
-          catchError((error) => {
-            patchState(store, { error: error.message, loading: false });
-            return of(null);
-          })
-        )
+            }),
+            catchError((error) => {
+              console.error('Error while deleting user:', error);
+              patchState(store, { error: error.message, loading: false });
+              return throwError(() => new Error('Failed to delete user.'));
+            })
+          );
+        })
       )
-    )),
+    ),
+    
+    updateUser(userId: string, updates: Partial<IUsers>): void {
+      const updatedUsers = store.users().map((user) => {
+        if (user.id === userId) {
+          return { ...user, ...updates };
+        }
+        return user;
+      });
+      patchState(store, { users: updatedUsers });
+    },
 
-    deleteUser: rxMethod<string>(pipe(
-      tap(() => patchState(store, { loading: true, error: null })),
-      switchMap((userId) =>
-        userService.deleteUser(userId).pipe(
-          tap((response) => {
-            // Ici, on suppose que `response` est le message de succès renvoyé par le backend
-            if (response === "User deleted successfully.") {
-              patchState(store, { users: store.users().filter((user) => user.id !== userId), loading: false });
-            } else {
-              patchState(store, { error: 'Failed to delete user', loading: false });
-            }
-          }),
-          catchError((error) => {
-            patchState(store, { error: error.message, loading: false });
-            return of("Failed");
-          })
-        )
-      )
-    )),
-    signup: rxMethod<TSignUp>(
-      pipe(
-        tap(() => patchState(store, { loading: true, error: null })),
-        switchMap((user) =>
-          authService.signUp(user).pipe(
-            tap(() => {
-              patchState(store, { loading: false });
-              router.navigate(['/login']);
-            }),
-            catchError((error) => {
-              patchState(store, { error: error.message, loading: false });
-              return of(null);
-            })
-          )
-        )
-      )
-    ),
-    login: rxMethod<IAuthCredentials>(
-      pipe(
-        tap(() => patchState(store, { loading: true, error: null })),
-        switchMap((credentials) =>
-          authService.login(credentials).pipe(
-            switchMap((token) => {
-              if (token) {
-                return authService.getUserByToken(token).pipe(
-                  tap((user) => {
-                    patchState(store, { isAuthenticated: true, loading: false, token, currentUser: user });
-                    router.navigate(['/dashboard/overview']);
-                    toastr.success('Connexion réussie ! Bienvenue 👋');
-                  }),
-                  catchError((error) => {
-                    patchState(store, { error: error.message, loading: false, isAuthenticated: false, currentUser: null });
-                    return of(null);
-                  })
-                );
-              } else {
-                patchState(store, { error: 'Invalid credentials', loading: false, isAuthenticated: false, currentUser: null });
-                return of(null);
-              }
-            }),
-            catchError((error) => {
-              patchState(store, { error: error.message, loading: false, isAuthenticated: false, currentUser: null });
-              return of(null);
-            })
-          )
-        )
-      )
-    ),
-    logout: rxMethod<void>(
-      pipe(
-        tap(() => patchState(store, { loading: true, error: null })),
-        switchMap(() =>
-          authService.getUserByToken(authService.getToken()!).pipe(
-            switchMap((currentUser) => {
-              if (currentUser) {
-                return authService.logout(currentUser.id).pipe(
-                  tap(() => {
-                    patchState(store, {
-                      isAuthenticated: false,
-                      token: null,
-                      currentUser: null,
-                      loading: false,
-                    });
-                    authService.deleteToken();
-                    toastr.success('Déconnexion réussie 👋');
-                    router.navigate(['/login']);
-                  }),
-                  catchError((error) => {
-                    patchState(store, { error: error.message, loading: false });
-                    toastr.error('Échec de la déconnexion : ' + error.message);
-                    return of(null);
-                  })
-                );
-              } else {
-                const error = 'Utilisateur non trouvé';
-                patchState(store, { error, loading: false });
-                toastr.error(error);
-                return of(null);
-              }
-            }),
-            catchError((error) => {
-              patchState(store, { error: error.message, loading: false });
-              toastr.error('Erreur lors de la récupération de l’utilisateur : ' + error.message);
-              return of(null);
-            })
-          )
-        )
-      )
-    ),
-    checkAuthStatus: () => {
-      const token = authService.getToken();
-      if (token) {
-        patchState(store, { isAuthenticated: true, token: token });
-      }
+    getUserById: (userId: string): IUsers | undefined => {
+      return store.users().find((user) => user.id === userId);
     },
   }))
 );

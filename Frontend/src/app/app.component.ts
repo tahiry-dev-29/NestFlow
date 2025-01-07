@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { UserStore } from './features/users/store/users.store';
+import { AuthStore } from './features/auth/store/auth.store';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet,],
@@ -10,9 +10,9 @@ import { UserStore } from './features/users/store/users.store';
 })
 export class AppComponent {
   title = 'nest-flow';
-  private userStore = inject(UserStore);
+  private authStore = inject(AuthStore);
 
   ngOnInit(): void {
-    this.userStore.checkAuthStatus();
+    this.authStore.checkAuthStatus();
   }
 }

@@ -1,9 +1,9 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service'; // Import de ngx-cookie-service
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { Router } from '@angular/router'; // Pour la redirection
+import { Router } from '@angular/router';
 import { IUsers } from '../../users/models/users/users.module';
 import { environment } from '../../../../environments/environment';
 
@@ -13,29 +13,26 @@ import { environment } from '../../../../environments/environment';
 export class AuthService {
   private apiUrl = environment.apiUrl + '/users';
 
-  constructor(
-    private http: HttpClient,
-    private cookieService: CookieService,
-    private router: Router // Ajout du Router pour la redirection
-  ) { }
+  private readonly http = inject(HttpClient);
+  private readonly cookieService = inject(CookieService);
+  private readonly router = inject(Router);
 
-  // Gestion des erreurs HTTP
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred!';
-
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Error: ${error.error.message}`;
     } else {
       if (error.status === 0) {
-        errorMessage = "Unable to contact the server. Please check your internet connection.";
+        errorMessage = 'Unable to contact the server. Please check your internet connection.';
       } else if (error.status === 400) {
-        errorMessage = error.error?.message || "Invalid request.";
+        errorMessage = error.error?.message || 'Invalid request.';
       } else if (error.status === 401) {
-        errorMessage = error.error?.message || "Unauthorized. Please check your credentials.";
+        errorMessage = error.error?.message || 'Unauthorized. Please check your credentials.';
       } else if (error.status === 404) {
-        errorMessage = error.error?.message || "Resource not found.";
+        errorMessage = error.error?.message || 'Resource not found.';
       } else if (error.status === 500) {
-        errorMessage = "Internal server error.";
+        errorMessage = 'Internal server error.';
       } else {
         errorMessage = `Error code: ${error.status}\nMessage: ${error.message}`;
       }
@@ -43,7 +40,6 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 
-  // Connexion
   login(credentials: { mail: string; password: string }): Observable<string | null> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials).pipe(
       map(response => {
@@ -57,30 +53,23 @@ export class AuthService {
     );
   }
 
-  // Inscription
   signUp(user: Omit<IUsers, 'id' | 'online' | 'active' | 'role'>): Observable<any> {
     return this.http.post(`${this.apiUrl}/signup`, user).pipe(
-      map(() => {
-        return null;
-      }),
+      map(() => null),
       catchError(this.handleError)
     );
   }
 
-  // Déconnexion
   logout(userId: string): Observable<{ message: string }> {
     const token = this.getToken();
     return this.http.post<{ message: string }>(`${this.apiUrl}/logout/${userId}`, null, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
       withCredentials: true,
     }).pipe(
-      catchError((error) => this.handleError(error)) // Gestion améliorée des erreurs
+      catchError(this.handleError)
     );
   }
 
-  // Obtenir l'utilisateur actuel
   getCurrentUser(): Observable<IUsers | null> {
     const token = this.getToken();
     if (!token) {
@@ -93,15 +82,14 @@ export class AuthService {
     );
   }
 
-  // Déconnexion de l'utilisateur
   logoutUser(): Observable<Object> {
     return this.getCurrentUser().pipe(
-      switchMap((user) => {
+      switchMap(user => {
         if (user?.id) {
           return this.logout(user.id).pipe(
             tap(() => {
               this.deleteToken();
-            }),
+            })
           );
         } else {
           return throwError(() => new Error('Impossible de déconnecter l’utilisateur (ID manquant).'));
@@ -111,19 +99,22 @@ export class AuthService {
     );
   }
 
-  // Vérifier si l'utilisateur est authentifié
+  validateToken(token: string): Observable<IUsers> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<IUsers>(`${environment.apiUrl}/auth/validate`, { headers });
+  }
+  
+
   isAuthenticated(): boolean {
     const token = this.getToken();
     return !!token;
   }
 
-  // Obtenir l'utilisateur par le token
   getUserByToken(token: string): Observable<IUsers | null> {
     return this.http.get<IUsers>(`${this.apiUrl}/me`, { headers: { Authorization: `Bearer ${token}` } })
       .pipe(
-        catchError((error) => {
+        catchError(error => {
           if (error.status === 401) {
-            // Si une erreur 401 est renvoyée, cela signifie que le token est invalide ou expiré
             this.logoutUserAndRedirect();
           }
           return this.handleError(error);
@@ -131,69 +122,37 @@ export class AuthService {
       );
   }
 
-  // Récupérer le token depuis le cookie
   getToken(): string | null {
     const token = this.cookieService.get('authToken');
-
-    // Si un token existe
-    if (token) {
-      // Vérifier la validité du token en appelant /me
-      this.getUserByToken(token).subscribe({
-        next: (user) => {
-          if (!user) {
-            this.logoutUserAndRedirect(); // Si aucun utilisateur n'est associé au token, se déconnecter
-          } else {
-            // Le token est valide, l'utilisateur est trouvé, rien à faire
-          }
-        },
-        error: (err) => {
-          // Si une erreur se produit (ex : token invalide ou expiré), déconnecter et rediriger
-          this.logoutUserAndRedirect();
-        }
-      });
-      return token; // Retourner le token si tout va bien
-    } else {
-      // Si aucun token n'est trouvé, vérifier sa validité et rediriger si nécessaire
-      this.checkAndRedirectIfInvalidToken();
-      return null; // Retourner null car le token est manquant
-    }
+    return token ? token : null;
   }
 
-
-
-
-  // Enregistrer le token dans le cookie
   setToken(token: string): void {
     this.cookieService.set('authToken', token, 1, '/', 'localhost', true, 'Strict');
   }
 
-  // Supprimer le token du cookie
   deleteToken(): void {
     this.cookieService.delete('authToken');
   }
 
-  // Supprimer le token et rediriger vers la page de login
   logoutUserAndRedirect(): void {
-    this.deleteToken(); // Supprimer le token
-    this.router.navigate(['/login']); // Rediriger vers la page de login
+    this.deleteToken();
+    this.router.navigate(['/login']);
   }
 
-  // Vérifier la validité du token et rediriger si nécessaire
   checkAndRedirectIfInvalidToken(): void {
     const token = this.getToken();
     if (token) {
       this.getUserByToken(token).subscribe({
-        next: (user) => {
+        next: user => {
           if (!user) {
-            this.logoutUserAndRedirect(); // Si l'utilisateur n'est pas trouvé, se déconnecter
+            this.logoutUserAndRedirect();
           }
         },
         error: () => {
-          this.logoutUserAndRedirect(); // Si une erreur se produit (par exemple 401), se déconnecter
+          this.logoutUserAndRedirect();
         },
       });
-    } else {
-      this.logoutUserAndRedirect(); // Si aucun token n'est trouvé, se déconnecter
     }
   }
 }

@@ -1,13 +1,10 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Observable, of, Subject } from 'rxjs';
-import { catchError, tap, takeUntil, switchMap } from 'rxjs/operators';
-import { UserStore } from '../../../users/store/users.store';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { AuthStore } from '../../store/auth.store';
 
 @Component({
   selector: 'app-login',
@@ -66,7 +63,7 @@ import { AuthService } from '../../services/auth.service';
 
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
-  readonly store = inject(UserStore);
+  readonly store = inject(AuthStore);
   readonly fb = inject(FormBuilder);
   readonly router = inject(Router);
   readonly toastr = inject(ToastrService);

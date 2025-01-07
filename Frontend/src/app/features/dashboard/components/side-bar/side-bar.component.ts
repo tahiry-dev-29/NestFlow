@@ -7,8 +7,8 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { UserStore } from '../../../users/store/users.store';
 import { sideLeftBarState } from '../../store/signal.store';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'app-side-bar',
@@ -19,7 +19,7 @@ import { sideLeftBarState } from '../../store/signal.store';
 })
 export class SideBarComponent {
   private readonly router = inject(Router);
-  private readonly userStore = inject(UserStore);
+  private readonly userStore = inject(AuthStore);
 
   logout(): void {
     this.userStore.logout();

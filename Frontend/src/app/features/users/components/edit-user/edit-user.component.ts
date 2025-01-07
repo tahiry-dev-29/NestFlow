@@ -80,12 +80,14 @@ import { IUsers } from '../../models/users/users.module';
 export class EditUserComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @Input() user: null | IUsers = null;
-
+  
+  selectedFileName: string | null = null;
   userForm!: FormGroup;
   private readonly store = inject(UserStore);
   private readonly toastr = inject(ToastrService);
   private readonly fb = inject(FormBuilder);
-  selectedFileName: string | null = null;
+  private userStore = inject(UserStore);
+
 
 
 
@@ -107,6 +109,7 @@ export class EditUserComponent {
       const updatedUser = { ...this.user, ...this.userForm.value };
       const { id: userId, ...userUpdates } = updatedUser; 
       this.store.updateUser(userId, userUpdates);
+      this.userStore.loadUsers([]);
       this.toastr.success(`User <span class="msg-class">${updatedUser.fullname}</span> updated successfully`);
     } else {
       this.toastr.error('Please fill in all fields correctly');

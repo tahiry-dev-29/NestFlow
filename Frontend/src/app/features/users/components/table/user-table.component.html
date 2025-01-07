@@ -47,9 +47,7 @@
                                         <td
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
                                             <div class="flex px-2 py-1">
-                                                <img [src]="user.imageUrl ? user.imageUrl : defaultImages"
-                                                    [alt]="user.firstName" loading="lazy" decoding="async"
-                                                    class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl">
+                                                <img [src]="user.imageUrl ? user.imageUrl : defaultImages" [alt]="user.firstName" class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl">
                                             </div>
                                         </td>
                                         <td
@@ -76,11 +74,11 @@
                                                 <span class="material-icons">delete</span>
                                             </button>
                                             <button class="tooltip hover:text text-blue-600 mr-2"
-                                                (click)="openSidebar('edit', user)">
+                                                (click)="toggleSidebar('edit', user)">
                                                 <span class="material-icons">edit</span>
                                             </button>
                                             <button class="tooltip hover:text text-slate-600"
-                                                (click)="openSidebar('view',user)">
+                                                (click)="toggleSidebar('view',user)">
                                                 <span class="material-icons">visibility</span>
                                             </button>
                                         </td>
@@ -108,15 +106,15 @@
         </div>
     </app-side-bar-right>
     
-    <app-side-bar-right [isOpen]="showEditUserSidebar()" [title]="'Edit User'" (closeEvent)="closeSidebar('edit')"
-        (clickOutside)="closeSidebar('edit')">
+    <app-side-bar-right [isOpen]="showEditUserSidebar()" [title]="'Edit User'" (closeEvent)="toggleSidebar('edit')"
+        (clickOutside)="toggleSidebar('edit')">
         <div class="w-85">
             <app-edit-user [user]="userToEdit"></app-edit-user>
         </div>
     </app-side-bar-right>
     
-    <app-side-bar-right [isOpen]="showViewUserSidebar()" [title]="'View User'" (closeEvent)="closeSidebar('view')"
-        (clickOutside)="closeSidebar('view')">
+    <app-side-bar-right [isOpen]="showViewUserSidebar()" [title]="'View User'" (closeEvent)="toggleSidebar('view')"
+        (clickOutside)="toggleSidebar('view')">
         <div class="w-85">
             <app-view-user [user]="userToView"></app-view-user>
         </div>
