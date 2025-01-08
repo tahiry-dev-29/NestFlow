@@ -1,5 +1,6 @@
 package com.nestflow.app.features.users.controller;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.nestflow.app.features.users.dto.UserUpdateRequest;
 import com.nestflow.app.features.users.exceptions.ApiRep;
 import com.nestflow.app.features.users.model.UserEntity;
+import com.nestflow.app.features.users.service.ImageUploadService;
 import com.nestflow.app.features.users.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +44,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+    private final ImageUploadService imageUploadService;
 
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -61,10 +64,23 @@ public class UserController {
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
 
         UserEntity user = new UserEntity();
+        String imagePath;
+        try {
+            imagePath = imageUploadService.uploadImage(imageFile);
+        } catch (IOException e) {
+            imagePath = null;
+        }
         user.setName(name);
         user.setFirstName(firstName);
         user.setMail(mail);
         user.setPassword(password);
+        if (imagePath != null) {
+            user.setImageUrl(imagePath);  // Store just the filename
+        } else {
+            user.setImageUrl(null);
+        }
+
+
 
         try {
             UserEntity.ROLE role = UserEntity.ROLE.valueOf(roleString.toUpperCase());

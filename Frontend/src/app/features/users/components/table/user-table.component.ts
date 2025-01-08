@@ -50,6 +50,10 @@ export class UserTableComponent implements OnInit {
     this.store.loadUsers([]); 
   }
 
+  handleImageError(event: any) {
+    event.target.src = this.defaultImages;
+  }
+
   toggleSidebar(sidebar: 'edit' | 'view', user?: IUsers): void {
     if (sidebar === 'edit') {
       this.userToEdit = user || null;

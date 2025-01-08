@@ -10,5 +10,3 @@ Revenir a la dernier commit
   8. `git checkout [branch]`: Switches to a different branch.
   9. `git merge [branch]`: Merges changes from one branch into the current branch.
   10. `git tag [tagname]`: Creates a new tag for a specific commit.
-
-
