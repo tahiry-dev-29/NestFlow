@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
                         Collections.emptyList());
                 String token = jwtService.generateToken(userDetails);
 
-                Cookie cookie = new Cookie("authToken", token);
+                Cookie cookie = new Cookie("Authorization", token);
                 cookie.setHttpOnly(true);
                 cookie.setSecure(false);
                 cookie.setPath("/");
@@ -213,7 +213,7 @@ public class UserServiceImpl implements UserService {
             String token = authHeader.substring(7);
             tokenBlacklistService.blacklistToken(token);
 
-            Cookie cookie = new Cookie("authToken", null);
+            Cookie cookie = new Cookie("Authorization", null);
             cookie.setHttpOnly(true);
             cookie.setSecure(false); // Utilisez `true` en production
             cookie.setPath("/");

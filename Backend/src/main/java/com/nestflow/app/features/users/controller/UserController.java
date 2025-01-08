@@ -1,10 +1,14 @@
 package com.nestflow.app.features.users.controller;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -191,4 +195,24 @@ public class UserController {
             HttpServletResponse response) {
         return userService.logout(id, request, response);
     }
+
+    @GetMapping("/api/users/images/upload/{filename}")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Resource> serveImage(@PathVariable String filename) {
+        try {
+            Path imagePath = Paths.get("uploads").resolve(filename);
+            Resource resource = new UrlResource(imagePath.toUri());
+            
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }

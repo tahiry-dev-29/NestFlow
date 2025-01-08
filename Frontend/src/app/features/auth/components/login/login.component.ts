@@ -23,7 +23,7 @@ import { AuthStore } from '../../store/auth.store';
                 <h5 class="title">Login</h5>
               </div>
               <div class="flex-auto p-6">
-                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" role="form text-left" [autocomplete]="true">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" role="form text-left">
                   <div class="mb-4">
                     <input type="mail" formControlName="mail" class="input-theme" placeholder="email" />
                     <div *ngIf="loginForm.get('mail')?.invalid && loginForm.get('mail')?.touched" class="text-red-500">

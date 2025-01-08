@@ -36,7 +36,8 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/webjars/**",
-            "/api/images/upload/"
+            "/api/users/images/upload/**",
+            "/api/images/upload/**"
     };
 
     @Bean

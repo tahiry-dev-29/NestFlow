@@ -123,16 +123,16 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    const token = this.cookieService.get('authToken');
+    const token = this.cookieService.get('Authorization');
     return token ? token : null;
   }
 
   setToken(token: string): void {
-    this.cookieService.set('authToken', token, 1, '/', 'localhost', true, 'Strict');
+    this.cookieService.set('Authorization', token, 1, '/', 'localhost', true, 'Strict');
   }
 
   deleteToken(): void {
-    this.cookieService.delete('authToken');
+    this.cookieService.delete('Authorization');
   }
 
   logoutUserAndRedirect(): void {

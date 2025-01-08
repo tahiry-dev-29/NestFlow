@@ -54,7 +54,7 @@
                                         <td
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
                                             <div class="flex px-2 py-1">
-                                                <img [src]="user.imageUrl ? 'http://localhost:8080/api/images/upload/' + user.imageUrl.split('/').pop() : defaultImages"
+                                                <img [src]="user.imageUrl ? 'http://localhost:8080/api/images/upload/' + user.imageUrl : defaultImages"
                                                 [alt]="user.firstName"
                                                 (error)="handleImageError($event)"
                                                 class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl">
