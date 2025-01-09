@@ -6,11 +6,11 @@ export const AuthRoutes: Routes = [
     title: 'Login',
     loadComponent: () => import("./components/login/login.component").then(m => m.LoginComponent)
   },
-  {
+  /* {
     path: 'register',
     title: 'Sign Up',
     loadComponent: () => import("./components/register/register.component").then(m => m.RegisterComponent)
-  },
+  }, */
   {
     path: 'pin',
     title: 'Verification Pin',

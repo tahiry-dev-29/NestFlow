@@ -20,11 +20,7 @@ const getInitialState = (): UserState => ({
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(getInitialState()),
-  withComputed(({ users, loading, error }) => ({
-    activeUsers: computed(() => users().filter((user) => user.online)),
-    inactiveUsers: computed(() => users().filter((user) => !user.online)),
-    totalUsers: computed(() => users().length),
-    userStatusClass: computed(() => (status: boolean) => (status ? 'online' : 'offline')),
+  withComputed(({ loading, error }) => ({
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
   })),

@@ -23,7 +23,7 @@ export const UserStore = signalStore(
     activeUsers: computed(() => users().filter((user) => user.online)),
     inactiveUsers: computed(() => users().filter((user) => !user.online)),
     totalUsers: computed(() => users().length),
-    userStatusClass: computed(() => (status: boolean) => (status ? 'online' : 'offline')),
+    userStatusClass: computed(() => (online: boolean) => (online ? 'online' : 'offline')),
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
   })),

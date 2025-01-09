@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+/* import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -145,4 +145,4 @@ export class RegisterComponent {
     // Implémentez ici la logique pour afficher le message d'erreur à l'utilisateur
     // Par exemple, vous pouvez utiliser un service de notification ou un composant d'alerte
   }
-}
+} */

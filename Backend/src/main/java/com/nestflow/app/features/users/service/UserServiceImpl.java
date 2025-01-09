@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
                 userMap.put("mail", user.getMail());
                 userMap.put("role", user.getRole());
                 userMap.put("imageUrl", user.getImageUrl());
-                userMap.put("status", user.isOnline() ? "online" : "offline");
+                userMap.put("online", user.isOnline());
                 return userMap;
             }).collect(Collectors.toList());
             return ResponseEntity.ok(userList);
@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService {
             publicInfo.put("name", user.getName());
             publicInfo.put("imageUrl", user.getImageUrl());
             publicInfo.put("mail", user.getMail());
-            publicInfo.put("status", user.isOnline() ? "online" : "offline");
+            publicInfo.put("online", user.isOnline());
             return ResponseEntity.ok(publicInfo);
         } catch (UserServiceException.UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

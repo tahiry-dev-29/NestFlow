@@ -4,7 +4,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { IUsers } from '../../users/models/users/users.module';
+import { IUsers, TSignUp } from '../../users/models/users/users.module';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({
@@ -53,7 +53,7 @@ export class AuthService {
     );
   }
 
-  signUp(user: Omit<IUsers, 'id' | 'online' | 'active' | 'role'>): Observable<any> {
+  signUp(user: TSignUp): Observable<any> {
     return this.http.post(`${this.apiUrl}/signup`, user).pipe(
       map(() => null),
       catchError(this.handleError)

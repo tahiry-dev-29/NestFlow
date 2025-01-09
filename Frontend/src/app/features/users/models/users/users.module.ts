@@ -14,9 +14,9 @@ export interface IUsers {
     mail: string;
     password: string;
     imageUrl?: string;
-    online: boolean;
-    active: boolean;
     role: UserEntity.ROLE;
+
+    online: boolean;
 }
 
 export interface UserUpdateRequest {
@@ -45,7 +45,7 @@ export interface IUserUpdateResponse {
     error?: string;
 }
 
-// Omit<IUsers, 'id' | 'online' | 'active' | 'role' >
+// <Omit<IUsers, 'id' | 'online' >>
 export type TSignUp = {
     name: string;
     firstName: string;
@@ -53,4 +53,6 @@ export type TSignUp = {
     password: string;
     imageUrl?: string;
     role: UserEntity.ROLE;
+    
+    // online: boolean;
 }
