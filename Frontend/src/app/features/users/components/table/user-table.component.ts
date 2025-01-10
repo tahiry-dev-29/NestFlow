@@ -6,7 +6,7 @@ import { ImageUrl } from '../../../../../../public/images/constant.images';
 import { slideInOut } from '../../../shared/animations/animations';
 import { PopupsComponent } from '../../../shared/components/popups/popups.component';
 import { SideBarRightComponent } from '../../../shared/components/side-bar-right/side-bar-right.component';
-import { IUsers } from '../../models/users/users.module';
+import { IUsers, UserEntity } from '../../models/users/users.module';
 import { UserStore } from '../../store/users.store';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
@@ -31,10 +31,11 @@ import { ViewUserComponent } from '../view-user/view-user.component';
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class UserTableComponent implements OnInit {
-  showAddUserSidebar = signal(false);
-  showEditUserSidebar = signal(false);
-  showViewUserSidebar = signal(false);
-  showPopup = signal(false);
+    protected UserEntity = UserEntity;
+    showAddUserSidebar = signal(false);
+    showEditUserSidebar = signal(false);
+    showViewUserSidebar = signal(false);
+    showPopup = signal(false);
 
   userToEdit: IUsers | null = null;
   userToView: IUsers | null = null;

@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 @Service
 public class ImageStorageService {
-	private final String uploadDir = "/Backend/src/main/resources/static/upload/";
+	private final String uploadDir = "C:/Users/RandevTeam/Desktop/tahiry/projects/NestFlow/Backend/src/main/resources/static/upload/";
 
 	public String storeImage(byte[] imageData) throws IOException {
 		String imageId = generateImageId();

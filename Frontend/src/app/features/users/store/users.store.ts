@@ -6,6 +6,7 @@ import { catchError, pipe, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../auth/services/auth.service';
 import { IUsers, UserState } from '../models/users/users.module';
+import { UsersService } from '../services/users.service';
 
 const getInitialState = (): UserState => ({
   users: [],
@@ -27,7 +28,7 @@ export const UserStore = signalStore(
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
   })),
-  withMethods((store, http = inject(HttpClient), authService = inject(AuthService)) => ({
+  withMethods((store, http = inject(HttpClient), authService = inject(AuthService), usersService = inject(UsersService)) => ({
     loadUsers: rxMethod<IUsers[]>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
@@ -80,6 +81,17 @@ export const UserStore = signalStore(
 
     getUserById: (userId: string): IUsers | undefined => {
       return store.users().find((user) => user.id === userId);
+    },
+
+    async createUser(userData: FormData) {
+      try {
+        const response = await usersService.createUser(userData).toPromise();
+        // Mettre à jour le store si nécessaire
+        return response;
+      } catch (error) {
+        console.error('Error creating user:', error);
+        throw error;
+      }
     },
   }))
 );

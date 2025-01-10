@@ -1,4 +1,4 @@
-export const ImageUrl = 
-    {
-        defaultImages: "../images/default-profil.png"
-    }
+export const ImageUrl =
+{
+    defaultImages: "../images/default-profil.png"
+}

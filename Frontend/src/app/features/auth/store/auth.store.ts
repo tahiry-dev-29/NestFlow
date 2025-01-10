@@ -35,11 +35,25 @@ export const AuthStore = signalStore(
         switchMap((user) =>
           authService.signUp(user).pipe(
             tap((response) => {
-              console.log('Réponse brute du serveur :', response);
-              patchState(store, { loading: false });
+              if (response) {
+                patchState(store, { 
+                  isAuthenticated: true,
+                  loading: false,
+                  currentUser: response,
+                  token: response.token
+                });
+                authService.setToken(response.token);
+                toastr.success('Creation du compte réussie ! Bienvenue 👋');
+                router.navigate(['/login']);
+              }
             }),
             catchError((error) => {
-              patchState(store, { error: error.message, loading: false });
+              patchState(store, { 
+                error: error.message, 
+                loading: false, 
+                isAuthenticated: false, 
+                currentUser: null 
+              });
               return of(null);
             })
           )

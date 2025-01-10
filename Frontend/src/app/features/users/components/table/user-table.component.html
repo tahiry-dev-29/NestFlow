@@ -33,6 +33,7 @@
                                         <th class="p-2 text-left user-th">User</th>
                                         <th class="p-2 text-left user-th">Full Name</th>
                                         <th class="p-2 text-left user-th">Email</th>
+                                        <th class="p-2 text-left user-th">Role</th>
                                         <th class="p-2 text-center user-th">Status</th>
                                         <th class="p-2 text-center user-th">Actions</th>
                                     </tr>
@@ -41,7 +42,7 @@
                                     @for (user of store.users() | paginate: { itemsPerPage: 10, currentPage: p }; track
                                     user.id; let i = $index) {
                                     <tr *ngIf="store.selectLoading()">
-                                        <td colspan="5" class="text-center p-4">
+                                        <td colspan="6" class="text-center p-4">
                                             <div class="flex items-center justify-center space-x-4">
                                                 <div class="w-full h-6 bg-gray-300 rounded-md animate-pulse"></div>
                                                 <div class="w-full h-6 bg-gray-300 rounded-md animate-pulse"></div>
@@ -69,6 +70,11 @@
                                             class="p-2 align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">
                                             <p class="mb-0 text-xs leading-tight text-white opacity-80">{{ user.mail }}
                                             </p>
+                                        </td>
+                                        <td class="p-2 align-middle bg-transparent border-b text text-lg border-white/40 whitespace-nowrap shadow-transparent">
+                                            <span class="px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none">
+                                                {{ user.role }}
+                                            </span>
                                         </td>
                                         <td
                                             class="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b border-white/40 whitespace-nowrap shadow-transparent">

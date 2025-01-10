@@ -1,5 +1,6 @@
 package com.nestflow.app.features.users.service;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -48,9 +49,18 @@ public class UserServiceImpl implements UserService {
             checkUserExists(user.getMail());
             encodePassword(user);
 
+            // Handle optional image upload
             if (imageFile != null && !imageFile.isEmpty()) {
-                String imageUrl = imageUploadService.uploadImage(imageFile);
-                user.setImageUrl(imageUrl);
+                try {
+                    String imageUrl = imageUploadService.uploadImage(imageFile);
+                    user.setImageUrl(imageUrl);
+                } catch (IOException e) {
+                    // Log the error but continue with user creation
+                    log.error("Failed to upload image: ", e);
+                    user.setImageUrl(null);
+                }
+            } else {
+                user.setImageUrl(null);
             }
 
             UserEntity createdUser = userRepository.save(user);
@@ -60,6 +70,7 @@ public class UserServiceImpl implements UserService {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
+            log.error("Error during user signup: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

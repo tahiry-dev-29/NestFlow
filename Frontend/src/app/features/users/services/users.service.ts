@@ -1,4 +1,4 @@
-/* import { inject, Injectable } from '@angular/core';
+ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
@@ -13,6 +13,10 @@ export class UsersService {
 
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+
+  createUser(userData: FormData) {
+    return this.http.post(`${this.baseUrl}/create`, userData);
+}
 
   private getHeaders(): HttpHeaders {
     const token = this.authService.getToken();
@@ -41,5 +45,4 @@ export class UsersService {
     console.error(message, error);
     return throwError(() => new Error(message));
   }
-}
- */
+} 

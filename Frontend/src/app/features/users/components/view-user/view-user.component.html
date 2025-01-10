@@ -1,0 +1,7 @@
+<img 
+  [src]="user.imageUrl || defaultImage" 
+  (error)="handleImageError()" 
+  [ngSrc]="imageError ? defaultImage : user.imageUrl" 
+  alt="User profile"
+  class="w-full h-full object-cover rounded-full"
+/> 

@@ -9,41 +9,14 @@
             "name": "NestflowApplication",
             "request": "launch",
             "mainClass": "com.nestflow.app.NestflowApplication",
-            "projectName": "app"
+            "projectName": "BackNestFlow"
         },
         {
             "type": "java",
             "name": "NestflowApplication",
             "request": "launch",
             "mainClass": "com.nestflow.app.NestflowApplication",
-            "projectName": "BackNestFlow"
-        },
-        {
-            "type": "java",
-            "name": "NestflowApplication",
-            "request": "launch",
-            "mainClass": "com.nestflow.NestflowApplication",
-            "projectName": "BackNestFlow"
-        },
-        {
-            "type": "java",
-            "name": "NestflowApplication",
-            "request": "launch",
-            "mainClass": "com.nestfolow.nestflow.NestflowApplication",
-            "projectName": "BackNestFlow"
-        },
-        {
-            "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "NestFlowApplication",
-            "request": "launch",
-            "mainClass": "com.nest.flow.BackNestFlow.NestFlowApplication",
-            "projectName": "BackNestFlow"
+            "projectName": "app"
         }
     ]
 }

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnInit, output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { AuthStore } from '../../../auth/store/auth.store';
 import { ViewUserComponent } from '../view-user/view-user.component';
 import { UserStore } from '../../store/users.store';
+import { ImageUrl } from '../../../../../../public/images/constant.images';
 
 @Component({
     selector: 'app-add-user',
@@ -12,7 +13,7 @@ import { UserStore } from '../../store/users.store';
     imports: [CommonModule, ReactiveFormsModule, ViewUserComponent],
     template: `
     <section class="flex justify-around gap-5">
-        <app-view-user [user]="previewUser"></app-view-user>
+        <app-view-user [user]="previewUser" [isPreview]="true"></app-view-user>
         <main class="mt-0 transition-all duration-200 ease-in-out">
             <div class="flex flex-col items-center">
                 <div class="w-85 max-w-md px-3 mx-auto">
@@ -23,9 +24,15 @@ import { UserStore } from '../../store/users.store';
                         <div class="flex-auto p-6">
                             <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left" class="flex flex-col">
                                 <div class="mb-4">
-                                    <input type="text" formControlName="fullname" class="input-theme w-full" placeholder="Full Name" />
-                                    <div *ngIf="userForm.get('fullname')?.invalid && userForm.get('fullname')?.touched" class="error">
-                                        {{ getErrorMessage('fullname') }}
+                                    <input type="text" formControlName="name" class="input-theme w-full" placeholder="Name" />
+                                    <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched" class="error">
+                                        {{ getErrorMessage('name') }}
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <input type="text" formControlName="firstName" class="input-theme w-full" placeholder="First Name" />
+                                    <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched" class="error">
+                                        {{ getErrorMessage('firstName') }}
                                     </div>
                                 </div>
                                 <div class="mb-4">
@@ -33,6 +40,13 @@ import { UserStore } from '../../store/users.store';
                                     <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="error">
                                         {{ getErrorMessage('email') }}
                                     </div>
+                                </div>
+                                <div class="mb-4">
+                                    <select formControlName="role" class="input-theme w-full">
+                                        <option value="USER">default (USER)</option>
+                                        <option value="ADMIN">ADMIN</option>
+                                        <option value="USER">USER</option>
+                                    </select>
                                 </div>
                                 <div class="mb-4">
                                     <input type="password" formControlName="password" class="input-theme w-full" placeholder="Password" />
@@ -45,12 +59,6 @@ import { UserStore } from '../../store/users.store';
                                     <div *ngIf="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched" class="error">
                                         {{ getErrorMessage('confirmPassword') }}
                                     </div>
-                                </div>
-                                <div class="mb-4">
-                                    <select formControlName="status" class="input-theme w-full">
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
                                 </div>
                                 <div class="mb-4 relative">
                                     <button type="button" (click)="triggerFileInput()" class="input-theme w-full flex items-center justify-center text-sm font-medium text-gray-300 bg-slate-800/80 hover:bg-slate-700/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500/25">
@@ -78,79 +86,49 @@ import { UserStore } from '../../store/users.store';
 })
 export class AddUserComponent implements OnInit {
     @ViewChild('fileInput') fileInput!: ElementRef;
-    userAdded = output();
-
-    private fb = inject(FormBuilder);
-    private store = inject(AuthStore);
-    private userStore = inject(UserStore);
-    private readonly toastr = inject(ToastrService);
-
-    errorMessages: { [key: string]: string } = {
-        fullname: 'Full name must contain at least 5 characters.',
-        email: 'Please enter a valid email address.',
-        password: 'Password must contain at least 4 characters.',
-        confirmPassword: 'Passwords do not match.',
+    @Output() userAdded = new EventEmitter<void>();
+    
+    userForm!: FormGroup;
+    selectedFileName: string = '';
+    previewUser: any = {
+        name: '',
+        firstName: '',
+        email: '',
+        role: 'USER',
+        imageUrl: ImageUrl.defaultImages
     };
 
-    userForm: FormGroup = this.fb.group({
-        fullname: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(4)]],
-        confirmPassword: ['', Validators.required],
-        status: ['active', Validators.required],
-        image: ['']
-    }, { validator: this.passwordMatchValidator });
-
-    selectedFileName: string | null = null;
-    previewUser: any = null;
+    private fb = inject(FormBuilder);
+    private userStore = inject(UserStore);
+    private toastr = inject(ToastrService);
 
     ngOnInit() {
-        this.initializePreview();
-        this.userForm.valueChanges.subscribe(() => this.updatePreview());
+        this.initForm();
+        this.setupFormValueChanges();
     }
 
-    initializePreview() {
-        this.previewUser = {
-            fullname: '',
-            email: '',
-            password: '',
-            status: 'active',
-            image: ''
-        };
+    private initForm() {
+        this.userForm = this.fb.group({
+            name: ['', [Validators.required, Validators.minLength(2)]],
+            firstName: ['', [Validators.required, Validators.minLength(2)]],
+            email: ['', [Validators.required, Validators.email]],
+            password: ['', [Validators.required, Validators.minLength(6)]],
+            confirmPassword: ['', Validators.required],
+            role: ['USER'],
+            image: [null]
+        }, { validators: this.passwordMatchValidator });
     }
 
-    updatePreview() {
-        this.previewUser = this.getUserDetails();
-    }
-
-    onSubmit(): void {
-        if (this.userForm.valid) {
-            const fullname = this.userForm.get('fullname')?.value;
-            this.store.signup(this.userForm.value);
-            this.userForm.reset();
-            this.selectedFileName = null;
-            this.initializePreview();
-            this.toastr.success(`Utilisateur <span class="msg-class">${fullname}</span> ajouté avec succès`);
-            this.userAdded.emit();
-            this.userStore.loadUsers([]);
-        }
-    }
-
-    passwordMatchValidator(form: FormGroup) {
-        const password = form.get('password');
-        const confirmPassword = form.get('confirmPassword');
-        if (password && confirmPassword && password.value !== confirmPassword.value) {
-            confirmPassword.setErrors({ mismatch: true });
-        } else {
-            confirmPassword?.setErrors(null);
-        }
-    }
-
-    getErrorMessage(field: string): string {
-        if (field === 'confirmPassword' && this.userForm.get('confirmPassword')?.hasError('mismatch')) {
-            return this.errorMessages[field];
-        }
-        return this.userForm.get(field)?.hasError('required') ? `${field} est requis.` : this.errorMessages[field] || '';
+    private setupFormValueChanges() {
+        this.userForm.valueChanges.subscribe(values => {
+            this.previewUser = {
+                ...this.previewUser,
+                name: values.name,
+                firstName: values.firstName,
+                email: values.email,
+                role: values.role
+            };
+        });
     }
 
     triggerFileInput(): void {
@@ -160,24 +138,96 @@ export class AddUserComponent implements OnInit {
     onFileSelected(event: Event): void {
         const file = (event.target as HTMLInputElement).files?.[0];
         if (file) {
+            if (file.size > 5000000) {
+                this.toastr.error('Image size should be less than 5MB');
+                return;
+            }
+            
             this.selectedFileName = file.name;
             const reader = new FileReader();
             reader.onload = (e: ProgressEvent<FileReader>) => {
                 const imageUrl = e.target?.result as string;
-                this.userForm.patchValue({ image: imageUrl });
-                this.updatePreview();
+                this.previewUser = {
+                    ...this.previewUser,
+                    imageUrl: imageUrl
+                };
             };
             reader.readAsDataURL(file);
+            this.userForm.patchValue({ image: file });
         }
     }
 
-    getUserDetails() {
-        return {
-            fullname: this.userForm.get('fullname')?.value || '',
-            email: this.userForm.get('email')?.value || '',
-            password: this.userForm.get('password')?.value || '',
-            status: this.userForm.get('status')?.value || 'active',
-            image: this.userForm.get('image')?.value || ''
+    async onSubmit() {
+        if (this.userForm.valid) {
+            const formData = new FormData();
+            const userData = this.userForm.value;
+
+            formData.append('name', userData.name);
+            formData.append('firstName', userData.firstName);
+            formData.append('mail', userData.email);
+            formData.append('password', userData.password);
+            formData.append('role', userData.role);
+
+            const imageFile = this.userForm.get('image')?.value;
+            if (imageFile) {
+                formData.append('imageFile', imageFile);
+            }
+
+            try {
+                await this.userStore.createUser(formData);
+                this.toastr.success('Utilisateur créé avec succès');
+                this.userStore.loadUsers([]);
+                this.resetForm();
+                this.userAdded.emit();
+            } catch (error: any) {
+                console.error('Error creating user:', error);
+                this.toastr.error(error.error?.message || 'Erreur lors de la création de l\'utilisateur');
+            }
+        }
+    }
+
+    private resetForm() {
+        this.userForm.reset({
+            name: '',
+            firstName: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            role: 'USER',
+            image: null
+        });
+        this.previewUser = {
+            name: '',
+            firstName: '',
+            email: '',
+            role: 'USER',
+            imageUrl: ImageUrl.defaultImages
         };
+        this.selectedFileName = '';
+        if (this.fileInput) {
+            this.fileInput.nativeElement.value = '';
+        }
+    }
+
+    passwordMatchValidator(g: FormGroup) {
+        return g.get('password')?.value === g.get('confirmPassword')?.value
+            ? null
+            : { mismatch: true };
+    }
+
+    getErrorMessage(field: string): string {
+        const control = this.userForm.get(field);
+        if (!control?.errors || !control.touched) return '';
+
+        const errors = control.errors;
+        const errorMessages: { [key: string]: string } = {
+            required: 'Ce champ est requis',
+            email: 'Email invalide',
+            minlength: `Minimum ${control.errors['minlength']?.requiredLength} caractères`,
+            mismatch: 'Les mots de passe ne correspondent pas'
+        };
+
+        const firstError = Object.keys(errors)[0];
+        return errorMessages[firstError] || 'Erreur de validation';
     }
 }

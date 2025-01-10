@@ -19,7 +19,7 @@ import { IUsers } from '../../models/users/users.module';
                         <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-48 rounded-t-lg transform hover:scale-105 transition-transform duration-300"></div>
                         <div class="relative -mt-28 px-6 animate-fadeIn">
                             <div class="relative inline-block mb-4">
-                                <img [src]="user()?.imageUrl ? 'http://localhost:8080/api/images/upload/' + user()?.imageUrl : defaultImages"
+                                <img [src]="getImageSrc()"
                                                 [alt]="user()?.firstName"
                                                 (error)="handleImageError($event)"
                                    class="w-40 h-40 rounded-full border-4 border-white mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -45,8 +45,21 @@ import { IUsers } from '../../models/users/users.module';
 })
 export class ViewUserComponent {
     user = input<IUsers | null | undefined>();
+    isPreview = input<boolean>(false);
 
     readonly defaultImages = ImageUrl.defaultImages;
+
+    getImageSrc(): string {
+        const imageUrl = this.user()?.imageUrl;
+        if (!imageUrl) return this.defaultImages;
+        
+        if (imageUrl.startsWith('data:') || imageUrl.startsWith('../')) {
+            return imageUrl;
+        }
+        
+        return `http://localhost:8080/api/images/upload/${imageUrl}`;
+    }
+
     handleImageError(event: any) {
         event.target.src = this.defaultImages;
     }

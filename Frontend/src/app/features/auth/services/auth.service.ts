@@ -54,8 +54,32 @@ export class AuthService {
   }
 
   signUp(user: TSignUp): Observable<any> {
-    return this.http.post(`${this.apiUrl}/signup`, user).pipe(
-      map(() => null),
+    const formData = new FormData();
+    formData.append('name', user.name);
+    formData.append('firstName', user.firstName);
+    formData.append('mail', user.mail);
+    formData.append('password', user.password);
+    formData.append('role', user.role.toString());
+
+    if (user.imageUrl && user.imageUrl.startsWith('data:image')) {
+      const base64Data = user.imageUrl.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/jpeg' });
+      const imageFile = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+      formData.append('imageFile', imageFile);
+    }
+
+    return this.http.post(`${this.apiUrl}/create`, formData, {
+      headers: new HttpHeaders({
+        'Accept': 'application/json'
+      }),
+      withCredentials: true
+    }).pipe(
       catchError(this.handleError)
     );
   }
@@ -99,11 +123,6 @@ export class AuthService {
     );
   }
 
-  validateToken(token: string): Observable<IUsers> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<IUsers>(`${environment.apiUrl}/auth/validate`, { headers });
-  }
-  
 
   isAuthenticated(): boolean {
     const token = this.getToken();
@@ -117,6 +136,8 @@ export class AuthService {
           if (error.status === 401) {
             this.logoutUserAndRedirect();
           }
+            this.logoutUserAndRedirect();
+          
           return this.handleError(error);
         })
       );
