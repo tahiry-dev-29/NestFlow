@@ -33,3 +33,5 @@ build/
 .vscode/
 
 ### project ###
+### Upload Folder ###
+/src/main/resources/static/upload/

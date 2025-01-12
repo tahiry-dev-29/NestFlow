@@ -1,48 +1,33 @@
- import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, of, throwError } from 'rxjs';
-import { AuthService } from '../../auth/services/auth.service';
-import { IUsers } from '../models/users/users.module';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { IUsers } from '../models/users/users.module';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class UsersService {
-  private readonly baseUrl = `${environment.apiUrl}/users`;
-
+  private readonly apiUrl = `${environment.apiUrl}/users`;
   private readonly http = inject(HttpClient);
-  private readonly authService = inject(AuthService);
 
-  createUser(userData: FormData) {
-    return this.http.post(`${this.baseUrl}/create`, userData);
-}
-
-  private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  getUsers(): Observable<IUsers[]> {
+    return this.http.get<IUsers[]>(this.apiUrl);
   }
 
-  getAll(): Observable<IUsers[]> {
-    return this.http.get<IUsers[]>(`${this.baseUrl}/lists`, { headers: this.getHeaders() }).pipe(
-      catchError((error) => this.handleError('Failed to load users', error))
-    );
+  getUser(id: string): Observable<IUsers> {
+    return this.http.get<IUsers>(`${this.apiUrl}/${id}`);
   }
 
-  updateUser(userId: string, updates: Partial<IUsers>): Observable<IUsers> {
-    return this.http.patch<IUsers>(`${this.baseUrl}/update/${userId}`, updates, { headers: this.getHeaders() }).pipe(
-      catchError((error) => this.handleError('Failed to update user', error))
-    );
+  createUser(user: FormData): Observable<IUsers> {
+    return this.http.post<IUsers>(this.apiUrl, user);
   }
 
-  deleteUser(userId: string): Observable<string> {
-    return this.http.delete(`${this.baseUrl}/delete/${userId}`, { headers: this.getHeaders(), responseType: 'text' }).pipe(
-      catchError((error) => this.handleError('Failed to delete user', error))
-    );
+  updateUser(id: string, user: FormData): Observable<IUsers> {
+    return this.http.put<IUsers>(`${this.apiUrl}/${id}`, user);
   }
 
-  private handleError(message: string, error: any) {
-    console.error(message, error);
-    return throwError(() => new Error(message));
+  deleteUser(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 } 

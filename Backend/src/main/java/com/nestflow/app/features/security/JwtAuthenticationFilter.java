@@ -1,4 +1,4 @@
-package com.nestflow.app.features.users.security;
+package com.nestflow.app.features.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

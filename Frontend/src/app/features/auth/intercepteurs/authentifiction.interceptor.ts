@@ -1,70 +1,46 @@
-import { Injectable } from '@angular/core';
-import {
-    HttpInterceptor,
-    HttpRequest,
-    HttpHandler,
-    HttpEvent,
-    HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { environment } from '../../../../environments/environment';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-    private readonly PUBLIC_ROUTES = [
-        '/login',
-    ];
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const cookieService = inject(CookieService);
+  const router = inject(Router);
+  const token = cookieService.get('Authorization');
+  const isApiUrl = req.url.startsWith(environment.apiUrl);
 
-    constructor(
-        private cookieService: CookieService,
-        private authService: AuthService,
-        private router: Router
-    ) { }
+  // Skip token for login/register
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/create')) {
+    return next(req);
+  }
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        // Ne pas ajouter le token pour les routes publiques
-        if (this.isPublicRoute(req.url)) {
-            return next.handle(req);
+  // Add token for API requests
+  if (isApiUrl && token) {
+    const authReq = req.clone({
+      headers: req.headers.set('Authorization', `Bearer ${token}`),
+      withCredentials: true
+    });
+
+    return next(authReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          cookieService.delete('Authorization', '/');
+          router.navigate(['/login']);
         }
+        return throwError(() => error);
+      })
+    );
+  }
 
-        const token = this.cookieService.get('Authorization');
+  // Pour les requêtes API sans token, ajouter quand même withCredentials
+  if (isApiUrl) {
+    const authReq = req.clone({
+      withCredentials: true
+    });
+    return next(authReq);
+  }
 
-        if (token) {
-            const clonedReq = req.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            return next.handle(clonedReq).pipe(
-                catchError((error: HttpErrorResponse) => {
-                    if (error.status === 401) {
-                        // Vérifier si l'erreur vient de la route /me
-                        if (req.url.includes('/api/users/me')) {
-                            this.authService.logoutUserAndRedirect();
-                        } else {
-                            // Pour les autres routes, simplement retourner l'erreur
-                            return throwError(() => error);
-                        }
-                    }
-                    return throwError(() => error);
-                })
-            );
-        }
-
-        // Si pas de token et route protégée, rediriger vers login
-        if (!this.isPublicRoute(req.url)) {
-            this.router.navigate(['/login']);
-            return throwError(() => new Error('No token available'));
-        }
-
-        return next.handle(req);
-    }
-
-    private isPublicRoute(url: string): boolean {
-        return this.PUBLIC_ROUTES.some(route => url.includes(route));
-    }
-}
+  return next(req);
+};

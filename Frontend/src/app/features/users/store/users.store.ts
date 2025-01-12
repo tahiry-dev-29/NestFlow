@@ -7,6 +7,7 @@ import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../auth/services/auth.service';
 import { IUsers, UserState } from '../models/users/users.module';
 import { UsersService } from '../services/users.service';
+import { Observable } from 'rxjs';
 
 const getInitialState = (): UserState => ({
   users: [],
@@ -69,29 +70,37 @@ export const UserStore = signalStore(
       )
     ),
     
-    updateUser(userId: string, updates: Partial<IUsers>): void {
-      const updatedUsers = store.users().map((user) => {
-        if (user.id === userId) {
-          return { ...user, ...updates };
+    updateUser(userId: string, updates: FormData | Partial<IUsers>): Observable<IUsers> {
+      patchState(store, { loading: true, error: null });
+      
+      const formData = updates instanceof FormData ? updates : this.convertToFormData(updates);
+      
+      return usersService.updateUser(userId, formData).pipe(
+        tap((updatedUser) => {
+          const updatedUsers = store.users().map((user) => 
+            user.id === userId ? updatedUser : user
+          );
+          patchState(store, { users: updatedUsers, loading: false });
+        }),
+        catchError((error) => {
+          patchState(store, { error: error.message, loading: false });
+          return throwError(() => error);
+        })
+      );
+    },
+
+    convertToFormData(data: Partial<IUsers>): FormData {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined) {
+          formData.append(key, String(value));
         }
-        return user;
       });
-      patchState(store, { users: updatedUsers });
+      return formData;
     },
 
     getUserById: (userId: string): IUsers | undefined => {
       return store.users().find((user) => user.id === userId);
-    },
-
-    async createUser(userData: FormData) {
-      try {
-        const response = await usersService.createUser(userData).toPromise();
-        // Mettre à jour le store si nécessaire
-        return response;
-      } catch (error) {
-        console.error('Error creating user:', error);
-        throw error;
-      }
-    },
+    }
   }))
 );

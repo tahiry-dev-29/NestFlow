@@ -20,6 +20,15 @@ import { AuthStore } from '../../../auth/store/auth.store';
 export class SideBarComponent {
   private readonly router = inject(Router);
   private readonly userStore = inject(AuthStore);
+  private readonly LOADING_DELAY = 1500; // 1 seconde
+  timer = signal<boolean>(false);
+
+  constructor() {
+    // Initialiser le timer
+    setTimeout(() => {
+      this.timer.set(true);
+    }, this.LOADING_DELAY);
+  }
 
   logout(): void {
     this.userStore.logout();

@@ -1,6 +1,25 @@
+import { ErrorHandler, importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
 
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+class GlobalErrorHandler implements ErrorHandler {
+  handleError(error: any) {
+    // Ignore les erreurs de connexion spécifiques
+    if (error.message?.includes('Could not establish connection')) {
+      return;
+    }
+    console.error('An error occurred:', error);
+  }
+}
+
+bootstrapApplication(AppComponent, {
+  ...appConfig,
+  providers: [
+    ...appConfig.providers,
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    }
+  ]
+}).catch(err => console.error(err));

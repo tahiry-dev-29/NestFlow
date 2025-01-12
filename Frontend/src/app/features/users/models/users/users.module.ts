@@ -46,13 +46,20 @@ export interface IUserUpdateResponse {
 }
 
 // <Omit<IUsers, 'id' | 'online' >>
-export type TSignUp = {
+/* export type TSignUp = {
     name: string;
     firstName: string;
     mail: string;
     password: string;
-    imageUrl?: string;
+    // imageUrl?: string;
     role: UserEntity.ROLE;
     
     // online: boolean;
+} */
+
+export interface IUserSignupResponse {
+    success: boolean;
+    message: string;
+    user?: IUsers;
+    error?: string;
 }

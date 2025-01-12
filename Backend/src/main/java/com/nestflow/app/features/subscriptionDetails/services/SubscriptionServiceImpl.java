@@ -1,4 +1,4 @@
-package com.nestflow.app.features.subscriptionDetails.service;
+package com.nestflow.app.features.subscriptionDetails.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

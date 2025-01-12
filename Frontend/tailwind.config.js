@@ -626,9 +626,11 @@ module.exports = {
         "0 8px 26px -4px hsla(0,0%,8%,.15),0 8px 9px -5px hsla(0,0%,8%,.06)",
       "primary-outline":
         "0 3px 9px rgba(50,50,9,0),3px 4px 8px rgba(94,114,228,.1)",
-      blur: "inset 0 0 1px 1px hsla(0,0%,100%,.9),0 20px 27px 0 rgba(0,0,0,.05)",
-      "dark-blur":
-        "inset 0 0 1px 1px hsla(0,0%,100%,.4),0 20px 27px 0 rgba(0,0,0,.05)",
+        blur: "inset 0 0 1px 1px hsla(0,0%,100%,.9),0 20px 27px 0 rgba(0,0,0,.05)",
+        "dark-blur":
+          "inset 0 0 1px 1px hsla(0,0%,100%,.4),0 20px 27px 0 rgba(0,0,0,.05)",
+      "dark-section":
+        "inset 0 0 8px 3px hsla(0,0%,70%,.4), 0 10px 15px 0 rgba(0,0,0,.25), 0 0 15px rgba(0,0,0,.1)",
       DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
       inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
       none: "none",

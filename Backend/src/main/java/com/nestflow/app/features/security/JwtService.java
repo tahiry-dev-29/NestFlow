@@ -1,4 +1,4 @@
-package com.nestflow.app.features.users.security;
+package com.nestflow.app.features.security;
 
 import java.security.Key;
 import java.util.Date;

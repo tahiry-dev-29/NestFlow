@@ -1,5 +1,5 @@
 @mixin status-badge {
-  @apply px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white;
+  @apply px-2.5 text-xs rounded-1.5 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white;
 }
 
 .online {

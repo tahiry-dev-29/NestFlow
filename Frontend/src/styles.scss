@@ -88,7 +88,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   }
 
   .cancel-btn {
-    @apply w-25 px-5 py-2.5 mt-6 mb-2 text-sm font-medium text-gray-300 bg-transparent border border-gray-300 rounded-3xl hover:bg-gray-700/65 hover:text-[#a855f7] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-100 ease-in-out;
+    @apply w-24 px-5 py-2.5 mt-6 mb-2 text-sm font-medium text-gray-300 bg-transparent border border-gray-300 rounded-3xl hover:bg-gray-700/65 hover:text-[#a855f7] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-100 ease-in-out;
   }
 
   .text {
@@ -126,8 +126,15 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 
 @layer components {
   .header-menu {
-    @apply sticky top-0 flex flex-wrap items-center h-20 justify-between mx-3 mt-2 py-2 rounded-2xl lg:flex-nowrap px-5 backdrop-saturate-200 bg-slate-850/80 shadow-dark-blur z-110;
+    @apply sticky top-0 flex flex-wrap items-center h-20 justify-between mx-3 mt-2 py-2 rounded-2xl lg:flex-nowrap px-5 bg-slate-900/5 backdrop-blur-sm shadow-dark-blur z-30;
   }
+  .content-style {
+    @apply rounded-2xl bg-slate-900/5 backdrop-blur-sm shadow-dark-blur;
+  }
+  .bg-section {
+    @apply bg-slate-900/5 backdrop-blur-sm shadow-dark-section;
+  }
+  
 }
 
 .bg-custom {

@@ -25,7 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.nestflow.app.features.subscriptionDetails.dto.RenewalRequest;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionStatusResponse;
-import com.nestflow.app.features.subscriptionDetails.service.SubscriptionService;
+import com.nestflow.app.features.subscriptionDetails.services.SubscriptionService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
