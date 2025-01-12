@@ -9,3 +9,13 @@ export const ERROR_MESSAGES = {
   UNAUTHORIZED: 'You are not authorized to perform this action.',
   FORBIDDEN: 'Access forbidden. Please check your permissions.'
 };
+
+export const ERROR_MESSAGES_FORM = {
+  PASSWORD_MISMATCH: 'Password mismatch',
+  PASSWORD_REQUIRED: 'Password is required',
+  EMAIL_REQUIRED: 'Email is required',
+  EMAIL_INVALID: 'Invalid email',
+  MIN_LENGTH: 'Minimum 8 characters',
+  REQUIRED: 'This field is required',
+  VALIDATION_ERROR: 'Validation error',
+};

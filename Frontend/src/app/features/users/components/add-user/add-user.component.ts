@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, inject, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, OnInit, output, Output, viewChild, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthStore } from '../../../auth/store/auth.store';
 import { UserStore } from '../../store/users.store';
 import { ViewUserComponent } from '../view-user/view-user.component';
+import { ERROR_MESSAGES_FORM } from '../../../../../constantes';
 
 @Component({
     selector: 'app-add-user',
@@ -13,8 +14,8 @@ import { ViewUserComponent } from '../view-user/view-user.component';
     styleUrl: './add-user.component.scss'
 })
 export class AddUserComponent implements OnInit {
-    @ViewChild('fileInput') fileInput!: ElementRef;
-    @Output() userAdded = new EventEmitter<void>();
+    fileInput = viewChild<ElementRef>('fileInput');
+    userAdded = output<void>();
     
     private fb = inject(FormBuilder);
     private authStore = inject(AuthStore);
@@ -118,18 +119,18 @@ export class AddUserComponent implements OnInit {
         const formErrors = this.userForm.errors;
 
         if (field === 'confirmPassword' && formErrors?.['mismatch'] && control.touched) {
-            return 'Password mismatch';
+            return ERROR_MESSAGES_FORM.PASSWORD_MISMATCH;
         }
 
         if (!errors) return '';
 
         const errorMessages: { [key: string]: string } = {
-            required: 'This field is required',
-            email: 'Invalid email',
-            minlength: `Minimum ${errors['minlength']?.requiredLength} characters`,
+            required: ERROR_MESSAGES_FORM.REQUIRED,
+            email: ERROR_MESSAGES_FORM.EMAIL_INVALID,
+            minlength: ERROR_MESSAGES_FORM.MIN_LENGTH,
         };
 
         const firstError = Object.keys(errors)[0];
-        return errorMessages[firstError] || 'Validation error';
+        return errorMessages[firstError] || ERROR_MESSAGES_FORM.VALIDATION_ERROR;
     }
 }
