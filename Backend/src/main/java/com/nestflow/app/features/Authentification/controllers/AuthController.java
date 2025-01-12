@@ -41,10 +41,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final ImageUploadService imageUploadService;
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Créer un nouvel utilisateur")
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Utilisateur créé avec succès", content = @Content(schema = @Schema(implementation = UserEntity.class))),
             @ApiResponse(responseCode = "400", description = "Paramètres de requête incorrects", content = @Content(schema = @Schema(type = "string"))),
@@ -60,22 +61,11 @@ public class AuthController {
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
 
         UserEntity user = new UserEntity();
-        String imagePath;
-        try {
-            imagePath = imageUploadService.uploadImage(imageFile);
-        } catch (IOException e) {
-            imagePath = null;
-        }
         user.setName(name);
         user.setFirstName(firstName);
         user.setMail(mail);
         user.setPassword(password);
-        if (imagePath != null) {
-            user.setImageUrl(imagePath);
-        } else {
-            user.setImageUrl(null);
-        }
-
+        user.setImageUrl(null);
 
         try {
             UserEntity.ROLE role = UserEntity.ROLE.valueOf(roleString.toUpperCase());

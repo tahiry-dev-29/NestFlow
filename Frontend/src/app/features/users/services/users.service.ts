@@ -14,16 +14,25 @@ export class UsersService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
 
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders().set('Content-Type', 'application/json');
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders()
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
   }
 
   getUsers(): Observable<IUsers[]> {
-    return this.http.get<IUsers[]>(this.apiUrl, { headers: this.getHeaders() });
+    return this.http.get<IUsers[]>(this.apiUrl, { 
+      headers: this.getAuthHeaders(),
+      withCredentials: true 
+    });
   }
 
   getUser(id: string): Observable<IUsers> {
-    return this.http.get<IUsers>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.get<IUsers>(`${this.apiUrl}/${id}`, { 
+      headers: this.getAuthHeaders(),
+      withCredentials: true 
+    });
   }
 
   createUser(user: FormData): Observable<IUsers> {
@@ -33,10 +42,19 @@ export class UsersService {
   }
 
   updateUser(id: string, user: FormData): Observable<IUsers> {
-    return this.http.put<IUsers>(`${this.apiUrl}/${id}`, user);
+    const headers = new HttpHeaders()
+      .set('Authorization', `Bearer ${this.authService.getToken()}`);
+      
+    return this.http.put<IUsers>(`${this.apiUrl}/${id}`, user, {
+      headers,
+      withCredentials: true
+    });
   }
 
   deleteUser(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { 
+      headers: this.getAuthHeaders(),
+      withCredentials: true 
+    });
   }
 } 

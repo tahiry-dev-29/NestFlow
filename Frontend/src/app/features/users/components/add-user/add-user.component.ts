@@ -1,85 +1,34 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { AuthStore } from '../../../auth/store/auth.store';
-import { ViewUserComponent } from '../view-user/view-user.component';
 import { UserStore } from '../../store/users.store';
-import { ImageUrl } from '../../../../../../public/images/constant.images';
+import { ViewUserComponent } from '../view-user/view-user.component';
 
 @Component({
     selector: 'app-add-user',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, ViewUserComponent],
-    template: `
-    <section class="flex justify-around gap-5">
-        <app-view-user [user]="previewUser" [isPreview]="true"></app-view-user>
-        <main class="mt-0 transition-all duration-200 ease-in-out">
-            <div class="flex flex-col items-center">
-                <div class="w-85 max-w-md px-3 mx-auto">
-                    <div class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
-                        <button type="button" (click)="userForm.reset()" class="text-gray-300 hover:text-white flex flex-row-reverse items-center pt-4 pr-4">
-                            <i class="material-icons">refresh</i>
-                        </button>
-                        <div class="flex-auto p-6">
-                            <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left" class="flex flex-col">
-                                <div class="mb-4">
-                                    <input type="text" formControlName="name" class="input-theme w-full" placeholder="Name" />
-                                    <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched" class="error">
-                                        {{ getErrorMessage('name') }}
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <input type="text" formControlName="firstName" class="input-theme w-full" placeholder="First Name" />
-                                    <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched" class="error">
-                                        {{ getErrorMessage('firstName') }}
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <input type="email" formControlName="email" class="input-theme w-full" placeholder="Email" />
-                                    <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="error">
-                                        {{ getErrorMessage('email') }}
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <select formControlName="role" class="input-theme w-full">
-                                        <option value="USER">default (USER)</option>
-                                        <option value="ADMIN">ADMIN</option>
-                                        <option value="USER">USER</option>
-                                    </select>
-                                </div>
-                                <div class="mb-4">
-                                    <input type="password" formControlName="password" class="input-theme w-full" placeholder="Password" />
-                                    <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="error">
-                                        {{ getErrorMessage('password') }}
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <input type="password" formControlName="confirmPassword" class="input-theme w-full" placeholder="Confirm Password" />
-                                    <div *ngIf="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched" class="error">
-                                        {{ getErrorMessage('confirmPassword') }}
-                                    </div>
-                                </div>
-                                <div class="flex justify-center">
-                                    <button type="submit" [disabled]="userForm.invalid" class="w-3/4" [ngClass]="{'btn-desactived-bg': !userForm.valid, 'btn-gradient-bg': userForm.valid}">
-                                        Ajouter
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </section>
-    `,
+    templateUrl: './add-user.component.html',
     styleUrl: './add-user.component.scss'
 })
 export class AddUserComponent implements OnInit {
     @ViewChild('fileInput') fileInput!: ElementRef;
     @Output() userAdded = new EventEmitter<void>();
     
-    userForm!: FormGroup;
+    private fb = inject(FormBuilder);
+    private authStore = inject(AuthStore);
+    private userStore = inject(UserStore);
+    
+    userForm = this.fb.group({
+        name: ['', [Validators.required, Validators.minLength(2)]],
+        firstName: ['', [Validators.required, Validators.minLength(2)]],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', Validators.required],
+        role: ['USER']
+    }, { validators: this.passwordMatchValidator });
+    
     selectedFileName: string = '';
     previewUser: any = {
         name: '',
@@ -88,46 +37,38 @@ export class AddUserComponent implements OnInit {
         role: 'USER',
     };
 
-    private fb = inject(FormBuilder);
-    private authStore = inject(AuthStore);
-    private toastr = inject(ToastrService);
-
     ngOnInit() {
-        this.initForm();
         this.setupFormValueChanges();
+        const passwordControl = this.userForm.get('password');
+        const confirmPasswordControl = this.userForm.get('confirmPassword');
+
+        passwordControl?.valueChanges.subscribe(() => {
+            if (confirmPasswordControl?.touched) {
+                confirmPasswordControl.updateValueAndValidity();
+            }
+        });
     }
-
-    private initForm() {
-        this.userForm = this.fb.group({
-            name: ['', [Validators.required, Validators.minLength(2)]],
-            firstName: ['', [Validators.required, Validators.minLength(2)]],
-            email: ['', [Validators.required, Validators.email]],
-            password: ['', [Validators.required, Validators.minLength(6)]],
-            confirmPassword: ['', Validators.required],
-            role: ['USER']
-        }, { validators: this.passwordMatchValidator });
-    }
-
-    
-
     
     onSubmit() {
         if (this.userForm.valid) {
-          const formData = new FormData();
-          const userData = this.userForm.value;
+            const formData = new FormData();
+            const userData = this.userForm.value;
     
-          formData.append('name', userData.name);
-          formData.append('firstName', userData.firstName);
-          formData.append('mail', userData.email);
-          formData.append('password', userData.password);
-          formData.append('role', userData.role);
+            formData.append('name', userData.name ?? '');
+            formData.append('firstName', userData.firstName ?? '');
+            formData.append('mail', userData.email ?? '');
+            formData.append('password', userData.password ?? '');
+            formData.append('role', userData.role ?? 'USER');
     
-          // Utiliser le AuthStore au lieu du UserStore
-          this.authStore.signup(formData);
-          this.resetForm();
-          this.userAdded.emit();
+            this.authStore.signup(formData);
+            
+            setTimeout(() => {
+                this.resetForm();
+                this.userAdded.emit();
+                this.userStore.loadUsers([]);
+            }, 1000);
         }
-      }
+    }
 
     private resetForm() {
         this.userForm.reset({
@@ -159,8 +100,13 @@ export class AddUserComponent implements OnInit {
     }
 
     passwordMatchValidator(g: FormGroup) {
-        return g.get('password')?.value === g.get('confirmPassword')?.value
-            ? null
+        const password = g.get('password');
+        const confirmPassword = g.get('confirmPassword');
+
+        if (!password || !confirmPassword) return null;
+        
+        return password.value === confirmPassword.value 
+            ? null 
             : { mismatch: true };
     }
 
@@ -169,14 +115,21 @@ export class AddUserComponent implements OnInit {
         if (!control?.errors || !control.touched) return '';
 
         const errors = control.errors;
+        const formErrors = this.userForm.errors;
+
+        if (field === 'confirmPassword' && formErrors?.['mismatch'] && control.touched) {
+            return 'Password mismatch';
+        }
+
+        if (!errors) return '';
+
         const errorMessages: { [key: string]: string } = {
-            required: 'Ce champ est requis',
-            email: 'Email invalide',
-            minlength: `Minimum ${control.errors['minlength']?.requiredLength} caractères`,
-            mismatch: 'Les mots de passe ne correspondent pas'
+            required: 'This field is required',
+            email: 'Invalid email',
+            minlength: `Minimum ${errors['minlength']?.requiredLength} characters`,
         };
 
         const firstError = Object.keys(errors)[0];
-        return errorMessages[firstError] || 'Erreur de validation';
+        return errorMessages[firstError] || 'Validation error';
     }
 }

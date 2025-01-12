@@ -15,6 +15,4 @@ export class HeaderComponent {
   toggleSidebar(): void {
     this.sidebarState.update(state => !state);
   }
-
-
 }

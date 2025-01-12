@@ -4,10 +4,10 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, mergeMap, pipe, switchMap, tap } from 'rxjs';
+import { ERROR_MESSAGES } from '../../../../constantes';
 import { IAuthCredentials } from '../../auth/models/auth/auth.module';
 import { AuthService } from '../../auth/services/auth.service';
 import { IUsers, UserState } from '../../users/models/users/users.module';
-import { ERROR_MESSAGES } from '../../../../constantes';
 
 // Memoize initial state
 const initialState: UserState = {
@@ -53,23 +53,14 @@ export const AuthStore = signalStore(
         pipe(
           tap(() => patchState(store, { loading: true, error: null })),
           switchMap((formData) =>
-            authService.createUser(formData).pipe(
-              tap((response: any) => {
-                if (response?.user) {
-                  patchState(store, {
-                    isAuthenticated: true,
-                    loading: false,
-                    currentUser: response.user,
-                    token: response.token
-                  });
-                  authService.setToken(response.token);
-                  toastr.success('Account creation successful !');
-                  router.navigate(['/login']);
-                }
+            authService.signup(formData).pipe(
+              tap(_ => {
+                patchState(store, { loading: false });
+                toastr.success('User created successfully!');
               }),
               catchError((error) => {
-                const errorMessage = error?.error?.message || error?.message || ERROR_MESSAGES.ACCOUNT_CREATION;
-                patchState(store, setErrorState(errorMessage));
+                const errorMessage = error?.error?.message || 'Failed to create user';
+                patchState(store, { error: errorMessage, loading: false });
                 toastr.error(errorMessage);
                 return EMPTY;
               })

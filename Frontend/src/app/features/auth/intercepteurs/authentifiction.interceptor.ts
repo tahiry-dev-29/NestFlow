@@ -15,7 +15,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const isApiUrl = req.url.startsWith(environment.apiUrl);
 
   // Skip token for login/register
-  if (req.url.includes('/auth/login') || req.url.includes('/auth/create')) {
+  if (req.url.includes('/auth/login')) {
     return next(req);
   }
 

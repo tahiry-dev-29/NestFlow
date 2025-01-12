@@ -45,7 +45,10 @@ export class SideBarRightComponent {
     this._title.set(value);
   }
 
-  onClose() {
+  onClose(event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.onCloseSignal.set(undefined);
     this._isOpen.set(false);
   }
@@ -62,10 +65,17 @@ export class SideBarRightComponent {
     }
 
     const clickedElement = event.target as HTMLElement;
-    console.log(clickedElement);
+    
+    const isToggleButton = clickedElement.closest('[data-toggle-sidebar]') || 
+                          clickedElement.closest('button[data-toggle-sidebar] *');
+    if (isToggleButton) {
+        return;
+    }
+
+    // Vérifier si le clic est à l'intérieur du sidebar
     if (!sidebarElement.nativeElement.contains(clickedElement)) {
-      this.onClickOutsideSignal.set(undefined);
-      this._isOpen.set(false);
+        this.onClickOutsideSignal.set(undefined);
+        this._isOpen.set(false);
     }
   }
 }

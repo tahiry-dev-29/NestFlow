@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, inject, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, computed, inject, model, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
@@ -31,49 +31,89 @@ import { ViewUserComponent } from '../view-user/view-user.component';
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class UserTableComponent implements OnInit {
-    protected UserEntity = UserEntity;
-    showAddUserSidebar = signal(false);
-    showEditUserSidebar = signal(false);
-    showViewUserSidebar = signal(false);
-    showPopup = signal(false);
+    // Utiliser des noms plus spécifiques pour les ViewChild
+    addUserSidebar = viewChild<SideBarRightComponent>('addUserSidebar');
+    editUserSidebar = viewChild<SideBarRightComponent>('editUserSidebar');
+    viewUserSidebar = viewChild<SideBarRightComponent>('viewUserSidebar');
 
-    userToEdit: IUsers | null = null;
-    userToView: IUsers | null = null;
-    userIdToDelete: string | null = null;
-
+    // Signaux
+    protected readonly UserEntity = UserEntity;
     readonly defaultImages = ImageUrl.defaultImages;
-    p: number = 1;
-
     readonly store = inject(UserStore);
+
+    private _userToEdit = signal<IUsers | null>(null);
+    private _userToView = signal<IUsers | null>(null);
+    private _userIdToDelete = signal<string | null>(null);
+    currentPage = signal<number>(1);
+    private _showPopup = signal(false);
+
+    // Signaux publics en lecture seule
+    readonly userToEdit = computed(() => this._userToEdit());
+    readonly userToView = computed(() => this._userToView());
+    readonly showPopup = computed(() => this._showPopup());
+
+    // Actions map pour le sidebar
+    private readonly sidebarActions: Record<string, (user?: IUsers) => { sidebar: SideBarRightComponent | undefined; title: string }> = {
+        add: () => ({
+            sidebar: this.addUserSidebar(),
+            title: 'Add User'
+        }),
+        edit: (user?: IUsers) => {
+            if (!user) return { sidebar: undefined, title: '' };
+            this._userToEdit.set(user);
+            return {
+                sidebar: this.editUserSidebar(),
+                title: 'Edit User'
+            };
+        },
+        view: (user?: IUsers) => {
+            if (!user) return { sidebar: undefined, title: '' };
+            this._userToView.set(user);
+            return {
+                sidebar: this.viewUserSidebar(),
+                title: 'View User'
+            };
+        }
+    };
 
     ngOnInit() {
         this.store.loadUsers([]); 
     }
 
-    toggleSidebar(sidebar: 'add' | 'edit' | 'view', user?: IUsers): void {
-        switch (sidebar) {
-            case 'add':
-                this.showAddUserSidebar.set(true);
-                this.showEditUserSidebar.set(false);
-                this.showViewUserSidebar.set(false);
-                break;
-            case 'edit':
-                if (user) {
-                    this.userToEdit = user;
-                    this.showEditUserSidebar.set(true);
-                    this.showAddUserSidebar.set(false);
-                    this.showViewUserSidebar.set(false);
-                }
-                break;
-            case 'view':
-                if (user) {
-                    this.userToView = user;
-                    this.showViewUserSidebar.set(true);
-                    this.showAddUserSidebar.set(false);
-                    this.showEditUserSidebar.set(false);
-                }
-                break;
+    toggleSidebar(action: keyof typeof this.sidebarActions, user?: IUsers): void {
+        const sidebarAction = this.sidebarActions[action];
+        if (!sidebarAction) return;
+
+        // Fermer tous les sidebars d'abord
+        this.closeSidebars();
+
+        const result = action === 'add' ? sidebarAction() : user ? sidebarAction(user) : null;
+        if (!result?.sidebar) {
+            return;
         }
+
+        // Ajouter un délai pour s'assurer que la fermeture est terminée
+        setTimeout(() => {
+            if (result.sidebar) {
+                result.sidebar.setTitle(result.title);
+                result.sidebar.setIsOpen(true);
+            }
+        }, 100);
+    }
+
+    private closeSidebars(): void {
+        const sidebars = [
+            this.addUserSidebar(),
+            this.editUserSidebar(),
+            this.viewUserSidebar()
+        ];
+
+        sidebars.forEach(sidebar => {
+            if (sidebar) {
+                sidebar.setIsOpen(false);
+                sidebar.setTitle('');
+            }
+        });
     }
 
     handleImageError(event: any) {
@@ -81,37 +121,54 @@ export class UserTableComponent implements OnInit {
     }
 
     openPopup(userId: string): void {
-        this.userIdToDelete = userId;
-        this.showPopup.set(true);
+        this._userIdToDelete.set(userId);
+        this._showPopup.set(true);
     }
 
     closePopup(): void {
-        this.showPopup.set(false);
-        this.userIdToDelete = null;
+        this._userIdToDelete.set(null);
+        this._showPopup.set(false);
     }
 
     confirmDelete(): void {
-        if (this.userIdToDelete) {
-            this.store.deleteUser(this.userIdToDelete);
+        const userId = this._userIdToDelete();
+        if (userId) {
+            this.store.deleteUser(userId);
             this.closePopup();
             this.store.loadUsers([]);
         }
     }
 
     onUserAdded(): void {
-        this.showAddUserSidebar.set(false);
-        this.store.loadUsers([]);
+        const sidebar = this.addUserSidebar();
+        if (sidebar) {
+            sidebar.setIsOpen(false);
+            this.store.loadUsers([]);
+        }
     }
 
     onUserEdited(): void {
-        this.showEditUserSidebar.set(false);
-        this.userToEdit = null;
-        this.store.loadUsers([]);
+        const sidebar = this.editUserSidebar();
+        if (sidebar) {
+            sidebar.setIsOpen(false);
+            this._userToEdit.set(null);
+            this.store.loadUsers([]);
+        }
     }
 
     onUserViewed(): void {
-        this.showViewUserSidebar.set(false);
-        this.userToView = null;
+        const sidebar = this.viewUserSidebar();
+        if (sidebar) {
+            sidebar.setIsOpen(false);
+            this._userToView.set(null);
+        }
+    }
+
+    setPage(page: number): void {
+        this.currentPage.set(page);
+    }
+
+    getCurrentPage(): number {
+        return this.currentPage();
     }
 }
-

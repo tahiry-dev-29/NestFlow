@@ -247,4 +247,20 @@ export class AuthService {
       })
     );
   }
+
+  signup(formData: FormData): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+        return throwError(() => new Error('Authentication required'));
+    }
+
+    return this.http.post<any>(`${this.API_URL}/create`, formData, {
+        headers: new HttpHeaders()
+            .set('Authorization', `Bearer ${token}`)
+            .set('Accept', 'application/json'),
+        withCredentials: true
+    }).pipe(
+        catchError(this.handleError.bind(this))
+    );
+  }
 }

@@ -1,6 +1,5 @@
 package com.nestflow.app.features.Authentification.services;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.nestflow.app.features.common.exceptions.UserServiceException;
 import com.nestflow.app.features.security.JwtService;
 import com.nestflow.app.features.security.TokenBlacklistService;
-import com.nestflow.app.features.upload.services.ImageUploadService;
 import com.nestflow.app.features.users.model.UserEntity;
 import com.nestflow.app.features.users.repository.UserRepository;
 
@@ -38,7 +36,6 @@ public class AuthServiceImpl implements AuthService {
     private final TokenBlacklistService tokenBlacklistService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ImageUploadService imageUploadService;
     
 
     @Override
@@ -47,21 +44,11 @@ public class AuthServiceImpl implements AuthService {
             validateUser(user);
             checkUserExists(user.getMail());
             encodePassword(user);
-
-            if (imageFile != null && !imageFile.isEmpty()) {
-                try {
-                    String imageUrl = imageUploadService.uploadImage(imageFile);
-                    user.setImageUrl(imageUrl);
-                } catch (IOException e) {
-                    log.error("Failed to upload image: ", e);
-                    user.setImageUrl(null);
-                }
-            } else {
-                user.setImageUrl(null);
-            }
+            user.setImageUrl(null);
 
             UserEntity createdUser = userRepository.save(user);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+            
         } catch (UserServiceException.UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         } catch (IllegalArgumentException e) {
