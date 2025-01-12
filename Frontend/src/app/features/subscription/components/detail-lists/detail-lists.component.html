@@ -1,6 +1,6 @@
-<section class="flex flex-wrap w-full justify-center shadow-dark-xl rounded-2xl">
+<section class="flex flex-wrap w-full justify-center">
   <div class="overflow-x-auto w-full rounded-2xl">
-    <div class="align-middle inline-block min-w-full rounded-t-2xl bg-slate-850 px-6 pt-3 h-[65vh] py-5 relative">
+    <div class="align-middle inline-block min-w-full rounded-t-2xl bg-content px-6 pt-3 h-[63vh] py-5 relative">
       <cdk-virtual-scroll-viewport itemSize="10" class="h-full overflow-y-auto custom-scrolbar">
         <table class="min-w-full border-collapse text-white">
           <thead class="sticky top-0 z-50 bg-slate-850/25 backdrop-blur-md border-b-2 border-gray-200">
@@ -143,17 +143,17 @@
         </table>
       </cdk-virtual-scroll-viewport>
     </div>
-    <div
-      class="sticky left-0 bottom-0 border-t border-gray-600 z-50 w-full flex justify-between items-center text-white bg-slate-850 py-2 px-4">
-      @if (filter.search) {
-      <div class="text-white mb-4">
-        Find subscription number : {{ store.filteredSubscriptions()(filter.menu, filter.search).length }}
-      </div>
-      } @else {
-      <span class="w-2/12"></span>
-      }
-      <p>Total subscribers <span class="text text-lg font-bold">{{ store.totalSubscribers() }}</span></p>
+  </div>
+  <div
+    class="sticky mt-7 w-9/10 left-0 bottom-0 z-50 flex justify-between items-center text-white content-style py-2 px-4">
+    @if (filter.search) {
+    <div class="text-white mb-4">
+      Find subscription number : {{ store.filteredSubscriptions()(filter.menu, filter.search).length }}
     </div>
+    } @else {
+    <span class="w-2/12"></span>
+    }
+    <p>Total subscribers <span class="text text-lg font-bold">{{ store.totalSubscribers() }}</span></p>
   </div>
 </section>
 

@@ -11,15 +11,15 @@ import { FormsModule } from '@angular/forms';
 export class SearchBarComponent {
   search = output<string>();
   searchTerm = signal('');
-  isLoading = signal(false); // État de chargement
+  isLoading = signal(false);
   private timeout: any;
 
   onSearch() {
-    this.isLoading.set(true); // Début de la recherche
+    this.isLoading.set(true);
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
       this.search.emit(this.searchTerm());
-      this.isLoading.set(false); // Fin de la recherche
-    }, 300); // Simule un délai avant l'émission de l'événement
+      this.isLoading.set(false);
+    }, 300);
   }
 }

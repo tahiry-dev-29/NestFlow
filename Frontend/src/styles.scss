@@ -126,15 +126,17 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 
 @layer components {
   .header-menu {
-    @apply sticky top-0 flex flex-wrap items-center h-20 justify-between mx-3 mt-2 py-2 rounded-2xl lg:flex-nowrap px-5 bg-slate-900/5 backdrop-blur-sm shadow-dark-blur z-30;
+    @apply sticky top-0 flex flex-wrap items-center h-20 justify-between mx-3 mt-2 py-2 rounded-2xl lg:flex-nowrap px-5 content-style z-30;
   }
   .content-style {
     @apply rounded-2xl bg-slate-900/5 backdrop-blur-sm shadow-dark-blur;
   }
   .bg-section {
-    @apply bg-slate-900/5 backdrop-blur-sm shadow-dark-section;
+    @apply bg-slate-900/5 backdrop-blur shadow-dark-section;
   }
-  
+  .bg-content {
+    @apply bg-slate-850/50 shadow-dark-section rounded-2xl;
+  }
 }
 
 .bg-custom {

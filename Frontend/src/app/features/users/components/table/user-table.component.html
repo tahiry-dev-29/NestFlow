@@ -2,7 +2,7 @@
     <div class="flex flex-wrap -mx-3">
         <div class="flex-none w-full max-w-full px-3">
             <div
-                class="relative flex flex-col min-w-0 mb-6 p-2 break-words border-0 border-transparent border-solid bg-slate-850 shadow-dark-xl rounded-2xl bg-clip-border">
+                class="relative flex flex-col min-w-0 mb-6 p-2 break-words border-0 border-transparent border-solid bg-content bg-clip-border">
                 <div class="flex justify-between items-center p-3 mb-0 border-b-2 border-gray-600 rounded-t-2xl border-b-transparent">
                     <h6 class="text-white text-xl font-semibold">Users Table</h6>
                     <div class="flex gap-5">
@@ -115,24 +115,27 @@
             </div>
         </div>
     </div>
-    <app-side-bar-right [isOpen]="showAddUserSidebar()" [title]="'Add User'"
-        (closeEvent)="showAddUserSidebar.set(false)" (clickOutside)="showAddUserSidebar.set(false)">
+    <app-side-bar-right [isOpen]="showAddUserSidebar()" [title]="'Add User'">
         <div class="min-w-full">
-            <app-add-user (userAdded)="showAddUserSidebar.set(false)"></app-add-user>
+            <app-add-user (userAdded)="onUserAdded()"></app-add-user>
         </div>
     </app-side-bar-right>
 
-    <app-side-bar-right [isOpen]="showEditUserSidebar()" [title]="'Edit User'" 
-        (closeEvent)="toggleSidebar('edit')" (clickOutside)="toggleSidebar('edit')">
+    <app-side-bar-right [isOpen]="showEditUserSidebar()" [title]="'Edit User'">
         <div class="min-w-full">
-            <app-edit-user [user]="userToEdit" (userEdited)="toggleSidebar('edit')"></app-edit-user>
+            <app-edit-user 
+                [user]="userToEdit" 
+                (userEdited)="onUserEdited()">
+            </app-edit-user>
         </div>
     </app-side-bar-right>
 
-    <app-side-bar-right [isOpen]="showViewUserSidebar()" [title]="'View User'" (closeEvent)="toggleSidebar('view')"
-        (clickOutside)="toggleSidebar('view')">
+    <app-side-bar-right [isOpen]="showViewUserSidebar()" [title]="'View User'">
         <div class="w-85">
-            <app-view-user [user]="userToView"></app-view-user>
+            <app-view-user 
+                [user]="userToView"
+                (closeEvent)="onUserViewed()">
+            </app-view-user>
         </div>
     </app-side-bar-right>
 

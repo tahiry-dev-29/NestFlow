@@ -78,9 +78,13 @@ export class AuthService {
   // User Management Methods
   createUser(userData: FormData): Observable<any> {
     return this.http.post(`${this.API_URL}/create`, userData, {
+      headers: new HttpHeaders(),
       withCredentials: true
     }).pipe(
-      catchError(this.handleError)
+      catchError(error => {
+        console.error('Create user error:', error);
+        return this.handleError(error);
+      })
     );
   }
 

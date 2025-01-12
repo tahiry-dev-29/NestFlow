@@ -37,50 +37,81 @@ export class UserTableComponent implements OnInit {
     showViewUserSidebar = signal(false);
     showPopup = signal(false);
 
-  userToEdit: IUsers | null = null;
-  userToView: IUsers | null = null;
-  userIdToDelete: string | null = null;
+    userToEdit: IUsers | null = null;
+    userToView: IUsers | null = null;
+    userIdToDelete: string | null = null;
 
-  readonly defaultImages = ImageUrl.defaultImages;
-  p: number = 1;
+    readonly defaultImages = ImageUrl.defaultImages;
+    p: number = 1;
 
-  readonly store = inject(UserStore);
-  readonly userStore = inject(UserStore);
+    readonly store = inject(UserStore);
 
-  ngOnInit() {
-    this.store.loadUsers([]); 
-  }
-
-  handleImageError(event: any) {
-    event.target.src = this.defaultImages;
-  }
-
-  toggleSidebar(sidebar: 'edit' | 'view', user?: IUsers): void {
-    if (sidebar === 'edit') {
-      this.userToEdit = user || null;
-      this.showEditUserSidebar.set(!!user);
-    } else {
-      this.userToView = user || null;
-      this.showViewUserSidebar.set(!!user);
+    ngOnInit() {
+        this.store.loadUsers([]); 
     }
-  }
 
-  openPopup(userId: string): void {
-    this.userIdToDelete = userId;
-    this.showPopup.set(true);
-  }
-
-  closePopup(): void {
-    this.showPopup.set(false);
-    this.userIdToDelete = null;
-  }
-
-  confirmDelete(): void {
-    if (this.userIdToDelete) {
-      this.store.deleteUser(this.userIdToDelete);
-      this.closePopup();
-      this.userStore.loadUsers([]);
+    toggleSidebar(sidebar: 'add' | 'edit' | 'view', user?: IUsers): void {
+        switch (sidebar) {
+            case 'add':
+                this.showAddUserSidebar.set(true);
+                this.showEditUserSidebar.set(false);
+                this.showViewUserSidebar.set(false);
+                break;
+            case 'edit':
+                if (user) {
+                    this.userToEdit = user;
+                    this.showEditUserSidebar.set(true);
+                    this.showAddUserSidebar.set(false);
+                    this.showViewUserSidebar.set(false);
+                }
+                break;
+            case 'view':
+                if (user) {
+                    this.userToView = user;
+                    this.showViewUserSidebar.set(true);
+                    this.showAddUserSidebar.set(false);
+                    this.showEditUserSidebar.set(false);
+                }
+                break;
+        }
     }
-  }
+
+    handleImageError(event: any) {
+        event.target.src = this.defaultImages;
+    }
+
+    openPopup(userId: string): void {
+        this.userIdToDelete = userId;
+        this.showPopup.set(true);
+    }
+
+    closePopup(): void {
+        this.showPopup.set(false);
+        this.userIdToDelete = null;
+    }
+
+    confirmDelete(): void {
+        if (this.userIdToDelete) {
+            this.store.deleteUser(this.userIdToDelete);
+            this.closePopup();
+            this.store.loadUsers([]);
+        }
+    }
+
+    onUserAdded(): void {
+        this.showAddUserSidebar.set(false);
+        this.store.loadUsers([]);
+    }
+
+    onUserEdited(): void {
+        this.showEditUserSidebar.set(false);
+        this.userToEdit = null;
+        this.store.loadUsers([]);
+    }
+
+    onUserViewed(): void {
+        this.showViewUserSidebar.set(false);
+        this.userToView = null;
+    }
 }
 

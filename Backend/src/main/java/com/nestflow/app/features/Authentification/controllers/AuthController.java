@@ -77,7 +77,6 @@ public class AuthController {
         }
 
 
-
         try {
             UserEntity.ROLE role = UserEntity.ROLE.valueOf(roleString.toUpperCase());
             user.setRole(role);
