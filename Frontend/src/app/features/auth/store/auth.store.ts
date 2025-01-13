@@ -29,7 +29,6 @@ export const AuthStore = signalStore(
     selectError: computed(() => error()),
   })),
   withMethods((store, authService = inject(AuthService), router = inject(Router), toastr = inject(ToastrService)) => {
-    // Memoize common state updates
     const resetAuthState = () => ({
       isAuthenticated: false,
       currentUser: null,
@@ -90,10 +89,10 @@ export const AuthStore = signalStore(
                       currentUser: user
                     });
                     router.navigate(['/dashboard/overview']);
-                    toastr.success('Welcome to Nestflow !👌');
+                    toastr.success('Bienvenue sur Nestflow !👌');
                   }),
                   catchError((error) => {
-                    const errorMessage = error?.error?.message || error?.message || ERROR_MESSAGES.USER_RETRIEVAL;
+                    const errorMessage = error?.error?.message || ERROR_MESSAGES.USER_RETRIEVAL;
                     patchState(store, setErrorState(errorMessage));
                     toastr.error(errorMessage);
                     return EMPTY;
@@ -101,9 +100,8 @@ export const AuthStore = signalStore(
                 );
               }),
               catchError((error) => {
-                const errorMessage = error?.error?.message || error?.message || ERROR_MESSAGES.LOGIN_ERROR;
+                const errorMessage = error?.error?.message || ERROR_MESSAGES.PASSWORD_OR_EMAIL_INCORRECT;
                 patchState(store, setErrorState(errorMessage));
-                toastr.error(errorMessage);
                 return EMPTY;
               })
             )

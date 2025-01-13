@@ -105,28 +105,6 @@ export const UserStore = signalStore(
       return store.users().find((user) => user.id === userId);
     },
 
-    createUser: rxMethod<FormData>(
-      pipe(
-        tap(() => patchState(store, { loading: true, error: null })),
-        switchMap((userData) =>
-          usersService.createUser(userData).pipe(
-            tap((newUser) => {
-              patchState(store, {
-                users: [...store.users(), newUser],
-                loading: false
-              });
-              toastr.success('User created successfully');
-            }),
-            catchError((error) => {
-              console.error('Create user error:', error);
-              const errorMessage = error?.error?.message || ERROR_MESSAGES.USER_CREATION_ERROR;
-              patchState(store, { error: errorMessage, loading: false });
-              toastr.error(errorMessage);
-              return EMPTY;
-            })
-          )
-        )
-      )
-    )
+    
   }))
 );

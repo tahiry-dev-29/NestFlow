@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, computed, inject, model, signal, viewChild } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, Signal, computed, inject, model, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
@@ -11,6 +11,7 @@ import { UserStore } from '../../store/users.store';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
 import { ViewUserComponent } from '../view-user/view-user.component';
+import { Unsubscribable } from 'rxjs';
 
 @Component({
     selector: 'app-user-table',
@@ -52,6 +53,7 @@ export class UserTableComponent implements OnInit {
     readonly userToView = computed(() => this._userToView());
     readonly showPopup = computed(() => this._showPopup());
 
+
     // Actions map pour le sidebar
     private readonly sidebarActions: Record<string, (user?: IUsers) => { sidebar: SideBarRightComponent | undefined; title: string }> = {
         add: () => ({
@@ -75,6 +77,14 @@ export class UserTableComponent implements OnInit {
             };
         }
     };
+
+    getRoleClasses(role: UserEntity.ROLE): string {
+        const classes = {
+            'ADMIN': 'bg-blue-500/10 text-blue-500',
+            'USER': 'bg-green-500/10 text-green-500',
+        };
+        return classes[role as unknown as keyof typeof classes] || 'bg-gray-500/10 text-gray-500';
+    }
 
     ngOnInit() {
         this.store.loadUsers([]); 

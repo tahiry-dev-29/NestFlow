@@ -6,6 +6,7 @@ import { catchError, map, tap, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { IUsers } from '../../users/models/users/users.module';
 import { environment } from '../../../../environments/environment';
+import { ERROR_MESSAGES, SERVER_ERROR_MESSAGES } from '../../../../constantes';
 
 @Injectable({
   providedIn: 'root',
@@ -48,7 +49,7 @@ export class AuthService {
     );
   }
 
-  logoutUser(): Observable<Object> {
+  /* logoutUser(): Observable<Object> {
     const currentUser = this.currentUserSubject.value;
     if (!currentUser?.id) {
       return throwError(() => new Error('No active user session found.'));
@@ -63,7 +64,7 @@ export class AuthService {
       finalize(() => this.router.navigate(['/login'])),
       catchError(this.handleError)
     );
-  }
+  } */
 
   logout(userId: string): Observable<any> {
     return this.http.post<{ message: string }>(
@@ -201,31 +202,25 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    const errorMessage = this.getErrorMessage(error);
-    return throwError(() => new Error(errorMessage));
-  }
-
-  private getErrorMessage(error: HttpErrorResponse): string {
+  private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
-      return `Client-side error: ${error.error.message}`;
+        return throwError(() => new Error(ERROR_MESSAGES.LOGIN_ERROR));
     }
 
     const statusMessages: { [key: number]: string } = {
-      0: 'Server is unreachable. Please check your internet connection.',
-      400: error.error?.message || 'Bad request - please check your input.',
-      401: error.error?.message || 'Authentication failed - please login again.',
-      403: error.error?.message || 'Access forbidden - insufficient permissions.',
-      404: error.error?.message || 'Resource not found.',
-      500: 'Internal server error - please try again later.'
+        0: SERVER_ERROR_MESSAGES[500],
+        400: error.error?.message || SERVER_ERROR_MESSAGES[400],
+        401: ERROR_MESSAGES.PASSWORD_OR_EMAIL_INCORRECT,
+        403: SERVER_ERROR_MESSAGES[403],
+        404: SERVER_ERROR_MESSAGES[404],
+        500: SERVER_ERROR_MESSAGES[500]
     };
 
     if (error.status === 401) {
-      this.logoutUserAndRedirect();
+        this.logoutUserAndRedirect();
     }
 
-    return statusMessages[error.status] || 
-           `Server error ${error.status}: ${error.error?.message || error.message}`;
+    return throwError(() => new Error(statusMessages[error.status] || ERROR_MESSAGES.LOGIN_ERROR));
   }
 
   getUserByToken(token: string): Observable<IUsers | null> {

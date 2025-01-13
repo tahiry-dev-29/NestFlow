@@ -41,7 +41,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for (user of store.users() | paginate: { itemsPerPage: 10, currentPage: getCurrentPage() }; track user.id) {
+                                    @for (user of store.users() | paginate: { itemsPerPage: 10, currentPage:
+                                    getCurrentPage() }; track user.id) {
                                     <tr *ngIf="store.selectLoading()">
                                         <td colspan="6" class="text-center p-4">
                                             <div class="flex items-center justify-center space-x-4">
@@ -74,7 +75,8 @@
                                         <td
                                             class="p-2 align-middle bg-transparent border-b text text-lg border-white/40 whitespace-nowrap shadow-transparent">
                                             <span
-                                                class="px-2.5 text-xs rounded-1.5 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none">
+                                                class="inline-block px-4 py-1.5 uppercase text-sm font-semibold rounded-full cursor-pointer transform transition-all duration-300 hover:scale-90"
+                                                [ngClass]="getRoleClasses(user.role)">
                                                 {{ user.role }}
                                             </span>
                                         </td>
