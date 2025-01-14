@@ -1,16 +1,16 @@
  // Start of Selection
 @mixin status-badge {
-  @apply inline-block px-2.5 py-1.4 uppercase text-sm font-semibold rounded-full cursor-pointer transform transition-all duration-300 hover:scale-90 backdrop-blur shadow-sm;
+  @apply inline-block px-2.5 py-1.4 uppercase text-sm font-semibold rounded-full cursor-pointer transform transition-all duration-300 hover:scale-90 backdrop-blur;
 }
 
 .online {
   @include status-badge;
-  @apply bg-blue-500/10 text-green-500;
+  @apply text-green-500;
 }
 
 .offline {
   @include status-badge;
-  @apply bg-gray-500/10 text-gray-500;
+  @apply text-gray-500;
 }
 .user-th {
   @apply px-6 py-3 font-bold uppercase align-middle bg-transparent border-b border-collapse shadow-none border-white/40 text-white text-xxs tracking-none whitespace-nowrap opacity-70 border-solid;

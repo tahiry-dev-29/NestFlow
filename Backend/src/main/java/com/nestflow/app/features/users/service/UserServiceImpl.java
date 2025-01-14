@@ -89,9 +89,54 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /* Mise à jour de l'image de l'utilisateur */
     @Override
-    public ResponseEntity<UserEntity> updateUser(String userId, UserUpdateRequest updateRequest,
-            MultipartFile imageFile) {
+    public ResponseEntity<UserEntity> updateImageUser(String userId, MultipartFile imageFile) {
+        try {
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
+
+            if (imageFile != null && !imageFile.isEmpty()) {
+                user.setImageUrl(imageUploadService.uploadImage(imageFile));
+            } else {
+                throw new IllegalArgumentException("Fichier image invalide ou absent.");
+            }
+
+            return ResponseEntity.ok(userRepository.save(user));
+        } catch (UserServiceException.UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    /* Mise à jour des informations utilisateur */
+    @Override
+public ResponseEntity<UserEntity> updateUser(String userId, UserEntity updateRequest) {
+    try {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
+
+        // Mise à jour conditionnelle des champs
+        Optional.ofNullable(updateRequest.getName()).ifPresent(user::setName);
+        Optional.ofNullable(updateRequest.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(updateRequest.getMail()).ifPresent(user::setMail);
+        Optional.ofNullable(updateRequest.getRole()).ifPresent(user::setRole);
+
+        // Sauvegarde de l'utilisateur mis à jour
+        UserEntity updatedUser = userRepository.save(user);
+        return ResponseEntity.ok(updatedUser);
+    } catch (UserServiceException.UserNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
+
+
+    /* Mise à jour du mot de passe utilisateur */
+    @Override
+    public ResponseEntity<UserEntity> updatePasswordUser(String userId, UserUpdateRequest updateRequest) {
         try {
             UserEntity user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
@@ -100,21 +145,10 @@ public class UserServiceImpl implements UserService {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
 
-            Optional<String> newName = Optional.ofNullable(updateRequest.getUpdatedUser().getName());
-            newName.ifPresent(user::setName);
+            Optional.ofNullable(updateRequest.getUpdatedUser().getPassword())
+                    .ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
 
-            Optional<String> newMail = Optional.ofNullable(updateRequest.getUpdatedUser().getMail());
-            newMail.ifPresent(user::setMail);
-
-            if (imageFile != null && !imageFile.isEmpty()) {
-                user.setImageUrl(imageUploadService.uploadImage(imageFile));
-            }
-
-            Optional<String> newPassword = Optional.ofNullable(updateRequest.getUpdatedUser().getPassword());
-            newPassword.ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
-            UserEntity updatedUser = userRepository.save(user);
-
-            return ResponseEntity.ok(updatedUser);
+            return ResponseEntity.ok(userRepository.save(user));
         } catch (UserServiceException.UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (Exception e) {

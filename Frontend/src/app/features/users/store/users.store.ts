@@ -2,14 +2,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, pipe, switchMap, tap, throwError, EMPTY } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { catchError, Observable, pipe, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../auth/services/auth.service';
 import { IUsers, UserState } from '../models/users/users.module';
 import { UsersService } from '../services/users.service';
-import { Observable } from 'rxjs';
-import { ERROR_MESSAGES } from '../../../../constantes';
-import { ToastrService } from 'ngx-toastr';
 
 const getInitialState = (): UserState => ({
   users: [],
@@ -31,7 +29,7 @@ export const UserStore = signalStore(
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
   })),
-  withMethods((store, http = inject(HttpClient), authService = inject(AuthService), usersService = inject(UsersService), toastr = inject(ToastrService)) => ({
+  withMethods((store, http = inject(HttpClient), authService = inject(AuthService), usersService = inject(UsersService))=> ({
     loadUsers: rxMethod<IUsers[]>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),

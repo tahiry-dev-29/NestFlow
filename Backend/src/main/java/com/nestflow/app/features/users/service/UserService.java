@@ -18,5 +18,9 @@ public interface UserService {
 
     ResponseEntity<ApiRep> deleteUser(String userId);
 
-    ResponseEntity<UserEntity> updateUser(String userId, UserUpdateRequest updateRequest, MultipartFile imageFile);
+    ResponseEntity<UserEntity> updateImageUser(String userId, MultipartFile imageFile);
+
+    ResponseEntity<UserEntity> updatePasswordUser(String userId, UserUpdateRequest updateRequest);
+
+    ResponseEntity<UserEntity> updateUser(String userId, UserEntity updateRequest);
 }
