@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, Signal, computed, inject, model, signal, viewChild } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
@@ -11,7 +11,6 @@ import { UserStore } from '../../store/users.store';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
 import { ViewUserComponent } from '../view-user/view-user.component';
-import { Unsubscribable } from 'rxjs';
 
 @Component({
     selector: 'app-user-table',
@@ -31,17 +30,16 @@ import { Unsubscribable } from 'rxjs';
     animations: [slideInOut],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class UserTableComponent implements OnInit {
-    // Utiliser des noms plus spécifiques pour les ViewChild
+export class UserTableComponent implements OnInit{
     addUserSidebar = viewChild<SideBarRightComponent>('addUserSidebar');
     editUserSidebar = viewChild<SideBarRightComponent>('editUserSidebar');
     viewUserSidebar = viewChild<SideBarRightComponent>('viewUserSidebar');
 
-    // Signaux
     protected readonly UserEntity = UserEntity;
     readonly defaultImages = ImageUrl.defaultImages;
     readonly store = inject(UserStore);
-
+    
+    // Signaux
     private _userToEdit = signal<IUsers | null>(null);
     private _userToView = signal<IUsers | null>(null);
     private _userIdToDelete = signal<string | null>(null);
@@ -78,6 +76,7 @@ export class UserTableComponent implements OnInit {
         }
     };
 
+    // Get role classes
     getRoleClasses(role: UserEntity.ROLE): string {
         const classes = {
             'ADMIN': 'bg-blue-500/10 text-blue-500',
@@ -86,15 +85,16 @@ export class UserTableComponent implements OnInit {
         return classes[role as unknown as keyof typeof classes] || 'bg-gray-500/10 text-gray-500';
     }
 
+    // On init
     ngOnInit() {
-        this.store.loadUsers([]); 
+        this.store.loadUsers(this.store.users()); 
     }
 
+    // Toggle sidebar
     toggleSidebar(action: keyof typeof this.sidebarActions, user?: IUsers): void {
         const sidebarAction = this.sidebarActions[action];
         if (!sidebarAction) return;
 
-        // Fermer tous les sidebars d'abord
         this.closeSidebars();
 
         const result = action === 'add' ? sidebarAction() : user ? sidebarAction(user) : null;
@@ -102,7 +102,6 @@ export class UserTableComponent implements OnInit {
             return;
         }
 
-        // Ajouter un délai pour s'assurer que la fermeture est terminée
         setTimeout(() => {
             if (result.sidebar) {
                 result.sidebar.setTitle(result.title);
@@ -111,6 +110,7 @@ export class UserTableComponent implements OnInit {
         }, 100);
     }
 
+    // Close sidebars
     private closeSidebars(): void {
         const sidebars = [
             this.addUserSidebar(),
@@ -140,29 +140,31 @@ export class UserTableComponent implements OnInit {
         this._showPopup.set(false);
     }
 
+    // Confirm delete
     confirmDelete(): void {
         const userId = this._userIdToDelete();
         if (userId) {
             this.store.deleteUser(userId);
             this.closePopup();
-            this.store.loadUsers([]);
+            this.store.loadUsers(this.store.users());
         }
     }
 
+    // On user added
     onUserAdded(): void {
         const sidebar = this.addUserSidebar();
         if (sidebar) {
             sidebar.setIsOpen(false);
-            this.store.loadUsers([]);
+            this.store.loadUsers(this.store.users());
         }
     }
-
+    // On user edited
     onUserEdited(): void {
         const sidebar = this.editUserSidebar();
         if (sidebar) {
             sidebar.setIsOpen(false);
             this._userToEdit.set(null);
-            this.store.loadUsers([]);
+            this.store.loadUsers(this.store.users());
         }
     }
 

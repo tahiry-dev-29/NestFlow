@@ -1,11 +1,7 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { ToastrService } from 'ngx-toastr';
 import { catchError, Observable, pipe, switchMap, tap, throwError } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { AuthService } from '../../auth/services/auth.service';
 import { IUsers, UserState } from '../models/users/users.module';
 import { UsersService } from '../services/users.service';
 
@@ -29,14 +25,13 @@ export const UserStore = signalStore(
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
   })),
-  withMethods((store, http = inject(HttpClient), authService = inject(AuthService), usersService = inject(UsersService))=> ({
+  withMethods((store, usersService = inject(UsersService))=> ({
+    // Load users
     loadUsers: rxMethod<IUsers[]>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap(() => {
-          const token = authService.getToken();
-          const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-          return http.get<IUsers[]>(`${environment.apiUrl}/users/lists`, { headers }).pipe(
+          return usersService.getUsers().pipe(
             tap((users) => patchState(store, { users, loading: false })),
             catchError((error) => {
               patchState(store, { error: error.message, loading: false });
@@ -47,13 +42,12 @@ export const UserStore = signalStore(
       )
     ),
 
+    // Delete user
     deleteUser: rxMethod<string>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((userId) => {
-          const token = authService.getToken();
-          const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-          return http.delete(`${environment.apiUrl}/users/delete/${userId}`, { headers, responseType: 'text' }).pipe(
+          return usersService.deleteUser(userId).pipe(
             tap(() => {
               patchState(store, {
                 users: store.users().filter((user) => user.id !== userId),
@@ -70,17 +64,17 @@ export const UserStore = signalStore(
       )
     ),
     
-    updateUser(userId: string, updates: FormData | Partial<IUsers>): Observable<IUsers> {
+    updateUser(userId: string, updates: Partial<IUsers>): Observable<IUsers> {
       patchState(store, { loading: true, error: null });
       
-      const formData = updates instanceof FormData ? updates : this.convertToFormData(updates);
-      
-      return usersService.updateUser(userId, formData).pipe(
-        tap((updatedUser) => {
-          const updatedUsers = store.users().map((user) => 
-            user.id === userId ? updatedUser : user
+      return usersService.updateUser(userId, updates).pipe(
+        switchMap(() => {
+          // use service to update user
+          return usersService.updateUser(userId, updates).pipe(
+            tap((updatedUser) => {
+              patchState(store, { users: store.users().map((user) => user.id === userId ? updatedUser : user), loading: false });
+            })
           );
-          patchState(store, { users: updatedUsers, loading: false });
         }),
         catchError((error) => {
           patchState(store, { error: error.message, loading: false });
@@ -89,20 +83,11 @@ export const UserStore = signalStore(
       );
     },
 
-    convertToFormData(data: Partial<IUsers>): FormData {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined) {
-          formData.append(key, String(value));
-        }
-      });
-      return formData;
-    },
 
+    // Get user by id
     getUserById: (userId: string): IUsers | undefined => {
       return store.users().find((user) => user.id === userId);
     },
-
     
   }))
 );

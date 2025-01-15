@@ -16,11 +16,13 @@ import { ERROR_MESSAGES_FORM } from '../../../../../constantes';
 export class AddUserComponent implements OnInit {
     fileInput = viewChild<ElementRef>('fileInput');
     userAdded = output<void>();
-    
+
+    // Injects
     private fb = inject(FormBuilder);
     private authStore = inject(AuthStore);
     private userStore = inject(UserStore);
-    
+
+    // Form group
     userForm = this.fb.group({
         name: ['', [Validators.required, Validators.minLength(2)]],
         firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -29,8 +31,11 @@ export class AddUserComponent implements OnInit {
         confirmPassword: ['', Validators.required],
         role: ['USER']
     }, { validators: this.passwordMatchValidator });
-    
+
+    // Selected file name
     selectedFileName: string = '';
+
+    // Preview user
     previewUser: any = {
         name: '',
         firstName: '',
@@ -38,6 +43,7 @@ export class AddUserComponent implements OnInit {
         role: 'USER',
     };
 
+    // On init
     ngOnInit() {
         this.setupFormValueChanges();
         const passwordControl = this.userForm.get('password');
@@ -49,7 +55,8 @@ export class AddUserComponent implements OnInit {
             }
         });
     }
-    
+
+    // On submit
     onSubmit() {
         if (this.userForm.valid) {
             const formData = new FormData();
@@ -71,6 +78,7 @@ export class AddUserComponent implements OnInit {
         }
     }
 
+    // Reset form
     private resetForm() {
         this.userForm.reset({
             name: '',
@@ -88,6 +96,7 @@ export class AddUserComponent implements OnInit {
         };
     }
 
+    // Setup form value changes
     private setupFormValueChanges() {
         this.userForm.valueChanges.subscribe(values => {
             this.previewUser = {
@@ -100,6 +109,7 @@ export class AddUserComponent implements OnInit {
         });
     }
 
+    // Password match validator
     passwordMatchValidator(g: FormGroup) {
         const password = g.get('password');
         const confirmPassword = g.get('confirmPassword');
@@ -111,6 +121,7 @@ export class AddUserComponent implements OnInit {
             : { mismatch: true };
     }
 
+    // Get error message
     getErrorMessage(field: string): string {
         const control = this.userForm.get(field);
         if (!control?.errors || !control.touched) return '';

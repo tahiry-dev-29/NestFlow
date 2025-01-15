@@ -14,6 +14,7 @@ export class UsersService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
 
+  // Get auth headers
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders()
@@ -21,13 +22,15 @@ export class UsersService {
       .set('Content-Type', 'application/json');
   }
 
+  // Get users
   getUsers(): Observable<IUsers[]> {
-    return this.http.get<IUsers[]>(this.apiUrl, { 
+    return this.http.get<IUsers[]>(`${this.apiUrl}/lists`, { 
       headers: this.getAuthHeaders(),
       withCredentials: true 
     });
   }
 
+  // Get user by id
   getUser(id: string): Observable<IUsers> {
     return this.http.get<IUsers>(`${this.apiUrl}/${id}`, { 
       headers: this.getAuthHeaders(),
@@ -35,24 +38,20 @@ export class UsersService {
     });
   }
 
-  createUser(user: FormData): Observable<IUsers> {
-    return this.authService.createUser(user).pipe(
-      map(response => response.user)
-    );
-  }
-
-  updateUser(id: string, user: FormData): Observable<IUsers> {
+  // Update user
+  updateUser(id: string, user: Partial<IUsers>): Observable<IUsers> {
     const headers = new HttpHeaders()
       .set('Authorization', `Bearer ${this.authService.getToken()}`);
       
-    return this.http.put<IUsers>(`${this.apiUrl}/${id}`, user, {
+    return this.http.patch<IUsers>(`${this.apiUrl}/update/${id}`, user, {
       headers,
       withCredentials: true
     });
   }
 
+  // Delete user
   deleteUser(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { 
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`, { 
       headers: this.getAuthHeaders(),
       withCredentials: true 
     });

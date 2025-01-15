@@ -13,11 +13,11 @@ export const ERROR_MESSAGES = {
 };
 
 export const SERVER_ERROR_MESSAGES = {
-  404: 'Resource not found',
-  403: 'Access forbidden. Please check your permissions.',
-  401: 'Unauthorized. Please login again.',
-  500: 'Internal server error. Please try again later.',
   400: 'Bad request. Please check your input.',
+  401: 'Unauthorized. Please login again.',
+  403: 'Access forbidden. Please check your permissions.',
+  404: 'Resource not found',
+  500: 'Internal server error. Please try again later.',
 };
 
 export const ERROR_MESSAGES_FORM = {

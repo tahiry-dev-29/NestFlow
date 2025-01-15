@@ -5,7 +5,7 @@ import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { ToastrService } from 'ngx-toastr';
-import { ERROR_MESSAGES } from '../../../../constantes';
+import { ERROR_MESSAGES, SERVER_ERROR_MESSAGES } from '../../../../constantes';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const cookieService = inject(CookieService);
@@ -27,18 +27,30 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
 
     return next(authReq).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 || error.status === 403) {
-          cookieService.delete('Authorization', '/');
-          router.navigate(['/login']);
-          toastr.error(ERROR_MESSAGES.FORBIDDEN);
+      catchError((error: HttpErrorResponse) => {// use Switch case
+        switch (error.status) {
+          case 401:
+            cookieService.delete('Authorization', '/');
+            router.navigate(['/login']);
+            toastr.error(ERROR_MESSAGES.FORBIDDEN);
+            break;
+          case 400:
+            toastr.error(SERVER_ERROR_MESSAGES[400]);
+            break;
+          case 404:
+            toastr.error(SERVER_ERROR_MESSAGES[404]);
+            toastr.error(SERVER_ERROR_MESSAGES[500]);
+            break;
+          default:
+            toastr.error(SERVER_ERROR_MESSAGES[500]);
+            break;
         }
         return throwError(() => error);
       })
     );
   }
 
-  // Pour les requêtes API sans token, ajouter quand même withCredentials
+  // For API requests without token, still add withCredentials
   if (isApiUrl) {
     const authReq = req.clone({
       withCredentials: true
