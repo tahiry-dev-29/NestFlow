@@ -5,7 +5,6 @@
         <table class="min-w-full border-collapse text-white">
           <thead class="sticky top-0 z-50 bg-slate-850/25 backdrop-blur-md border-b-2 border-gray-200">
             <tr class="text-center">
-              <th class="th">ID</th>
               <th class="th hidden sm:table-cell">Nom complet</th>
               <th class="th hidden sm:table-cell">Email</th>
               <th class="th">Progression</th>
@@ -14,7 +13,7 @@
             </tr>
           </thead>
           <tbody>
-            @if (store.isLoading()) {
+            @if (store.loading()) {
             @defer (on timer(500ms)) {
             <tr>
               <td colspan="6" class="text-center py-4">
@@ -67,23 +66,22 @@
             @for (subscription of store.filteredSubscriptions()(filter.menu, filter.search); track subscription.id) {
             <tr
               [ngClass]="{'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== subscription.id, 'bg-slate-700': store.expandedId() === subscription.id}">
-              <td class="td">{{ subscription.id }}</td>
               <td class="td hidden sm:table-cell">{{ subscription.fullname }}</td>
               <td class="td hidden sm:table-cell">{{ subscription.email }}</td>
               <td class="td">
-                <div class="relative flex justify-center w-full h-2 bg-gray-700 rounded-full">
+                <!-- <div class="relative flex justify-center w-full h-2 bg-gray-700 rounded-full">
                   <div class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
                     [ngClass]="store.getProgressClasses()(subscription.progress ?? 0)"
                     [style.width.%]="subscription.progress ?? 0"></div>
                   <span class="block text-sm mt-2 text-gray-400">{{ subscription.progress ?? 0 }}%</span>
-                </div>
+                </div> -->
               </td>
               <td class="td">
                 <div class="flex flex-col items-center">
                   <span
-                    [ngClass]="{'text-blue-400': subscription.subscriptionType === 'Basique', 'text-green-400': subscription.subscriptionType === 'Classique'}">{{
+                    [ngClass]="{'text-blue-400': subscription.subscriptionType === subscription.subscriptionType, 'text-green-400': subscription.subscriptionType === subscription.subscriptionType}">{{
                     subscription.subscriptionType }}</span>
-                  <span class="text-xs text-gray-400">{{ store.getRemainingDays(subscription.id) }} jours restants</span>
+                  <span class="text-xs text-gray-400">{{ subscription.remainingDays }} jours restants</span>
                 </div>
               </td>
               <td class="px-6 py-4 text-center">
@@ -124,14 +122,17 @@
                     <p><strong>Nombre de chaînes :</strong> {{ subscription.channelCount }}</p>
                   </div>
                   <div class="w-1/3 p-2">
-                    <p><strong>Mot de passe :</strong> {{ subscription.password | hidePassword }}</p>
+                    <p><strong>Mot de passe :</strong> {{ subscription.code | hidePassword }}</p>
                     <p><strong>Date d'inscription :</strong> {{ subscription.subscriptionStartDate |
                       date:'dd/MM/yyyy à HH:mm' }}</p>
                     <p><strong>Date fin :</strong> {{ subscription.subscriptionEndDate | date:'dd/MM/yyyy à HH:mm'
                       }}</p>
                   </div>
                   <div class="w-1/3 p-2">
-                    <p><strong>Actif :</strong> {{ subscription.active }}</p>
+                    <p><strong>Actif :</strong> {{ subscription.status }}</p>
+                    <p><strong>Prix :</strong> {{ subscription.price }}</p>
+                    <p><strong>Heures restantes :</strong> {{ subscription.remainingHours }}</p>
+                    <p><strong>Jours restant :</strong> {{ subscription.remainingDays }}</p>
                   </div>
                 </div>
               </td>
@@ -153,7 +154,7 @@
     } @else {
     <span class="w-2/12"></span>
     }
-    <p>Total subscribers <span class="text text-lg font-bold">{{ store.totalSubscribers() }}</span></p>
+    <p>Total subscribers <span class="text text-lg font-bold">{{ store.subscriptions().length }}</span></p>
   </div>
 </section>
 

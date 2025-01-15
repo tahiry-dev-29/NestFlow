@@ -66,7 +66,7 @@ export class AuthService {
   }
 
   // Token Management
-  private getAuthHeaders() {
+  getAuthHeaders() {
     const token = this.getToken();
     return {
       headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
@@ -179,7 +179,7 @@ export class AuthService {
   }
 
   // Handle error
-  private handleError(error: HttpErrorResponse) {
+  handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
       return throwError(() => new Error(ERROR_MESSAGES.LOGIN_ERROR));
     }

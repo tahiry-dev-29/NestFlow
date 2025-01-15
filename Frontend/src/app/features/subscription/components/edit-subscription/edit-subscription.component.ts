@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ISubscription, SubscriptionType } from '../../models/subscription.interface';
-import { SubscriptionStore } from '../../store/subscribed.store';
+import { SubscriptionStore } from '../../store/store';
 
 @Component({
   selector: 'app-edit-subscription',
@@ -13,7 +13,7 @@ import { SubscriptionStore } from '../../store/subscribed.store';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
 })
-export class EditSubscriptionComponent implements OnInit {
+export class EditSubscriptionComponent {
   private fb = inject(FormBuilder);
   private store = inject(SubscriptionStore);
   private router = inject(Router);
@@ -35,7 +35,7 @@ export class EditSubscriptionComponent implements OnInit {
     Classique: { channels: 500 },
   };
 
-  ngOnInit() {
+  /* ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       const subscription = this.store.getSubscriptionById(+id);
@@ -54,7 +54,7 @@ export class EditSubscriptionComponent implements OnInit {
         this.redirectToList();
       }
     }
-  }
+  } */
 
   onSubmit(): void {
     if (this.editForm.invalid) {
@@ -75,7 +75,7 @@ export class EditSubscriptionComponent implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.store.update(+id, updatedSubscription);
+      // this.store.update(+id, updatedSubscription);
       this.redirectToList();
       this.toastr.success('Abonnement mis à jour avec succès.');
     } else {

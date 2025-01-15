@@ -3,8 +3,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { SubscriptionType, ISubscription } from '../../models/subscription.interface';
-import { SUBSCRIPTION_SETTINGS, SubscriptionStore } from '../../store/subscribed.store';
+import { Status, SubscriptionDetails, SubscriptionType } from '../../models/subscription.model';
+import { SubscriptionStore } from '../../store/store';
 
 @Component({
   selector: 'app-add-subscription',
@@ -59,31 +59,33 @@ export class AddSubscriptionComponent implements OnInit {
 
   private addSubscription() {
     const formValues = this.subscriptionForm.value;
-
+/* 
     const subscriptionType: SubscriptionType = formValues.subscriptionType === 'Classique' ? 'Classique' : 'Basique';
-    const duration = SUBSCRIPTION_SETTINGS[subscriptionType]?.duration || 31;
+    const duration = SUBSCRIPTION_SETTINGS[subscriptionType]?.duration || 31; */
 
-    const startDate = new Date().toISOString().split('T')[0];
+    /* const startDate = new Date().toISOString().split('T')[0];
     const endDate = new Date(Date.now() + duration * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const remainingDays = this.calculateRemainingDays(startDate, endDate);
     const progress = (remainingDays / duration) * 100;
-
-    const newSubscription: ISubscription = {
-      subscriptionStartDate: startDate,
-      subscriptionEndDate: endDate,
-      active: true,
-      id: 0,
+ */
+    const newSubscription: SubscriptionDetails = {
       fullname: formValues.fullname || '',
       email: formValues.email || '',
       tel: formValues.tel || '',
       adresse: formValues.adresse || '',
-      subscriptionType,
+      subscriptionType: formValues.subscriptionType as SubscriptionType || SubscriptionType.BASIC,
       channelCount: formValues.channelCount || 250,
-      password: formValues.password || '',
-      progress: progress,
+      code: formValues.password || '',
+      id: undefined,
+      subscriptionStartDate: undefined,
+      subscriptionEndDate: undefined,
+      status: Status.ACTIVE,
+      price: undefined,
+      remainingHours: undefined,
+      remainingDays: undefined
     };
 
-    this.store.addSubscription(newSubscription);
+    // this.store.addSubscription(newSubscription);
     this.toastr.success(`Abonnement <span class="msg-class">${newSubscription.subscriptionType}</span> ajouté avec succès!`);
     this.redirectToList();
   }

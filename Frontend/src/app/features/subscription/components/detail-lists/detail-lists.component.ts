@@ -1,6 +1,6 @@
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { Component, computed, HostListener, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, HostListener, inject, Input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
@@ -8,7 +8,8 @@ import { PopupsComponent } from "../../../shared/components/popups/popups.compon
 import { DirectiveModule } from "../../../../modules";
 import { expandCollapse } from '../../../shared/animations/animations';
 import { ISubscription } from '../../models/subscription.interface';
-import { SubscriptionStore } from '../../store/subscribed.store';
+import { SubscriptionStore } from '../../store/store';
+import { SubscriptionDetails } from '../../models/subscription.model';
 
 @Component({
   selector: 'app-detail-lists',
@@ -19,63 +20,73 @@ import { SubscriptionStore } from '../../store/subscribed.store';
   animations: [expandCollapse],
 })
 export class DetailListsComponent implements OnInit {
+  // injects
   store = inject(SubscriptionStore);
   toastr = inject(ToastrService);
   router = inject(Router);
 
+  // variables helpers
   @Input() filter: { menu: string; search: string } = { menu: 'all', search: '' };
   showPopup = signal(false);
-  subscriberToDelete = signal<number | null>(null);
+  subscriberToDelete = signal<string | undefined>(undefined);
 
+
+  // ngOnInit
   ngOnInit() {
-    this.store.loadSubscriptions();
-  }
-  /* remainingDays = computed(() => (id: number) => {
-    const subscription = this.store.getSubscriptionById(id);
-    if (!subscription) return 0;
-    const endDate = new Date(subscription.subscriptionEndDate);
-    const today = new Date();
-    const differenceInTime = endDate.getTime() - today.getTime();
-    return Math.max(0, Math.ceil(differenceInTime / (1000 * 3600 * 24)));
-  }); */
-
-
-  openPopup(subscriberId: number) {
-    this.subscriberToDelete.set(subscriberId);
-    this.showPopup.set(true);
+    this.store.loadSubscriptions(this.store.subscriptions()); // ok
   }
 
-  closePopup() {
-    this.showPopup.set(false);
-    this.subscriberToDelete.set(null);
-  }
-
+  // confirmDelete
   confirmDelete() {
     const id = this.subscriberToDelete();
-    const fullname = this.store.getSubscriptionById(id!)?.fullname ?? '';
+    const fullname = this.store.subscriptions().find((subscription: SubscriptionDetails) => subscription.id === id)?.fullname ?? '';
     if (id !== null) {
-      this.store.deleteSubscription(id);
+      this.store.deleteSubscription({ id: id! });
       this.toastr.success(`L'abonnement de <span class="msg-class">${fullname}</span> est supprimé avec succès`);
     }
     this.closePopup();
   }
-
-  editSubscriber(id: number) {
+  // edit Subscriber
+  editSubscriber(id: string | undefined) {
     this.router.navigate(['dashboard/subscriptions/edit', id]);
   }
-
-  trackById(index: number, subscription: ISubscription): number {
+  // track By Id
+  trackById(subscription: ISubscription): number {
     return subscription.id;
   }
 
+  // Close the expanded menu when clicking outside of it
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (this.store.expandedMenuId() !== null) {
       const clickedElement = event.target as HTMLElement;
       if (!clickedElement.closest('.tooltip-container') && !clickedElement.closest('button')) {
-        this.store.closeExpandedMenu();
+        // this.store.closeExpandedMenu();
       }
     }
   }
+
+  // Utilisation avec le typage correct
+  filterSubscriptions(menu: string, search: string | null) {
+    // const filtered: SubscriptionDetails[] = this.store.filteredSubscriptions()(menu, search);
+    // return filtered;
+  }
+
+  getProgressClass(progress: number) {
+    // TypeScript connaît maintenant le type de retour
+    const className: string =
+      this.store.getProgressClasses()(progress);
+    return className;
+  }
+
+  // openPopup
+  openPopup(subscriberId: string | undefined) {
+    this.subscriberToDelete.set(subscriberId);
+    this.showPopup.set(true);
+  }
+  // closePopup
+  closePopup() {
+    this.showPopup.set(false);
+    this.subscriberToDelete.set(undefined);
+  }
 }
-    
