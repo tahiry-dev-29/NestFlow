@@ -27,7 +27,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
 
     return next(authReq).pipe(
-      catchError((error: HttpErrorResponse) => {// use Switch case
+      catchError((error: HttpErrorResponse) => {
         switch (error.status) {
           case 401:
             cookieService.delete('Authorization', '/');

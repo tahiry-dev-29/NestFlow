@@ -2,9 +2,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { IUsers } from '../models/users/users.module';
 import { AuthService } from '../../auth/services/auth.service';
-import { map } from 'rxjs/operators';
+import { IUsers } from '../models/users/users.module';
 
 @Injectable({
   providedIn: 'root'

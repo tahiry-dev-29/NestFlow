@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, mergeMap, pipe, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, mergeMap, Observable, pipe, switchMap, tap } from 'rxjs';
 import { ERROR_MESSAGES } from '../../../../constantes';
 import { IAuthCredentials } from '../../auth/models/auth/auth.module';
 import { AuthService } from '../../auth/services/auth.service';
