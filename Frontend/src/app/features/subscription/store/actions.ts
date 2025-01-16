@@ -22,7 +22,7 @@ export const subscriptionActionsFeature = signalStoreFeature(
                             next: (subscriptions) => patchState(store, { subscriptions, loading: false }),
                             error: (error) => patchState(store, { error: error.message, loading: false })
                         })
-                    ) 
+                    )
                 )
             )
         ),
@@ -65,14 +65,24 @@ export const subscriptionActionsFeature = signalStoreFeature(
 
         // Helpers methods
         toggleExpand(id: string | undefined): void {
-            patchState(store, { expandedId: id });
+            patchState(store, { expandedId: store.expandedId() === id ? null : id });
         },
+
         toggleMenuExpand(id: string | undefined): void {
-            patchState(store, { expandedMenuId: id });
+            patchState(store, { expandedMenuId: store.expandedMenuId() === id ? null : id });
         },
+
 
         closeExpandedMenu(): void {
             patchState(store, { expandedMenuId: null });
-        }
+        },
+        
+        toggleDetails(id: string | undefined): void {
+            patchState(store, { expandedId: store.expandedId() === id ? null : id });
+        },
+
+        closeExpandedId(): void {
+            patchState(store, { expandedId: null });
+        },
     }))
 );

@@ -180,7 +180,4 @@ export class UserTableComponent implements OnInit{
         this.currentPage.set(page);
     }
 
-    getCurrentPage(): number {
-        return this.currentPage();
-    }
 }

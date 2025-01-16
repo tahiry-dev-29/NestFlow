@@ -42,7 +42,7 @@
                                 </thead>
                                 <tbody>
                                     @for (user of store.users() | paginate: { itemsPerPage: 10, currentPage:
-                                    getCurrentPage() }; track user.id) {
+                                    currentPage() }; track user.id) {
                                     <tr *ngIf="store.selectLoading()">
                                         <td colspan="6" class="text-center p-4">
                                             <div class="flex items-center justify-center space-x-4">

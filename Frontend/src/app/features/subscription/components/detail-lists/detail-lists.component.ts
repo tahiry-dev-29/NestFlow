@@ -1,6 +1,5 @@
-import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, inject, Input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
@@ -10,14 +9,16 @@ import { expandCollapse } from '../../../shared/animations/animations';
 import { ISubscription } from '../../models/subscription.interface';
 import { SubscriptionStore } from '../../store/store';
 import { SubscriptionDetails } from '../../models/subscription.model';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
   templateUrl: './detail-lists.component.html',
   styleUrls: ['./detail-lists.component.scss'],
-  imports: [PopupsComponent, CommonModule, DirectiveModule, ScrollingModule, CdkVirtualScrollViewport],
+  imports: [PopupsComponent, CommonModule, DirectiveModule, NgxPaginationModule],
   animations: [expandCollapse],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DetailListsComponent implements OnInit {
   // injects
@@ -29,7 +30,7 @@ export class DetailListsComponent implements OnInit {
   @Input() filter: { menu: string; search: string } = { menu: 'all', search: '' };
   showPopup = signal(false);
   subscriberToDelete = signal<string | undefined>(undefined);
-
+  currentPage = signal<number>(1);
 
   // ngOnInit
   ngOnInit() {
@@ -42,7 +43,7 @@ export class DetailListsComponent implements OnInit {
     const fullname = this.store.subscriptions().find((subscription: SubscriptionDetails) => subscription.id === id)?.fullname ?? '';
     if (id !== null) {
       this.store.deleteSubscription({ id: id! });
-      this.toastr.success(`L'abonnement de <span class="msg-class">${fullname}</span> est supprimé avec succès`);
+      this.toastr.warning(`<span class="msg-class">${fullname}</span> deletion successful`);
     }
     this.closePopup();
   }
@@ -61,10 +62,11 @@ export class DetailListsComponent implements OnInit {
     if (this.store.expandedMenuId() !== null) {
       const clickedElement = event.target as HTMLElement;
       if (!clickedElement.closest('.tooltip-container') && !clickedElement.closest('button')) {
-        // this.store.closeExpandedMenu();
+        this.store.closeExpandedMenu();
       }
     }
   }
+
 
   // Utilisation avec le typage correct
   filterSubscriptions(menu: string, search: string | null) {
@@ -73,10 +75,15 @@ export class DetailListsComponent implements OnInit {
   }
 
   getProgressClass(progress: number) {
-    // TypeScript connaît maintenant le type de retour
     const className: string =
       this.store.getProgressClasses()(progress);
     return className;
+  }
+
+  // Pagination
+  
+  setPage(page: number): void {
+    this.currentPage.set(page);
   }
 
   // openPopup
@@ -89,4 +96,5 @@ export class DetailListsComponent implements OnInit {
     this.showPopup.set(false);
     this.subscriberToDelete.set(undefined);
   }
+
 }

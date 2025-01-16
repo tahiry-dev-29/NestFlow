@@ -73,6 +73,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .active-lists {
     @apply bg-slate-400/10 shadow-dark-xl rounded-24;
   }
+
   .hover-dropdown-lists {
     @apply px-4 py-2 hover:bg-slate-700/13 hover:shadow cursor-pointer rounded-7;
   }
@@ -83,6 +84,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .btn-gradient-bg {
     @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all bg-transparent border-0 rounded-3xl cursor-pointer active:opacity-85 hover:-translate-y-px leading-normal text-sm ease-in shadow-md hover:border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-2 ring-offset-2;
   }
+
   .btn-desactived-bg {
     @apply cursor-help bg-gray-700/25 inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all border-0 rounded-3xl leading-normal text-sm ease-in shadow-md focus:ring-2 ring-offset-2;
   }
@@ -128,12 +130,15 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .header-menu {
     @apply sticky top-0 flex flex-wrap items-center h-20 justify-between mx-3 mt-2 py-2 rounded-2xl lg:flex-nowrap px-5 content-style z-30;
   }
+
   .content-style {
     @apply rounded-2xl bg-slate-900/5 backdrop-blur-sm shadow-dark-blur;
   }
+
   .bg-section {
     @apply bg-slate-900/5 backdrop-blur shadow-dark-section;
   }
+
   .bg-content {
     @apply bg-slate-850/50 shadow-dark-section rounded-2xl;
   }
@@ -177,7 +182,6 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .custom-scrolbar::-webkit-scrollbar-thumb:hover {
     background: #f8f8f8e5;
   }
-
 
   .no-custom-scrolbar {
     scrollbar-width: none;

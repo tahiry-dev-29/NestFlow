@@ -1,7 +1,7 @@
 <section class="flex flex-wrap w-full justify-center">
-  <div class="overflow-x-auto w-full rounded-2xl">
-    <div class="align-middle inline-block min-w-full rounded-t-2xl bg-content px-6 pt-3 h-[63vh] py-5 relative">
-      <cdk-virtual-scroll-viewport itemSize="10" class="h-full overflow-y-auto custom-scrolbar">
+  <div class="overflow-auto w-full rounded-2xl">
+    <div class="align-middle inline-block min-w-full rounded-t-2xl bg-content pl-6 pr-3 pt-3 h-[63vh] py-5 relative">
+      <div class="h-full overflow-y-auto custom-scrolbar">
         <table class="min-w-full border-collapse text-white">
           <thead class="sticky top-0 z-50 bg-slate-850/25 backdrop-blur-md border-b-2 border-gray-200">
             <tr class="text-center">
@@ -63,7 +63,9 @@
               </td>
             </tr>
             } @else {
-            @for (subscription of store.filteredSubscriptions()(filter.menu, filter.search); track subscription.id) {
+            @for (subscription of store.filteredSubscriptions()(filter.menu, filter.search) | paginate: { itemsPerPage:
+            10, currentPage:
+            currentPage() }; track subscription.id) {
             <tr
               [ngClass]="{'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== subscription.id, 'bg-slate-700': store.expandedId() === subscription.id}">
               <td class="td hidden sm:table-cell">{{ subscription.fullname }}</td>
@@ -88,7 +90,8 @@
                 <div class="relative inline-block ml-2">
                   <button class="text-gray-100 hover:text-gray-500 relative top-3"
                     (click)="store.toggleMenuExpand(subscription.id)">
-                    <span class="material-icons transition-all duration-300 transform"
+                    <span
+                      class="material-icons transition-all duration-300 transform rounded-full hover:bg-slate-300/10"
                       [ngClass]="{ 'rotate-180': store.expandedMenuId() === subscription.id }">more_vert</span>
                   </button>
                   <div *ngIf="store.expandedMenuId() === subscription.id">
@@ -105,8 +108,9 @@
                   </div>
                 </div>
                 <button class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2"
-                  (click)="store.toggleExpand(subscription.id)">
-                  <span class="material-icons transition-all duration-300 transform text-8"
+                  (click)="store.toggleDetails(subscription.id)">
+                  <span
+                    class="material-icons transition-all duration-300 transform text-8 rounded-full hover:bg-slate-300/10"
                     [ngClass]="{ 'rotate-180': store.expandedId() === subscription.id }">{{ store.expandedId() ===
                     subscription.id ? 'expand_less' : 'expand_more' }}</span>
                 </button>
@@ -142,19 +146,21 @@
             }
           </tbody>
         </table>
-      </cdk-virtual-scroll-viewport>
+      </div>
     </div>
   </div>
   <div
-    class="sticky mt-7 w-9/10 left-0 bottom-0 z-50 flex justify-between items-center text-white content-style py-2 px-4">
-    @if (filter.search) {
-    <div class="text-white mb-4">
-      Find subscription number : {{ store.filteredSubscriptions()(filter.menu, filter.search).length }}
+    class="sticky mt-7 w-9/10 left-0 bottom-0 z-50 flex justify-between items-center text-white content-style py-2 px-4
+    ">
+    <div class="flex justify-between items-center w-full">
+      <p>Total subscribers <span class="text text-lg font-bold">{{ store.subscriptions().length }}</span></p>
+      <pagination-controls (pageChange)="setPage($event)" [currentPage]="currentPage()"></pagination-controls>
+      @if (filter.search) {
+        <div class="text-white mb-4">
+          Find subscription number : {{ store.filteredSubscriptions()(filter.menu, filter.search).length }}
+        </div>
+        } 
     </div>
-    } @else {
-    <span class="w-2/12"></span>
-    }
-    <p>Total subscribers <span class="text text-lg font-bold">{{ store.subscriptions().length }}</span></p>
   </div>
 </section>
 
