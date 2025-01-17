@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, output, signal } from '@angular/core';
 import { SearchBarComponent } from "../../../shared/components/search-bar/search-bar.component";
 import { Router } from '@angular/router';
+import { SubscriptionStore } from '../../store/store';
 
 @Component({
   selector: 'app-menu-subscription',
@@ -16,6 +17,7 @@ export class MenuComponent {
   activeMenu = signal<number>(0);
 
   private readonly router = inject(Router);
+  store = inject(SubscriptionStore);
 
   menuItems = signal([
     { label: 'Tous', icon: 'apps', filter: 'all' },

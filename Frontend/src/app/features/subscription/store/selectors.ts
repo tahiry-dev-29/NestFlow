@@ -2,16 +2,18 @@
 import { signalStoreFeature, withState } from "@ngrx/signals";
 import { computed } from "@angular/core";
 import { withComputed } from "@ngrx/signals";
-import { Status, SubscriptionDetails } from "../models/subscription.model";
+import { Status, SubscriptionDetails, SubscriptionType } from "../models/subscription.model";
 import { SubscriptionState } from "./states";
 import { initialState } from "./states";
+import { TimeUnit } from "../models/subscription.interface";
+import { SubscriptionCalculator } from "../utils/subscription.constant";
 
 export const subscriptionSelectorsFeature = signalStoreFeature(
     withState<SubscriptionState>(initialState),
 
     withComputed(({ subscriptions }) => ({
         filteredSubscriptions: computed(() => {
-            return function(menu: string, search: string | null): SubscriptionDetails[] {
+            return function (menu: string, search: string | null): SubscriptionDetails[] {
                 let filtered = subscriptions();
 
                 // Filtrage par menu
@@ -37,10 +39,9 @@ export const subscriptionSelectorsFeature = signalStoreFeature(
             }
         }),
 
-        // Type explicite pour le sélecteur getProgressClasses
         getProgressClasses: computed(() => {
             // Définir le type de la fonction retournée
-            return function(progress: number): string {
+            return function (progress: number): string {
                 if (progress > 90) return 'bg-green-500';
                 if (progress > 80) return 'bg-green-400';
                 if (progress > 70) return 'bg-blue-500';
@@ -53,5 +54,53 @@ export const subscriptionSelectorsFeature = signalStoreFeature(
                 return 'bg-red-500';
             }
         }),
+
+        calculateTimeBasedPrice: computed(() => {
+            return (
+                type: SubscriptionType,
+                duration: number,
+                unit: TimeUnit,
+                customChannelCount?: number
+            ): number => {
+                const calculator = new SubscriptionCalculator(
+                    type,
+                    duration,
+                    unit,
+                    customChannelCount
+                );
+                return calculator.calculateTimeBasedPrice();
+            };
+        }),
+
+        channelCount: computed(() => {
+            return (
+                type: SubscriptionType,
+                customChannelCount?: number
+            ): number => {
+                const calculator = new SubscriptionCalculator(
+                    type,
+                    1,
+                    TimeUnit.MONTHS,
+                    customChannelCount
+                );
+                return calculator.getChannelCount();
+            };
+        }),
+        totalPrice: computed(() => {
+            return (
+                type: SubscriptionType,
+                duration: number,
+                unit: TimeUnit,
+                customChannelCount?: number
+            ): number => {
+                const calculator = new SubscriptionCalculator(
+                    type,
+                    duration,
+                    unit,
+                    customChannelCount
+                );
+                return calculator.calculateTotalPrice();
+            };
+        })
     }))
 );

@@ -47,6 +47,9 @@ table {
     .ng-star-inserted {
         @apply rounded-full text-gray-600;
     }
+    .ng-star-inserted.current {
+        @apply bg-blue-DEFAULT-800;
+    }
 
     .pagination-previous,
     .pagination-next {

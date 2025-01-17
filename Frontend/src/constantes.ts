@@ -29,3 +29,39 @@ export const ERROR_MESSAGES_FORM = {
   REQUIRED: 'This field is required',
   VALIDATION_ERROR: 'Validation error',
 };
+
+
+export const errorMessages: { [key: string]: { [key: string]: string } } = {  // mettre en anglais
+  fullname: {
+      required: 'The full name is required.',
+      minlength: 'The full name must contain at least 5 characters.',
+      maxlength: 'The full name must contain at most 100 characters.'
+  },
+  email: {
+      required: 'The email is required.',
+      email: 'The email is invalid.'
+  },
+  tel: {
+      required: 'The phone number is required.',
+      pattern: 'The phone number must contain 10 digits.'
+  },
+  adresse: {
+      required: 'The address is required.',
+      minlength: 'The address must contain at least 5 characters.',
+      maxlength: 'The address must contain at most 100 characters.'
+  },
+  code: {
+      required: 'The password is required.',
+      minlength: 'The password must contain at least 4 characters.'
+  },
+  subscriptionType: {
+      required: 'The subscription type is required.'
+  },
+  duration: {
+      required: 'The duration is required.',
+      min: 'The duration must be at least 1.'
+  },
+  timeUnit: {
+      required: 'The time unit is required.'
+  }
+};

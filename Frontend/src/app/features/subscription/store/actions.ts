@@ -7,6 +7,7 @@ import { catchError, of, pipe, switchMap, tap } from 'rxjs';
 import { SubscriptionDetails } from "../models/subscription.model";
 import { SubscriptionService } from '../services/subscription.service';
 import { initialState } from './states';
+import { AddSubscription } from '../components/interfaces/subscription.interface';
 
 export const subscriptionActionsFeature = signalStoreFeature(
     withState(initialState),
@@ -28,11 +29,24 @@ export const subscriptionActionsFeature = signalStoreFeature(
         ),
         // Add Subscription
 
-        addSubscription: rxMethod<SubscriptionDetails>(
+        addSubscription: rxMethod<AddSubscription>(
             pipe(
-                tap(() => patchState(store, state => ({
-                    // ... logique for adding subscription
-                })))
+                tap(() => patchState(store, { loading: true, error: null })),
+                switchMap((newSubscription) =>
+                    subscriptionService.AddSubscription(newSubscription as SubscriptionDetails).pipe(
+                        tap(() => {
+                            patchState(store, {
+                                subscriptions: [...store.subscriptions(), newSubscription as SubscriptionDetails],
+                            });
+                        }),
+                        catchError((error) => {
+                            console.error("Erreur lors de l'ajout de customer :", error);
+                            patchState(store, { error: error.message || 'Erreur lors de l\'ajout', loading: false });
+                            return of(null);
+                        })
+                    )
+                ),
+                tap(() => patchState(store, { loading: false }))
             )
         ),
         updateSubscription: rxMethod<SubscriptionDetails>(

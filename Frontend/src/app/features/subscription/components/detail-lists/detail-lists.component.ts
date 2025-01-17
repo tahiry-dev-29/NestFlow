@@ -33,8 +33,8 @@ export class DetailListsComponent implements OnInit {
   currentPage = signal<number>(1);
 
   // ngOnInit
-  ngOnInit() {
-    this.store.loadSubscriptions(this.store.subscriptions()); // ok
+  ngOnInit() { 
+      this.store.loadSubscriptions(this.store.subscriptions());
   }
 
   // confirmDelete
@@ -56,7 +56,6 @@ export class DetailListsComponent implements OnInit {
     return subscription.id;
   }
 
-  // Close the expanded menu when clicking outside of it
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (this.store.expandedMenuId() !== null) {
@@ -67,26 +66,16 @@ export class DetailListsComponent implements OnInit {
     }
   }
 
-
-  // Utilisation avec le typage correct
-  filterSubscriptions(menu: string, search: string | null) {
-    // const filtered: SubscriptionDetails[] = this.store.filteredSubscriptions()(menu, search);
-    // return filtered;
-  }
-
   getProgressClass(progress: number) {
     const className: string =
       this.store.getProgressClasses()(progress);
     return className;
   }
-
-  // Pagination
   
   setPage(page: number): void {
     this.currentPage.set(page);
   }
 
-  // openPopup
   openPopup(subscriberId: string | undefined) {
     this.subscriberToDelete.set(subscriberId);
     this.showPopup.set(true);

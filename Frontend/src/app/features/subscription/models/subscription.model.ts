@@ -42,3 +42,12 @@ export class SubscriptionDetails {
     "remainingHours": 742,
     "remainingDays": 30
 }, */
+
+/* { // add subscription
+  "fullname": "{{$randomFullName}}",
+  "email": "{{$randomExampleEmail}}",
+  "tel": "{{$randomPhoneNumber}}", // Numéro de téléphone (facultatif)
+  "adresse": "{{$randomStreetAddress}}", // Adresse (facultatif)
+  "subscriptionType": "CLASSIC", // "CLASSIC" ou "BASIC"
+  "code": "password" // Mot de passe EN CLAIR (sera haché par le serveur)
+} */

@@ -24,3 +24,10 @@ export interface SubscriptionState {
   expandedId: number | null;
   expandedMenuId: number | null;
 }
+
+export enum TimeUnit {
+  DAYS = 'DAYS',
+  WEEKS = 'WEEKS',
+  MONTHS = 'MONTHS',
+  YEARS = 'YEARS'
+}
