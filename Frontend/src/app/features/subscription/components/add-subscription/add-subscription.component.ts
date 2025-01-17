@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { errorMessages } from '../../../../../constantes';
+import { TimeUnit } from '../../models/subscription.interface';
 import { SubscriptionType } from '../../models/subscription.model';
 import { SubscriptionStore } from '../../store/store';
-import { AddSubscription } from '../interfaces/subscription.interface';
 import { SubscriptionCalculator } from '../../utils/subscription.constant';
-import { TimeUnit } from '../../models/subscription.interface';
-import { errorMessages } from '../../../../../constantes';
+import { AddSubscription } from '../interfaces/subscription.interface';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -21,8 +21,8 @@ import { errorMessages } from '../../../../../constantes';
 export class AddSubscriptionComponent implements OnInit {
     private fb = inject(FormBuilder);
     private store = inject(SubscriptionStore);
-    private router = inject(Router);
     private toastr = inject(ToastrService);
+    private router = inject(Router);
 
     SubscriptionType = SubscriptionType;
     TimeUnit = TimeUnit;
@@ -41,11 +41,18 @@ export class AddSubscriptionComponent implements OnInit {
         timeUnit: [TimeUnit.MONTHS, [Validators.required]]
     });
 
+    getInitialValues() {
+      this.subscriptionForm.patchValue({
+        subscriptionType: SubscriptionType.BASIC,
+        duration: 1,
+        timeUnit: TimeUnit.MONTHS
+      });
+    }
+
     ngOnInit() {
         this.subscriptionForm.valueChanges.subscribe(() => {
             this.updateDisplayedValues();
         });
-
         this.updateDisplayedValues();
     }
 
@@ -95,15 +102,22 @@ export class AddSubscriptionComponent implements OnInit {
             };
 
             this.store.addSubscription(subscription);
-            this.toastr.success(`Abonnement ${subscription.subscriptionType} ajouté avec succès!`);
-            this.redirectToList();
+            this.toastr.success(`<span class="msg-class">${subscription.fullname}</span> subscription added successfully!`);
+            setTimeout(() => {
+              this.store.loadSubscriptions(this.store.subscriptions());
+              this.subscriptionForm.reset({
+                subscriptionType: SubscriptionType.BASIC,
+                duration: 1,
+                timeUnit: TimeUnit.MONTHS
+              });
+            }, this.store.loading() === false ? 1000 : 0);
         } else {
-            this.toastr.error('Le formulaire est invalide.');
+            this.toastr.error('The form is invalid.');
             this.subscriptionForm.markAllAsTouched();
         }
     }
-
     redirectToList() {
         this.router.navigate(['dashboard/subscriptions/list']);
     }
+
 }

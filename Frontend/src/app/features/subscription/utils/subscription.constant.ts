@@ -71,16 +71,27 @@ export class ChannelCalculator {
 export class SubscriptionCalculator {
   private calculator: PriceCalculator;
   private channelCalc: ChannelCalculator;
+  private type: SubscriptionType;
 
   constructor(
-    private type: SubscriptionType,
-    private duration: number,
-    private unit: TimeUnit,
-    customChannelCount?: number
+      type: SubscriptionType | null | undefined,
+      private duration: number,
+      private unit: TimeUnit,
+      customChannelCount?: number
   ) {
-    const basePrice = SUBSCRIPTION_CONFIG[type].basePrice;
-    this.calculator = new PriceCalculator(basePrice);
-    this.channelCalc = new ChannelCalculator(type, customChannelCount);
+      this.type = type ?? SubscriptionType.BASIC;
+      const config = SUBSCRIPTION_CONFIG[this.type];
+
+      if (!config) {
+          console.error(`Invalid subscription type: ${type}`);
+          this.calculator = new PriceCalculator(0);
+          this.channelCalc = new ChannelCalculator(SubscriptionType.BASIC, customChannelCount);
+          return;
+      }
+
+      const basePrice = config.basePrice;
+      this.calculator = new PriceCalculator(basePrice);
+      this.channelCalc = new ChannelCalculator(this.type, customChannelCount);
   }
 
   calculateTimeBasedPrice(): number {

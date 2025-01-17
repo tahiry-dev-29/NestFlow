@@ -40,7 +40,6 @@ export const subscriptionActionsFeature = signalStoreFeature(
                             });
                         }),
                         catchError((error) => {
-                            console.error("Erreur lors de l'ajout de customer :", error);
                             patchState(store, { error: error.message || 'Erreur lors de l\'ajout', loading: false });
                             return of(null);
                         })
