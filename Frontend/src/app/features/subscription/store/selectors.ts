@@ -5,22 +5,22 @@ import { withComputed } from "@ngrx/signals";
 import { Status, SubscriptionDetails, SubscriptionType } from "../models/subscription.model";
 import { SubscriptionState } from "./states";
 import { initialState } from "./states";
-import { TimeUnit } from "../models/subscription.interface";
+import { SubscriptionWithDetails, TimeUnit } from "../models/subscription.interface";
 import { SubscriptionCalculator } from "../utils/subscription.constant";
 
 export const subscriptionSelectorsFeature = signalStoreFeature(
     withState<SubscriptionState>(initialState),
 
-    withComputed(({ subscriptions }) => ({
+    withComputed(({ subscriptionsWithDetails }) => ({
         filteredSubscriptions: computed(() => {
-            return function (menu: string, search: string | null): SubscriptionDetails[] {
-                let filtered = subscriptions();
+            return function (menu: string, search: string | null): SubscriptionWithDetails[] {
+                let filtered = subscriptionsWithDetails();
 
                 // Filtrage par menu
                 if (menu && menu !== 'all') {
-                    filtered = filtered.filter((sub: SubscriptionDetails) => {
-                        if (menu === 'active') return sub.status === Status.ACTIVE;
-                        if (menu === 'inactive') return sub.status === Status.EXPIRED;
+                    filtered = filtered.filter((sub: SubscriptionWithDetails) => {
+                        if (menu === 'active') return sub.status.expired === false;
+                        if (menu === 'inactive') return sub.status.expired === true;
                         return true;
                     });
                 }
@@ -28,11 +28,11 @@ export const subscriptionSelectorsFeature = signalStoreFeature(
                 // Filtrage par recherche
                 if (search && typeof search === 'string' && search.trim() !== '') {
                     const searchLower = search.toLowerCase().trim();
-                    filtered = filtered.filter((sub: SubscriptionDetails) =>
-                        sub.fullname?.toLowerCase().includes(searchLower) ||
-                        sub.email?.toLowerCase().includes(searchLower) ||
-                        sub.tel?.toLowerCase().includes(searchLower) ||
-                        sub.id?.toString().includes(searchLower)
+                    filtered = filtered.filter((sub: SubscriptionWithDetails) =>
+                        sub.details.fullname?.toLowerCase().includes(searchLower) ||
+                        sub.details.email?.toLowerCase().includes(searchLower) ||
+                        sub.details.tel?.toLowerCase().includes(searchLower) ||
+                        sub.details.id?.toString().includes(searchLower)
                     );
                 }
                 return filtered;

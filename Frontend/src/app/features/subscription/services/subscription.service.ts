@@ -4,6 +4,7 @@ import { catchError, Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../auth/services/auth.service';
 import { SubscriptionDetails } from '../models/subscription.model';
+import { SubscriptionWithDetails } from '../models/subscription.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -34,10 +35,10 @@ export class SubscriptionService {
         });
     }
 
-    
+
     // Get Status Subscriptions
-    getStatusSubscriptions(id: string): Observable<SubscriptionDetails[]> {
-        return this.http.get<SubscriptionDetails[]>(`${this.baseUrl}/status/${id}`, {
+    getStatusSubscriptions(): Observable<SubscriptionWithDetails[]> {
+        return this.http.get<SubscriptionWithDetails[]>(`${this.baseUrl}/getAll/withDetails`, {
             headers: this.getAuthHeaders(),
             withCredentials: true
         });

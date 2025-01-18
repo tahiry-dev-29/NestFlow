@@ -1,7 +1,9 @@
+import { SubscriptionWithDetails } from "../models/subscription.interface";
 import { SubscriptionDetails } from "../models/subscription.model";
 
 export interface SubscriptionState {
     subscriptions: SubscriptionDetails[];
+    subscriptionsWithDetails: SubscriptionWithDetails[];
     loading: boolean;
     error: string | null;
     expandedId: string | null;
@@ -10,6 +12,7 @@ export interface SubscriptionState {
 
 export const initialState: SubscriptionState = {
     subscriptions: [],
+    subscriptionsWithDetails: [],
     loading: false,
     error: null,
     expandedId: null,

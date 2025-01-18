@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubscriptionRepository extends MongoRepository<SubscriptionDetailsEntity, String> {
-    List<SubscriptionDetailsEntity> findAll(); // Changed return type to List for compatibility
+    List<SubscriptionDetailsEntity> findAll();
 
     default List<SubscriptionDetailsEntity> findAllBlocking() {
-        return findAll(); // Directly return List
+        return findAll();
     }
 }

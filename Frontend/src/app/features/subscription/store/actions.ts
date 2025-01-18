@@ -8,12 +8,13 @@ import { SubscriptionDetails } from "../models/subscription.model";
 import { SubscriptionService } from '../services/subscription.service';
 import { initialState } from './states';
 import { AddSubscription } from '../components/interfaces/subscription.interface';
+import { SubscriptionWithDetails } from '../models/subscription.interface';
 
 export const subscriptionActionsFeature = signalStoreFeature(
     withState(initialState),
     withMethods((store, subscriptionService = inject(SubscriptionService)) => ({
 
-        loadSubscriptions: rxMethod<SubscriptionDetails[]>(
+        /* loadSubscriptions: rxMethod<SubscriptionDetails[]>(
             pipe(
                 tap(() => patchState(store, { loading: true, error: null })),
                 switchMap(() =>
@@ -25,18 +26,19 @@ export const subscriptionActionsFeature = signalStoreFeature(
                     )
                 )
             )
-        ),
-        getStatusSubscription: rxMethod<string>(
+        ), */
+        LoadSubscriptionWithDetails: rxMethod<SubscriptionWithDetails[]>(
             pipe(
                 tap(() => patchState(store, { loading: true, error: null })),
-                switchMap((id: string) =>
-                    subscriptionService.getStatusSubscriptions(id).pipe(
+                switchMap(() =>
+                    subscriptionService.getStatusSubscriptions().pipe(
                         tap({
-                            next: (subscriptions) => patchState(store, { subscriptions, loading: false }),
+                            next: (subscriptions) => patchState(store, { subscriptionsWithDetails: subscriptions, loading: false }),
                             error: (error) => patchState(store, { error: error.message, loading: false })
                         })
                     )
-                )
+                ),
+                tap(() => patchState(store, { loading: false }))
             )
         ),
 

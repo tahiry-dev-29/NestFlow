@@ -33,7 +33,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public List<SubscriptionStatusResponse> getAllSubscriptionsStatus() {
-        List<SubscriptionDetailsEntity> subscriptions = subscriptionRepository.findAllBlocking(); // Appel à la méthode bloquante
+        List<SubscriptionDetailsEntity> subscriptions = subscriptionRepository.findAllBlocking();
         return subscriptions.stream()
                 .map(this::mapSubscriptionToStatusResponse)
                 .collect(Collectors.toList());
@@ -45,7 +45,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscriptions.stream()
                 .map(subscription -> {
                     SubscriptionStatusResponse status = mapSubscriptionToStatusResponse(subscription);
-                    return new SubscriptionWithDetailsResponse(status, subscription); // Création du nouveau DTO
+                    return new SubscriptionWithDetailsResponse(status, subscription);
                 })
                 .collect(Collectors.toList());
     }

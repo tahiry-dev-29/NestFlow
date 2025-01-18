@@ -104,7 +104,7 @@ export class AddSubscriptionComponent implements OnInit {
             this.store.addSubscription(subscription);
             this.toastr.success(`<span class="msg-class">${subscription.fullname}</span> subscription added successfully!`);
             setTimeout(() => {
-              this.store.loadSubscriptions(this.store.subscriptions());
+              this.store.LoadSubscriptionWithDetails(this.store.subscriptionsWithDetails());
               this.subscriptionForm.reset({
                 subscriptionType: SubscriptionType.BASIC,
                 duration: 1,

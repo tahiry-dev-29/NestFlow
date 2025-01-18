@@ -3,8 +3,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { ISubscription, SubscriptionType } from '../../models/subscription.interface';
 import { SubscriptionStore } from '../../store/store';
+import { SubscriptionDetails, SubscriptionType } from '../../models/subscription.model';
 
 @Component({
   selector: 'app-edit-subscription',
@@ -25,7 +25,7 @@ export class EditSubscriptionComponent {
     email: ['', [Validators.required, Validators.email]],
     tel: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     adresse: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-    password: ['', [Validators.required, Validators.minLength(4)]],
+    code: ['', [Validators.required, Validators.minLength(4)]],
     subscriptionType: ['BASIC', [Validators.required]],
     channelCount: [250, [Validators.required]],
   });
@@ -63,14 +63,14 @@ export class EditSubscriptionComponent {
     }
 
     const formValue = this.editForm.value;
-    const updatedSubscription: Partial<ISubscription> = {
+    const updatedSubscription: Partial<SubscriptionDetails> = {
       fullname: formValue.fullname || '',
       email: formValue.email || '',
       tel: formValue.tel || '',
       adresse: formValue.adresse || '',
       subscriptionType: formValue.subscriptionType as SubscriptionType,
       channelCount: this.subscriptionTypes[formValue.subscriptionType as SubscriptionType].channels,
-      password: formValue.password || '',
+      code: formValue.code || '',
     };
 
     const id = this.route.snapshot.paramMap.get('id');
