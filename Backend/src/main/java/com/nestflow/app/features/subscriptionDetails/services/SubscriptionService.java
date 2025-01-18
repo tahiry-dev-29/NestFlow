@@ -3,9 +3,9 @@ package com.nestflow.app.features.subscriptionDetails.services;
 import java.util.List;
 
 import com.nestflow.app.features.subscriptionDetails.dto.RenewalRequest;
+import com.nestflow.app.features.subscriptionDetails.dto.SubscriptionWithDetailsResponse;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionStatusResponse;
-import reactor.core.publisher.Mono;
 
 public interface SubscriptionService {
 
@@ -21,7 +21,7 @@ public interface SubscriptionService {
 
     SubscriptionDetailsEntity getSubscriptionById(String id);
 
-    Mono<SubscriptionStatusResponse> getSubscriptionStatus(String id);
-
+    List<SubscriptionStatusResponse> getAllSubscriptionsStatus();
+    List<SubscriptionWithDetailsResponse> getAllSubscriptionsWithDetails();
 
 }

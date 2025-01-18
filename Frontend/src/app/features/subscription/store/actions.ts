@@ -13,7 +13,6 @@ export const subscriptionActionsFeature = signalStoreFeature(
     withState(initialState),
     withMethods((store, subscriptionService = inject(SubscriptionService)) => ({
 
-        // Load Subscriptions
         loadSubscriptions: rxMethod<SubscriptionDetails[]>(
             pipe(
                 tap(() => patchState(store, { loading: true, error: null })),
@@ -27,7 +26,19 @@ export const subscriptionActionsFeature = signalStoreFeature(
                 )
             )
         ),
-        // Add Subscription
+        getStatusSubscription: rxMethod<string>(
+            pipe(
+                tap(() => patchState(store, { loading: true, error: null })),
+                switchMap((id: string) =>
+                    subscriptionService.getStatusSubscriptions(id).pipe(
+                        tap({
+                            next: (subscriptions) => patchState(store, { subscriptions, loading: false }),
+                            error: (error) => patchState(store, { error: error.message, loading: false })
+                        })
+                    )
+                )
+            )
+        ),
 
         addSubscription: rxMethod<AddSubscription>(
             pipe(

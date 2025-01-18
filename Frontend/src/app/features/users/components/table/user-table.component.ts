@@ -85,12 +85,11 @@ export class UserTableComponent implements OnInit{
         return classes[role as unknown as keyof typeof classes] || 'bg-gray-500/10 text-gray-500';
     }
 
-    // On init
     ngOnInit() {
         this.store.loadUsers(this.store.users()); 
     }
 
-    // Toggle sidebar
+    /** Sidebar **/
     toggleSidebar(action: keyof typeof this.sidebarActions, user?: IUsers): void {
         const sidebarAction = this.sidebarActions[action];
         if (!sidebarAction) return;
@@ -110,7 +109,6 @@ export class UserTableComponent implements OnInit{
         }, 100);
     }
 
-    // Close sidebars
     private closeSidebars(): void {
         const sidebars = [
             this.addUserSidebar(),
@@ -139,8 +137,8 @@ export class UserTableComponent implements OnInit{
         this._userIdToDelete.set(null);
         this._showPopup.set(false);
     }
-
-    // Confirm delete
+    
+    /** Methodes **/
     confirmDelete(): void {
         const userId = this._userIdToDelete();
         if (userId) {
@@ -150,7 +148,6 @@ export class UserTableComponent implements OnInit{
         }
     }
 
-    // On user added
     onUserAdded(): void {
         const sidebar = this.addUserSidebar();
         if (sidebar) {
@@ -158,7 +155,6 @@ export class UserTableComponent implements OnInit{
             this.store.loadUsers(this.store.users());
         }
     }
-    // On user edited
     onUserEdited(): void {
         const sidebar = this.editUserSidebar();
         if (sidebar) {

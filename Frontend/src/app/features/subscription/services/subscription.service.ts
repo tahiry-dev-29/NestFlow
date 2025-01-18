@@ -34,6 +34,15 @@ export class SubscriptionService {
         });
     }
 
+    
+    // Get Status Subscriptions
+    getStatusSubscriptions(id: string): Observable<SubscriptionDetails[]> {
+        return this.http.get<SubscriptionDetails[]>(`${this.baseUrl}/status/${id}`, {
+            headers: this.getAuthHeaders(),
+            withCredentials: true
+        });
+    }
+
     // Delete Subscription
     DeleteSubscription(id: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/delete/${id}`, {

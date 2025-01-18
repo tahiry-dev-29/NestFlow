@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class SubscriptionStatusResponse {
+
     private long remainingDays;
     private double progressPercentage;
     private boolean isExpired;
@@ -14,11 +15,4 @@ public class SubscriptionStatusResponse {
         this.isExpired = isExpired;
     }
 
-    public boolean isExpired() {
-        return isExpired;
-    }
-
-    public long getDaysUntilExpiration() {
-        return remainingDays;
-    }
 }

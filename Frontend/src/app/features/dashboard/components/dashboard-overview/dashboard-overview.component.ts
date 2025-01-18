@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
 })
 export class DashboardOverviewComponent {
-  sideLeftBarState = sideLeftBarState; // On garde le signal
+  sideLeftBarState = sideLeftBarState;
   isSmallScreen = false;
 
   constructor() {
@@ -28,13 +28,11 @@ export class DashboardOverviewComponent {
   private checkScreenSize(): void {
     this.isSmallScreen = window.innerWidth < 1200;
     if (this.isSmallScreen) {
-      // Si l'écran est petit, on cache la sidebar
       this.sideLeftBarState.update(() => false);
     }
   }
 
   toggleSidebar() {
-    // Inverse l'état de la sidebar
     this.sideLeftBarState.update((state) => !state);
   }
 }

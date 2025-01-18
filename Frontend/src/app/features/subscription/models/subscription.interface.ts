@@ -1,4 +1,4 @@
-export type SubscriptionType = 'Basique' | 'Classique';
+export type SubscriptionType = 'BASIC' | 'CLASSIC';
 
 export interface ISubscription {
   id: number;

@@ -26,13 +26,13 @@ export class EditSubscriptionComponent {
     tel: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     adresse: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
     password: ['', [Validators.required, Validators.minLength(4)]],
-    subscriptionType: ['Basique', [Validators.required]],
+    subscriptionType: ['BASIC', [Validators.required]],
     channelCount: [250, [Validators.required]],
   });
 
   subscriptionTypes: Record<SubscriptionType, { channels: number }> = {
-    Basique: { channels: 250 },
-    Classique: { channels: 500 },
+    BASIC: { channels: 250 },
+    CLASSIC: { channels: 500 },
   };
 
   /* ngOnInit() {

@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'hidePassword'
+  name: 'hidePassword',
 })
 export class HidePasswordPipe implements PipeTransform {
   transform(value: string): string {

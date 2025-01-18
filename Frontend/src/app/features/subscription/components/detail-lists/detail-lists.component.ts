@@ -5,10 +5,11 @@ import { ToastrService } from 'ngx-toastr';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { DirectiveModule } from "../../../../modules";
 import { expandCollapse } from '../../../shared/animations/animations';
-import { ISubscription } from '../../models/subscription.interface';
+import { ISubscription, SubscriptionType } from '../../models/subscription.interface';
 import { SubscriptionStore } from '../../store/store';
 import { SubscriptionDetails } from '../../models/subscription.model';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { SubscriptionService } from '../../services/subscription.service';
 
 @Component({
   selector: 'app-detail-lists',
@@ -20,7 +21,6 @@ import { NgxPaginationModule } from 'ngx-pagination';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DetailListsComponent implements OnInit {
-  // injects
   store = inject(SubscriptionStore);
   toastr = inject(ToastrService);
   router = inject(Router);
@@ -30,10 +30,13 @@ export class DetailListsComponent implements OnInit {
   showPopup = signal(false);
   subscriberToDelete = signal<string | undefined>(undefined);
   currentPage = signal<number>(1);
+  maxSize = 4;
 
+  
   ngOnInit() {
     this.store.loadSubscriptions(this.store.subscriptions());
   }
+  
 
   confirmDelete() {
     const id = this.subscriberToDelete();
@@ -48,7 +51,7 @@ export class DetailListsComponent implements OnInit {
   editSubscriber(id: string | undefined) {
     this.router.navigate(['dashboard/subscriptions/edit', id]);
   }
-  
+
   trackById(subscription: ISubscription): number {
     return subscription.id;
   }
