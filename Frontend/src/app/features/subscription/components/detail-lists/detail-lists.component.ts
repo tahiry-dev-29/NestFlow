@@ -8,6 +8,7 @@ import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { SubscriptionDetails } from '../../models/subscription.model';
 import { SubscriptionStore } from '../../store/store';
+import { SubscriptionWithDetails } from '../../models/subscription.interface';
 
 @Component({
   selector: 'app-detail-lists',
@@ -19,33 +20,32 @@ import { SubscriptionStore } from '../../store/store';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DetailListsComponent implements OnInit {
-  store = inject(SubscriptionStore);
   toastr = inject(ToastrService);
   router = inject(Router);
 
+  store = inject(SubscriptionStore);
+  
   // variables helpers
   @Input() filter: { menu: string; search: string } = { menu: 'all', search: '' };
   showPopup = signal(false);
   subscriberToDelete = signal<string | undefined>(undefined);
   currentPage = signal<number>(1);
   maxSize = 4;
-
-  storeSubscriptionsWithDetails = inject(SubscriptionStore).LoadSubscriptionWithDetails;
+  
 
   ngOnInit() {
-    this.storeSubscriptionsWithDetails(this.store.subscriptionsWithDetails());
-    console.log(this.store.subscriptionsWithDetails());
+    this.store.LoadSubscriptionWithDetails(this.store.subscriptionsWithDetails());
   }
-
 
   confirmDelete() {
     const id = this.subscriberToDelete();
-    const fullname = this.store.subscriptions().find((subscription: SubscriptionDetails) => subscription.id === id)?.fullname ?? '';
+    const fullname = this.store.subscriptionsWithDetails().find((subscription: SubscriptionWithDetails) => subscription.details.id === id)?.details.fullname ?? '';
     if (id !== null) {
       this.store.deleteSubscription({ id: id! });
       this.toastr.warning(`<span class="msg-class">${fullname}</span> deletion successful`);
     }
     this.closePopup();
+    this.store.LoadSubscriptionWithDetails(this.store.subscriptionsWithDetails());
   }
 
   editSubscriber(id: string | undefined) {

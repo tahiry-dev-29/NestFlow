@@ -14,19 +14,6 @@ export const subscriptionActionsFeature = signalStoreFeature(
     withState(initialState),
     withMethods((store, subscriptionService = inject(SubscriptionService)) => ({
 
-        /* loadSubscriptions: rxMethod<SubscriptionDetails[]>(
-            pipe(
-                tap(() => patchState(store, { loading: true, error: null })),
-                switchMap(() =>
-                    subscriptionService.getListsSubscriptions().pipe(
-                        tap({
-                            next: (subscriptions) => patchState(store, { subscriptions, loading: false }),
-                            error: (error) => patchState(store, { error: error.message, loading: false })
-                        })
-                    )
-                )
-            )
-        ), */
         LoadSubscriptionWithDetails: rxMethod<SubscriptionWithDetails[]>(
             pipe(
                 tap(() => patchState(store, { loading: true, error: null })),
@@ -75,7 +62,7 @@ export const subscriptionActionsFeature = signalStoreFeature(
                     subscriptionService.DeleteSubscription(id).pipe(
                         tap(() => {
                             patchState(store, {
-                                subscriptions: store.subscriptions().filter((subscription: SubscriptionDetails) => subscription.id !== id),
+                                subscriptionsWithDetails: store.subscriptionsWithDetails().filter((subscription: SubscriptionWithDetails) => subscription.details.id !== id),
                             });
                         }),
                         catchError((error) => {
