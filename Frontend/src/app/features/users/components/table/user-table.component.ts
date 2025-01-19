@@ -147,7 +147,12 @@ export class UserTableComponent implements OnInit{
         if (userId) {
             this.store.deleteUser(userId);
             this.closePopup();
-            this.toastr.success(`<span class="msg-class">${firstName}</span> deleted  successfully`);
+            this.toastr.success(`<span class="msg-class">${firstName}</span> deleted  successfully`, '', {
+                timeOut: 3000,
+                positionClass: 'toast-bottom-center',
+                closeButton: false,
+                tapToDismiss: true,
+            });
             this.store.loadUsers(this.store.users());
         }
     }

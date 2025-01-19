@@ -8,6 +8,13 @@ export enum Status {
   EXPIRED = 'EXPIRED',
 }
 
+export enum TimeUnit {
+  DAYS = 'DAYS',
+  WEEKS = 'WEEKS',
+  MONTHS = 'MONTHS',
+  YEARS = 'YEARS'
+}
+
 export class SubscriptionDetails {
   id: string | undefined;
   fullname: string | undefined;

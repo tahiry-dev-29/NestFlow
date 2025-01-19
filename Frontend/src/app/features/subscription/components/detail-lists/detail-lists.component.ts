@@ -8,7 +8,7 @@ import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
 import { SubscriptionDetails } from '../../models/subscription.model';
 import { SubscriptionStore } from '../../store/store';
-import { SubscriptionWithDetails } from '../../models/subscription.interface';
+import { SubscriptionWithDetails } from '../../interfaces/subscription.interface';
 
 @Component({
   selector: 'app-detail-lists',

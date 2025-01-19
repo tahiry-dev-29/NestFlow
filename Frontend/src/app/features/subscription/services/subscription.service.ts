@@ -1,10 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { AuthService } from '../../auth/services/auth.service';
 import { SubscriptionDetails } from '../models/subscription.model';
-import { SubscriptionWithDetails } from '../models/subscription.interface';
+import { ReNewSubscription, SubscriptionWithDetails } from '../interfaces/subscription.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -22,7 +21,7 @@ export class SubscriptionService {
 
     // Get Status Subscriptions
     getStatusSubscriptions(): Observable<SubscriptionWithDetails[]> {
-        return this.http.get<SubscriptionWithDetails[]>(`${this.baseUrl}/getAll/withDetails`); // Plus besoin des headers ni de withCredentials
+        return this.http.get<SubscriptionWithDetails[]>(`${this.baseUrl}/getAll/withDetails`);
     }
 
     // Delete Subscription
@@ -38,5 +37,10 @@ export class SubscriptionService {
     // Add Subscription
     AddSubscription(subscription: SubscriptionDetails): Observable<SubscriptionDetails> {
         return this.http.post<SubscriptionDetails>(`${this.baseUrl}/add`, subscription);
+    }
+
+    // Re New Subscription
+    ReNewSubscription(id: string, subscription: ReNewSubscription): Observable<SubscriptionDetails> {
+        return this.http.patch<SubscriptionDetails>(`${this.baseUrl}/${id}/renew`, subscription);
     }
 }

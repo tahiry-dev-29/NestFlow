@@ -1,4 +1,4 @@
-import { SubscriptionWithDetails } from "../models/subscription.interface";
+import { SubscriptionWithDetails } from "../interfaces/subscription.interface";
 import { SubscriptionDetails } from "../models/subscription.model";
 
 export interface SubscriptionState {

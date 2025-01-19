@@ -7,8 +7,7 @@ import { catchError, of, pipe, switchMap, tap } from 'rxjs';
 import { SubscriptionDetails } from "../models/subscription.model";
 import { SubscriptionService } from '../services/subscription.service';
 import { initialState } from './states';
-import { AddSubscription } from '../components/interfaces/subscription.interface';
-import { SubscriptionWithDetails } from '../models/subscription.interface';
+import { AddSubscription, SubscriptionWithDetails } from '../interfaces/subscription.interface';
 
 export const subscriptionActionsFeature = signalStoreFeature(
     withState(initialState),

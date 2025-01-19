@@ -1,12 +1,10 @@
 // Frontend/src/app/features/subscription/store/selectors.ts
-import { signalStoreFeature, withState } from "@ngrx/signals";
 import { computed } from "@angular/core";
-import { withComputed } from "@ngrx/signals";
-import { Status, SubscriptionDetails, SubscriptionType } from "../models/subscription.model";
-import { SubscriptionState } from "./states";
-import { initialState } from "./states";
-import { SubscriptionWithDetails, TimeUnit } from "../models/subscription.interface";
+import { signalStoreFeature, withComputed, withState } from "@ngrx/signals";
+import { SubscriptionWithDetails } from "../interfaces/subscription.interface";
+import { SubscriptionType, TimeUnit } from "../models/subscription.model";
 import { SubscriptionCalculator } from "../utils/subscription.constant";
+import { initialState, SubscriptionState } from "./states";
 
 export const subscriptionSelectorsFeature = signalStoreFeature(
     withState<SubscriptionState>(initialState),

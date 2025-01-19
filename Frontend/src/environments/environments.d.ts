@@ -4,5 +4,6 @@ export interface Environment {
     apiUrl: string;
     appVersion: string;
     enableDebug: boolean;
+    cookieDomain: string;
   }
   

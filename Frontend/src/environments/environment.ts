@@ -5,4 +5,5 @@ export const environment: Environment = {
   apiUrl: 'http://localhost:8080/api',
   appVersion: '1.0.0',
   enableDebug: true,
+  cookieDomain: "localhost"
 };

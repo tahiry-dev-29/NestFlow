@@ -1,5 +1,4 @@
-import { TimeUnit } from "../models/subscription.interface";
-import { SubscriptionType } from "../models/subscription.model";
+import { SubscriptionType, TimeUnit } from "../models/subscription.model";
 
 export const SUBSCRIPTION_CONFIG = {
   [SubscriptionType.BASIC]: {

@@ -1,16 +1,20 @@
+import { CommonModule } from '@angular/common';
 import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SideBarComponent } from '../side-bar/side-bar.component';
-import { HeaderComponent } from '../header/header.component';
+import { fadeIn } from '../../../shared/animations/animations';
 import { sideLeftBarState } from '../../store/signal.store';
-import { CommonModule } from '@angular/common';
+import { HeaderComponent } from '../header/header.component';
+import { SideBarComponent } from '../side-bar/side-bar.component';
 
 @Component({
   selector: 'app-dashboard-overview',
+  standalone: true,
   imports: [RouterOutlet, SideBarComponent, HeaderComponent, CommonModule],
   templateUrl: './dashboard-overview.component.html',
   styleUrls: ['./dashboard-overview.component.scss'],
-  standalone: true,
+  animations: [
+    fadeIn
+  ]
 })
 export class DashboardOverviewComponent {
   sideLeftBarState = sideLeftBarState;

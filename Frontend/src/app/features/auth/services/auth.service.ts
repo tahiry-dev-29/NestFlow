@@ -1,197 +1,146 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CookieService, CookieOptions } from 'ngx-cookie-service';
-import { Observable, throwError, of, take, BehaviorSubject } from 'rxjs';
-import { catchError, map, tap, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { IUsers } from '../../users/models/users/users.module';
-import { environment } from '../../../../environments/environment';
+import { CookieOptions, CookieService } from 'ngx-cookie-service';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { ERROR_MESSAGES, SERVER_ERROR_MESSAGES } from '../../../../constantes';
+import { environment } from '../../../../environments/environment';
+import { IUsers } from '../../users/models/users/users.module';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  // Constants
   private readonly API_URL = `${environment.apiUrl}/auth`;
   private readonly TOKEN_KEY = 'Authorization';
   private readonly COOKIE_OPTIONS: CookieOptions = {
     path: '/',
-    secure: true,
+    secure: environment.production,
     sameSite: 'Strict' as const,
-    domain: 'localhost'
+    domain: environment.cookieDomain || 'localhost'
   };
 
-  // State
   private currentUserSubject = new BehaviorSubject<IUsers | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  // Dependencies
   private readonly http = inject(HttpClient);
   private readonly cookieService = inject(CookieService);
   private readonly router = inject(Router);
 
-  constructor() {
-  }
-
-
-  // Get current user
-  getCurrentUser(): Observable<IUsers | null> {
-
-    return this.http.get<IUsers>(
-      `${this.API_URL}/me`
-    ).pipe(
-      tap(user => this.currentUserSubject.next(user)),
-      catchError(error => {
-        this.currentUserSubject.next(null);
-        return this.handleError(error);
-      })
+  // Méthodes d'authentification
+  login(credentials: { mail: string; password: string }): Observable<string | null> {
+    return this.http.post<{ token: string }>(`${this.API_URL}/login`, credentials).pipe(
+      map(response => response?.token || null),
+      tap(token => {
+        if (token) {
+          this.setToken(token);
+          this.getCurrentUser().subscribe();
+        }
+      }),
+      catchError(this.handleError.bind(this))
     );
   }
 
-  // Token Management
-  /* getAuthHeaders() {
-    const token = this.getToken();
-    return {
-      headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
-      withCredentials: true
-    };
-  } */
+  logout(userId?: string): Observable<any> {
+    const logoutUrl = userId ? `${this.API_URL}/logout/${userId}` : `${this.API_URL}/logout`;
+    return this.http.post<{ message: string }>(logoutUrl, null).pipe(
+      tap(() => this.clearUserSession()),
+      catchError(this.handleError.bind(this))
+    );
+  }
 
-  // Get token
+  // Gestion du token
+  setToken(token: string): void {
+    if (!token) return;
+    try {
+      this.cookieService.set(this.TOKEN_KEY, token, {
+        ...this.COOKIE_OPTIONS,
+        expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+      });
+    } catch (error) {
+      console.error('Failed to set token:', error);
+    }
+  }
+
   getToken(): string | null {
     try {
       return this.cookieService.get(this.TOKEN_KEY) || null;
-    } catch {
+    } catch (error) {
+      console.error('Failed to get token:', error);
       return null;
     }
   }
 
-  // Set token
-  setToken(token: string): void {
-    if (!token) return;
+  deleteToken(): void {
     try {
-      this.cookieService.delete(this.TOKEN_KEY, '/');
-      this.cookieService.set(
-        this.TOKEN_KEY,
-        token,
-        {
-          ...this.COOKIE_OPTIONS,
-          expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-        }
-      );
-    } catch {
-      console.warn('Failed to set token');
+      this.cookieService.delete(this.TOKEN_KEY, '/', this.COOKIE_OPTIONS.domain);
+    } catch (error) {
+      console.error('Failed to delete token:', error);
     }
   }
 
-  // Authentication Status
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    if (!token) {
-      return this.checkDocumentCookies();
-    }
-    return true;
+    return !!this.getToken();
   }
 
-  private checkDocumentCookies(): boolean {
-    const cookies = document.cookie.split(';');
-    const authCookie = cookies.find(c => c.trim().startsWith(`${this.TOKEN_KEY}=`));
-    if (authCookie) {
-      const tokenFromCookie = authCookie.split('=')[1];
-      this.setToken(tokenFromCookie);
-      return true;
-    }
-    return false;
-  }
-
-
-  // Clear user session
-  private clearUserSession(): void {
-    this.deleteToken();
-    this.currentUserSubject.next(null);
-  }
-
- 
-
-  // Logout user and redirect
-  logoutUserAndRedirect(): void {
-    this.clearUserSession();
-    this.router.navigate(['/login']);
-  }
-
-  // Handle error
-  handleError(error: HttpErrorResponse) {
-    if (error.error instanceof ErrorEvent) {
-      return throwError(() => new Error(ERROR_MESSAGES.LOGIN_ERROR));
-    }
-
-    const statusMessages: { [key: number]: string } = {
-      0: SERVER_ERROR_MESSAGES[500],
-      400: error.error?.message || SERVER_ERROR_MESSAGES[400],
-      401: ERROR_MESSAGES.PASSWORD_OR_EMAIL_INCORRECT,
-      403: SERVER_ERROR_MESSAGES[403],
-      404: SERVER_ERROR_MESSAGES[404],
-      500: SERVER_ERROR_MESSAGES[500]
-    };
-
-    if (error.status === 401) {
-      this.logoutUserAndRedirect();
-    }
-
-    return throwError(() => new Error(statusMessages[error.status] || ERROR_MESSAGES.LOGIN_ERROR));
-  }
-
-  // Get user by token
-  getUserByToken(token: string): Observable<IUsers | null> {
-    if (!token) return of(null);
-
-    return this.http.get<IUsers>(
-      `${this.API_URL}/me`).pipe(
+  // Gestion de l'utilisateur
+  getCurrentUser(): Observable<IUsers | null> {
+    return this.http.get<IUsers>(`${this.API_URL}/me`).pipe(
       tap(user => this.currentUserSubject.next(user)),
       catchError(error => {
-        if (error.status === 401) {
-          this.logoutUserAndRedirect();
-        }
+        this.currentUserSubject.next(null);
         return of(null);
       })
     );
   }
 
-  // Signup
+  getUserByToken(token: string): Observable<IUsers | null> {
+    if (!token) return of(null);
+    this.setToken(token)
+    return this.getCurrentUser();
+  }
+
+
+  // Gestion des erreurs
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage: string;
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = ERROR_MESSAGES.LOGIN_ERROR;
+    } else {
+      const statusMessages: { [key: number]: string } = {
+        0: SERVER_ERROR_MESSAGES[500],
+        400: error.error?.message || SERVER_ERROR_MESSAGES[400],
+        401: ERROR_MESSAGES.PASSWORD_OR_EMAIL_INCORRECT,
+        403: SERVER_ERROR_MESSAGES[403],
+        404: SERVER_ERROR_MESSAGES[404],
+        500: SERVER_ERROR_MESSAGES[500]
+      };
+      errorMessage = statusMessages[error.status] || ERROR_MESSAGES.LOGIN_ERROR;
+
+      if (error.status === 401) {
+        this.logoutUserAndRedirect();
+      }
+    }
+    return throwError(() => new Error(errorMessage));
+  }
+
+  // Autres méthodes / Helpers
+  private clearUserSession(): void {
+    this.deleteToken();
+    this.currentUserSubject.next(null);
+  }
+
+  logoutUserAndRedirect(): void {
+    this.logout().subscribe({
+      next: () => this.router.navigate(['/login'])
+    });
+  }
+
   signup(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.API_URL}/create`, formData).pipe(
       catchError(this.handleError.bind(this))
     );
   }
 
-  // Authentication Methods
-  login(credentials: { mail: string; password: string }): Observable<string | null> {
-    return this.http.post<{ token: string }>(`${this.API_URL}/login`, credentials).pipe(
-      map(response => response.token || null),
-      tap(token => {
-        if (token) {
-          this.setToken(token);
-        }
-      }),
-      catchError(this.handleError)
-    );
-  }
-
-  // Delete token
-  deleteToken(): void {
-    try {
-      this.cookieService.delete(this.TOKEN_KEY, '/', 'localhost');
-    } catch {
-      console.warn('Failed to delete token');
-    }
-  }
-
-  // Logout
-  logout(userId: string): Observable<any> {
-    return this.http.post<{ message: string }>(
-      `${this.API_URL}/logout/${userId}`, null,).pipe(
-        catchError(this.handleError)
-      );
-  }
 }

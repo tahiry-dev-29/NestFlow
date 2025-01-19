@@ -3,11 +3,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { errorMessages } from '../../../../../constantes';
-import { TimeUnit } from '../../models/subscription.interface';
-import { SubscriptionType } from '../../models/subscription.model';
+import { SubscriptionType, TimeUnit } from '../../models/subscription.model';
 import { SubscriptionStore } from '../../store/store';
 import { SubscriptionCalculator } from '../../utils/subscription.constant';
-import { AddSubscription } from '../interfaces/subscription.interface';
+import { AddSubscription } from '../../interfaces/subscription.interface';
 import { Router } from '@angular/router';
 
 

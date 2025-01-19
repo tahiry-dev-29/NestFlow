@@ -2,6 +2,7 @@ import {
   animate,
   group,
   query,
+  state,
   style,
   transition,
   trigger,
@@ -53,3 +54,18 @@ export const slideInOut = trigger('slideInOut', [
     ),
   ]),
 ]);
+export const fadeIn = trigger('slideInOut', [
+  state('in', style({
+    transform: 'translateX(0)',
+    opacity: 1,
+    width: '250px',
+  })),
+  state('out', style({
+    transform: 'translateX(-250px)',
+    opacity: 0,
+    width: '0',
+  })),
+  transition('in <=> out', animate('200ms ease-in-out'))
+
+]);
+
