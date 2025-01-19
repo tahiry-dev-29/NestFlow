@@ -32,30 +32,14 @@ export class AuthService {
   private readonly router = inject(Router);
 
   constructor() {
-    this.initializeCurrentUser();
   }
 
-
-  // User Management Methods
-  createUser(userData: FormData): Observable<any> {
-    return this.http.post(`${this.API_URL}/create`, userData, {
-      headers: new HttpHeaders(),
-      withCredentials: true
-    }).pipe(
-      catchError(error => {
-        return this.handleError(error);
-      })
-    );
-  }
 
   // Get current user
   getCurrentUser(): Observable<IUsers | null> {
-    const token = this.getToken();
-    if (!token) return of(null);
 
     return this.http.get<IUsers>(
-      `${this.API_URL}/me`,
-      this.getAuthHeaders()
+      `${this.API_URL}/me`
     ).pipe(
       tap(user => this.currentUserSubject.next(user)),
       catchError(error => {
@@ -66,13 +50,13 @@ export class AuthService {
   }
 
   // Token Management
-  getAuthHeaders() {
+  /* getAuthHeaders() {
     const token = this.getToken();
     return {
       headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
       withCredentials: true
     };
-  }
+  } */
 
   // Get token
   getToken(): string | null {
@@ -86,7 +70,6 @@ export class AuthService {
   // Set token
   setToken(token: string): void {
     if (!token) return;
-
     try {
       this.cookieService.delete(this.TOKEN_KEY, '/');
       this.cookieService.set(
@@ -111,7 +94,6 @@ export class AuthService {
     return true;
   }
 
-  // Check document cookies
   private checkDocumentCookies(): boolean {
     const cookies = document.cookie.split(';');
     const authCookie = cookies.find(c => c.trim().startsWith(`${this.TOKEN_KEY}=`));
@@ -123,30 +105,6 @@ export class AuthService {
     return false;
   }
 
-  // Utility Methods
-  private initializeCurrentUser(): void {
-    const token = this.getToken();
-    if (token) {
-      this.getCurrentUser().pipe(take(1)).subscribe({
-        next: user => user && this.currentUserSubject.next(user),
-        error: () => this.logoutUserAndRedirect()
-      });
-    }
-  }
-
-  // Load user and navigate
-  private loadUserAndNavigate(): void {
-    this.getCurrentUser().pipe(take(1)).subscribe({
-      next: user => {
-        if (user) {
-          this.currentUserSubject.next(user);
-          this.router.navigate(['/dashboard']);
-        } else {
-          this.logoutUserAndRedirect();
-        }
-      }
-    });
-  }
 
   // Clear user session
   private clearUserSession(): void {
@@ -154,23 +112,7 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
-  // Logout user
-  logoutUser(): Observable<Object> {
-    const currentUser = this.currentUserSubject.value;
-    if (!currentUser?.id) {
-      return throwError(() => new Error('No active user session found.'));
-    }
-
-    return this.http.post<{ message: string }>(
-      `${this.API_URL}/logout/${currentUser.id}`, 
-      null, 
-      this.getAuthHeaders()
-    ).pipe(
-      tap(() => this.clearUserSession()),
-      finalize(() => this.router.navigate(['/login'])),
-      catchError(this.handleError)
-    );
-  }
+ 
 
   // Logout user and redirect
   logoutUserAndRedirect(): void {
@@ -205,12 +147,7 @@ export class AuthService {
     if (!token) return of(null);
 
     return this.http.get<IUsers>(
-      `${this.API_URL}/me`,
-      {
-        headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
-        withCredentials: true
-      }
-    ).pipe(
+      `${this.API_URL}/me`).pipe(
       tap(user => this.currentUserSubject.next(user)),
       catchError(error => {
         if (error.status === 401) {
@@ -223,17 +160,7 @@ export class AuthService {
 
   // Signup
   signup(formData: FormData): Observable<any> {
-    const token = this.getToken();
-    if (!token) {
-      return throwError(() => new Error('Authentication required'));
-    }
-
-    return this.http.post<any>(`${this.API_URL}/create`, formData, {
-      headers: new HttpHeaders()
-        .set('Authorization', `Bearer ${token}`)
-        .set('Accept', 'application/json'),
-      withCredentials: true
-    }).pipe(
+    return this.http.post<any>(`${this.API_URL}/create`, formData).pipe(
       catchError(this.handleError.bind(this))
     );
   }
@@ -245,7 +172,6 @@ export class AuthService {
       tap(token => {
         if (token) {
           this.setToken(token);
-          this.loadUserAndNavigate();
         }
       }),
       catchError(this.handleError)
@@ -264,11 +190,8 @@ export class AuthService {
   // Logout
   logout(userId: string): Observable<any> {
     return this.http.post<{ message: string }>(
-      `${this.API_URL}/logout/${userId}`,
-      null,
-      this.getAuthHeaders()
-    ).pipe(
-      catchError(this.handleError)
-    );
+      `${this.API_URL}/logout/${userId}`, null,).pipe(
+        catchError(this.handleError)
+      );
   }
 }

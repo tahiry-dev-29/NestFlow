@@ -5,6 +5,7 @@ import { AuthStore } from '../../../auth/store/auth.store';
 import { UserStore } from '../../store/users.store';
 import { ViewUserComponent } from '../view-user/view-user.component';
 import { ERROR_MESSAGES_FORM } from '../../../../../constantes';
+import { UserEntity } from '../../models/users/users.module';
 
 @Component({
     selector: 'app-add-user',
@@ -26,7 +27,7 @@ export class AddUserComponent implements OnInit {
     userForm = this.fb.group({
         name: ['', [Validators.required, Validators.minLength(2)]],
         firstName: ['', [Validators.required, Validators.minLength(2)]],
-        email: ['', [Validators.required, Validators.email]],
+        mail: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', Validators.required],
         role: ['USER']
@@ -39,9 +40,15 @@ export class AddUserComponent implements OnInit {
     previewUser: any = {
         name: '',
         firstName: '',
-        email: '',
+        mail: '',
         role: 'USER',
     };
+
+    restForm() {
+        this.userForm.reset({
+            role: 'USER'
+        });
+    }
 
     // On init
     ngOnInit() {
@@ -61,40 +68,23 @@ export class AddUserComponent implements OnInit {
         if (this.userForm.valid) {
             const formData = new FormData();
             const userData = this.userForm.value;
-    
+
             formData.append('name', userData.name ?? '');
             formData.append('firstName', userData.firstName ?? '');
-            formData.append('mail', userData.email ?? '');
+            formData.append('mail', userData.mail ?? '');
             formData.append('password', userData.password ?? '');
             formData.append('role', userData.role ?? 'USER');
-    
+
             this.authStore.signup(formData);
-            
-            setTimeout(() => {
-                this.resetForm();
-                this.userAdded.emit();
-                this.userStore.loadUsers([]);
-            }, 1000);
+
+            this.userForm.reset({
+                role: 'USER'
+            });
+            this.userAdded.emit();
+            this.userStore.loadUsers(this.userStore.users());
         }
     }
 
-    // Reset form
-    private resetForm() {
-        this.userForm.reset({
-            name: '',
-            firstName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-            role: 'USER'
-        });
-        this.previewUser = {
-            name: '',
-            firstName: '',
-            email: '',
-            role: 'USER',
-        };
-    }
 
     // Setup form value changes
     private setupFormValueChanges() {
@@ -103,7 +93,7 @@ export class AddUserComponent implements OnInit {
                 ...this.previewUser,
                 name: values.name,
                 firstName: values.firstName,
-                email: values.email,
+                mail: values.mail,
                 role: values.role
             };
         });
@@ -115,9 +105,9 @@ export class AddUserComponent implements OnInit {
         const confirmPassword = g.get('confirmPassword');
 
         if (!password || !confirmPassword) return null;
-        
-        return password.value === confirmPassword.value 
-            ? null 
+
+        return password.value === confirmPassword.value
+            ? null
             : { mismatch: true };
     }
 
@@ -137,7 +127,7 @@ export class AddUserComponent implements OnInit {
 
         const errorMessages: { [key: string]: string } = {
             required: ERROR_MESSAGES_FORM.REQUIRED,
-            email: ERROR_MESSAGES_FORM.EMAIL_INVALID,
+            mail: ERROR_MESSAGES_FORM.EMAIL_INVALID,
             minlength: ERROR_MESSAGES_FORM.MIN_LENGTH,
         };
 

@@ -14,8 +14,6 @@ const initialState: UserState = {
   users: [],
   loading: false,
   error: null,
-  isAuthenticated: false,
-  token: null,
   currentUser: null,
 };
 
@@ -82,10 +80,8 @@ export const AuthStore = signalStore(
 
                 return authService.getUserByToken(token).pipe(
                   tap((user) => {
-                    patchState(store, {
-                      isAuthenticated: true,
+                      patchState(store, {
                       loading: false,
-                      token,
                       currentUser: user
                     });
                     router.navigate(['/dashboard/overview']);
@@ -151,12 +147,7 @@ export const AuthStore = signalStore(
         )
       ),
 
-      checkAuthStatus: () => {
-        const token = authService.getToken();
-        if (token) {
-          patchState(store, { isAuthenticated: true, token });
-        }
-      },
+      
     };
   })
 );

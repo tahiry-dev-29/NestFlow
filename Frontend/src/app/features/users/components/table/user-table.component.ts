@@ -11,6 +11,7 @@ import { UserStore } from '../../store/users.store';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
 import { ViewUserComponent } from '../view-user/view-user.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-user-table',
@@ -38,6 +39,7 @@ export class UserTableComponent implements OnInit{
     protected readonly UserEntity = UserEntity;
     readonly defaultImages = ImageUrl.defaultImages;
     readonly store = inject(UserStore);
+    private readonly toastr = inject(ToastrService);
     
     // Signaux
     private _userToEdit = signal<IUsers | null>(null);
@@ -141,9 +143,11 @@ export class UserTableComponent implements OnInit{
     /** Methodes **/
     confirmDelete(): void {
         const userId = this._userIdToDelete();
+        const firstName = this.store.getUserById(userId as string)?.firstName;
         if (userId) {
             this.store.deleteUser(userId);
             this.closePopup();
+            this.toastr.success(`<span class="msg-class">${firstName}</span> deleted  successfully`);
             this.store.loadUsers(this.store.users());
         }
     }

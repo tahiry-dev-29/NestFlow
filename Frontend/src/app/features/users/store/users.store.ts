@@ -9,8 +9,6 @@ const getInitialState = (): UserState => ({
   users: [],
   loading: false,
   error: null,
-  isAuthenticated: false,
-  token: null,
   currentUser: null,
 });
 
@@ -55,7 +53,6 @@ export const UserStore = signalStore(
               });
             }),
             catchError((error) => {
-              console.error('Error while deleting user:', error);
               patchState(store, { error: error.message, loading: false });
               return throwError(() => new Error('Failed to delete user.'));
             })

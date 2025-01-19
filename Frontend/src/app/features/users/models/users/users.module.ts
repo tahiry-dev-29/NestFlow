@@ -2,8 +2,6 @@ export interface UserState {
     users: IUsers[];
     loading: boolean;
     error: string | null;
-    isAuthenticated: boolean;
-    token: string | null;
     currentUser: IUsers | null | undefined;
 }
 

@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthStore } from './features/auth/store/auth.store';
+import { AuthService } from './features/auth/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,13 +12,9 @@ import { AuthStore } from './features/auth/store/auth.store';
 })
 export class AppComponent implements OnInit {
   private authStore = inject(AuthStore);
+  private authService = inject(AuthService);
 
   ngOnInit(): void {
-    // Wrap in try-catch to prevent uncaught promise errors
-    try {
-      this.authStore.checkAuthStatus();
-    } catch (error) {
-      console.warn('Auth status check failed:', error);
-    }
+    this.authService.isAuthenticated();
   }
 }

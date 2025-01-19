@@ -11,60 +11,32 @@ import { SubscriptionWithDetails } from '../models/subscription.interface';
 })
 export class SubscriptionService {
 
-    // base url
     private readonly baseUrl = environment.apiUrl + '/subscriptions';
-
-    // injects
-    private readonly authService = inject(AuthService);
     private readonly http = inject(HttpClient);
 
-    // Get auth headers
-    private getAuthHeaders(): HttpHeaders {
-        const token = this.authService.getToken();
-        return new HttpHeaders()
-            .set('Authorization', `Bearer ${token}`)
-            .set('Content-Type', 'application/json');
-    }
-
-    /* All methods for subscription */
     // Get All Subscriptions
     getListsSubscriptions(): Observable<SubscriptionDetails[]> {
-        return this.http.get<SubscriptionDetails[]>(`${this.baseUrl}/lists`, {
-            headers: this.getAuthHeaders(),
-            withCredentials: true
-        });
+        return this.http.get<SubscriptionDetails[]>(`${this.baseUrl}/lists`);
     }
 
 
     // Get Status Subscriptions
     getStatusSubscriptions(): Observable<SubscriptionWithDetails[]> {
-        return this.http.get<SubscriptionWithDetails[]>(`${this.baseUrl}/getAll/withDetails`, {
-            headers: this.getAuthHeaders(),
-            withCredentials: true
-        });
+        return this.http.get<SubscriptionWithDetails[]>(`${this.baseUrl}/getAll/withDetails`); // Plus besoin des headers ni de withCredentials
     }
 
     // Delete Subscription
     DeleteSubscription(id: string): Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/delete/${id}`, {
-            headers: this.getAuthHeaders(),
-            withCredentials: true
-        });
+        return this.http.delete<void>(`${this.baseUrl}/delete/${id}`);
     }
 
     // Edit Subscription
     EditSubscription(id: string, subscription: SubscriptionDetails): Observable<SubscriptionDetails> {
-        return this.http.put<SubscriptionDetails>(`${this.baseUrl}/edit/${id}`, subscription, {
-            headers: this.getAuthHeaders(),
-            withCredentials: true
-        });
+        return this.http.put<SubscriptionDetails>(`${this.baseUrl}/edit/${id}`, subscription);
     }
 
     // Add Subscription
     AddSubscription(subscription: SubscriptionDetails): Observable<SubscriptionDetails> {
-        return this.http.post<SubscriptionDetails>(`${this.baseUrl}/add`, subscription, {
-            headers: this.getAuthHeaders(),
-            withCredentials: true
-        });
+        return this.http.post<SubscriptionDetails>(`${this.baseUrl}/add`, subscription);
     }
 }

@@ -35,7 +35,6 @@ import { IUsers, UserEntity } from '../../models/users/users.module';
                                     <h1 class="text-2xl font-bold hover:text-blue-400 transition-colors duration-300 text">
                                         {{ user()?.name }} {{ user()?.firstName }}
                                     </h1>
-                                    <p class="text-gray-300 hover:text-white transition-colors duration-300">{{ user()?.mail }}</p>
                                     <span class="inline-block px-4 py-1.5 text-sm font-semibold rounded-full cursor-pointer transform transition-all duration-300 hover:scale-105"
                                           [ngClass]="roleClasses()">
                                         {{ user()?.role }}
