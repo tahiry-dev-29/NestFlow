@@ -19,21 +19,20 @@ import { SubscriptionWithDetails } from '../../interfaces/subscription.interface
   animations: [expandCollapse],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class DetailListsComponent implements OnInit {
+export class DetailListsComponent {
   toastr = inject(ToastrService);
   router = inject(Router);
 
   store = inject(SubscriptionStore);
-  
+
   // variables helpers
   @Input() filter: { menu: string; search: string } = { menu: 'all', search: '' };
   showPopup = signal(false);
   subscriberToDelete = signal<string | undefined>(undefined);
   currentPage = signal<number>(1);
   maxSize = 4;
-  
 
-  ngOnInit() {
+  constructor() {
     this.store.LoadSubscriptionWithDetails(this.store.subscriptionsWithDetails());
   }
 

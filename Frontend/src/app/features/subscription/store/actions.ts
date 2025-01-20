@@ -6,12 +6,15 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, of, pipe, switchMap, tap } from 'rxjs';
 import { SubscriptionDetails } from "../models/subscription.model";
 import { SubscriptionService } from '../services/subscription.service';
-import { initialState } from './states';
-import { AddSubscription, SubscriptionWithDetails } from '../interfaces/subscription.interface';
+import { initialState, SubscriptionState } from './states';
+import { AddSubscription, EditSubscription, SubscriptionWithDetails } from '../interfaces/subscription.interface';
 
 export const subscriptionActionsFeature = signalStoreFeature(
-    withState(initialState),
+    withState<SubscriptionState>(initialState),
     withMethods((store, subscriptionService = inject(SubscriptionService)) => ({
+        getById(id: string): SubscriptionWithDetails | undefined {
+            return store.subscriptionsWithDetails().find(subscription => subscription.details.id === id);
+        },
 
         LoadSubscriptionWithDetails: rxMethod<SubscriptionWithDetails[]>(
             pipe(
@@ -47,11 +50,27 @@ export const subscriptionActionsFeature = signalStoreFeature(
                 tap(() => patchState(store, { loading: false }))
             )
         ),
-        updateSubscription: rxMethod<SubscriptionDetails>(
+        updateSubscription: rxMethod<EditSubscription>(
             pipe(
-                tap(() => patchState(store, state => ({
-                    // ... logique for updating subscription
-                })))
+                tap(() => patchState(store, { loading: true, error: null })),
+                switchMap((subscription: EditSubscription) => {
+                    if (!subscription.id) {
+                        return of(null);
+                    }
+                    return subscriptionService.EditSubscription(subscription.id, subscription).pipe( 
+                        tap(() => {
+                            const updatedSubscriptions = store.subscriptions().map(sub => 
+                                sub.id === subscription.id ? { ...sub, ...subscription } : sub
+                            );
+                            patchState(store, { subscriptions: updatedSubscriptions });
+                        }),
+                        catchError((error) => {
+                            patchState(store, { error: error.message || 'Erreur lors de la mise à jour', loading: false });
+                            return of(null);
+                        })
+                    );
+                }),
+                tap(() => patchState(store, { loading: false }))
             )
         ),
         deleteSubscription: rxMethod<{ id: string }>(
@@ -98,3 +117,4 @@ export const subscriptionActionsFeature = signalStoreFeature(
         },
     }))
 );
+

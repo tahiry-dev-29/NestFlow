@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { SubscriptionDetails } from '../models/subscription.model';
-import { ReNewSubscription, SubscriptionWithDetails } from '../interfaces/subscription.interface';
+import { AddSubscription, EditSubscription, ReNewSubscription, SubscriptionWithDetails } from '../interfaces/subscription.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -30,12 +30,12 @@ export class SubscriptionService {
     }
 
     // Edit Subscription
-    EditSubscription(id: string, subscription: SubscriptionDetails): Observable<SubscriptionDetails> {
-        return this.http.put<SubscriptionDetails>(`${this.baseUrl}/edit/${id}`, subscription);
+    EditSubscription(id: string, subscription: EditSubscription): Observable<EditSubscription> {
+        return this.http.put<EditSubscription>(`${this.baseUrl}/update/${id}`, subscription);
     }
 
     // Add Subscription
-    AddSubscription(subscription: SubscriptionDetails): Observable<SubscriptionDetails> {
+    AddSubscription(subscription: AddSubscription): Observable<SubscriptionDetails> {
         return this.http.post<SubscriptionDetails>(`${this.baseUrl}/add`, subscription);
     }
 

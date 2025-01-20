@@ -1,12 +1,5 @@
 import { SubscriptionDetails, SubscriptionType, TimeUnit } from "../models/subscription.model";
 
-export interface SubscriptionState {
-    subscriptionsWithDetails: SubscriptionWithDetails[];
-    loading: boolean;
-    error: string | null;
-    expandedId: number | null;
-    expandedMenuId: number | null;
-}
 
 export interface SubscriptionWithDetails {
     status: {
@@ -18,6 +11,9 @@ export interface SubscriptionWithDetails {
 }
 
 export type AddSubscription = Omit<SubscriptionDetails, 'id' | 'subscriptionStartDate' | 'subscriptionEndDate' | 'remainingHours' | 'remainingDays' | 'status' | 'price' | 'channelCount'>;
+
+export type EditSubscription = Omit<SubscriptionDetails, 'subscriptionStartDate' | 'subscriptionEndDate' | 'remainingHours' | 'remainingDays' | 'status' | 'price' | 'channelCount' |'subscriptionType'>;
+
 
 export type ReNewSubscription = {
     renewalPeriod: number;

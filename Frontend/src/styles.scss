@@ -122,7 +122,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   }
 
   .error {
-    @apply text-red-500 mt-1 text-xs font-bold ml-7;
+    @apply text-red-500 mt-1 text-sm font-bold ml-7;
   }
 }
 

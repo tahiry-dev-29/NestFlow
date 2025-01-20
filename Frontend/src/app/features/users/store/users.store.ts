@@ -1,7 +1,7 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, Observable, pipe, switchMap, tap, throwError } from 'rxjs';
+import { catchError, Observable, of, pipe, switchMap, tap } from 'rxjs';
 import { IUsers, UserState } from '../models/users/users.module';
 import { UsersService } from '../services/users.service';
 
@@ -23,7 +23,7 @@ export const UserStore = signalStore(
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
   })),
-  withMethods((store, usersService = inject(UsersService))=> ({
+  withMethods((store, usersService = inject(UsersService)) => ({
     // Load users
     loadUsers: rxMethod<IUsers[]>(
       pipe(
@@ -33,7 +33,7 @@ export const UserStore = signalStore(
             tap((users) => patchState(store, { users, loading: false })),
             catchError((error) => {
               patchState(store, { error: error.message, loading: false });
-              return throwError(() => new Error('Failed to load users.'));
+              return of(error);
             })
           );
         })
@@ -54,16 +54,16 @@ export const UserStore = signalStore(
             }),
             catchError((error) => {
               patchState(store, { error: error.message, loading: false });
-              return throwError(() => new Error('Failed to delete user.'));
+              return of(error);
             })
           );
         })
       )
     ),
-    
+
     updateUser(userId: string, updates: Partial<IUsers>): Observable<IUsers> {
       patchState(store, { loading: true, error: null });
-      
+
       return usersService.updateUser(userId, updates).pipe(
         switchMap(() => {
           // use service to update user
@@ -75,7 +75,7 @@ export const UserStore = signalStore(
         }),
         catchError((error) => {
           patchState(store, { error: error.message, loading: false });
-          return throwError(() => error);
+          return of(error);
         })
       );
     },
@@ -85,6 +85,6 @@ export const UserStore = signalStore(
     getUserById: (userId: string): IUsers | undefined => {
       return store.users().find((user) => user.id === userId);
     },
-    
+
   }))
 );

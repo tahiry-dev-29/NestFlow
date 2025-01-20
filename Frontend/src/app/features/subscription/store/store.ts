@@ -1,11 +1,9 @@
-import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
-import { subscriptionSelectorsFeature } from "./selectors";
-import { initialState, SubscriptionState } from "./states";
+import { signalStore } from "@ngrx/signals";
 import { subscriptionActionsFeature } from "./actions";
+import { subscriptionSelectorsFeature } from "./selectors";
 
 export const SubscriptionStore = signalStore(
     { providedIn: 'root' },
-    withState<SubscriptionState>(initialState),
     subscriptionSelectorsFeature,
     subscriptionActionsFeature,
 );

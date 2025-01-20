@@ -31,11 +31,11 @@ export const ERROR_MESSAGES_FORM = {
 };
 
 
-export const errorMessages: { [key: string]: { [key: string]: string } } = {  // mettre en anglais
+export const errorMessages: { [key: string]: { [key: string]: string } } = {
   fullname: {
       required: 'The full name is required.',
       minlength: 'The full name must contain at least 5 characters.',
-      maxlength: 'The full name must contain at most 100 characters.'
+      maxlength: 'The full name must contain at most 50 characters.',
   },
   email: {
       required: 'The email is required.',
@@ -43,16 +43,18 @@ export const errorMessages: { [key: string]: { [key: string]: string } } = {  //
   },
   tel: {
       required: 'The phone number is required.',
-      pattern: 'The phone number must contain 10 digits.'
+      pattern: 'The phone number is invalid. ex: 1234567890'
   },
   adresse: {
       required: 'The address is required.',
       minlength: 'The address must contain at least 5 characters.',
-      maxlength: 'The address must contain at most 100 characters.'
+      maxlength: 'The address must contain at most 60 characters.'
   },
   code: {
       required: 'The password is required.',
-      minlength: 'The password must contain at least 4 characters.'
+      minlength: 'The password must contain at least 4 characters.',
+      maxlength: 'The password must contain at most 4 characters.',
+      pattern: 'The password must contain only numbers.'
   },
   subscriptionType: {
       required: 'The subscription type is required.'
