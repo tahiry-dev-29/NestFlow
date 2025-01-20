@@ -2,16 +2,16 @@ import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { ToastrService } from 'ngx-toastr';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
 import { slideInOut } from '../../../shared/animations/animations';
 import { PopupsComponent } from '../../../shared/components/popups/popups.component';
 import { SideBarRightComponent } from '../../../shared/components/side-bar-right/side-bar-right.component';
-import { IUsers, UserEntity } from '../../models/users/users.module';
+import { IUsers, ROLE, } from '../../models/users/users.module';
 import { UserStore } from '../../store/users.store';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
 import { ViewUserComponent } from '../view-user/view-user.component';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-user-table',
@@ -36,7 +36,7 @@ export class UserTableComponent implements OnInit{
     editUserSidebar = viewChild<SideBarRightComponent>('editUserSidebar');
     viewUserSidebar = viewChild<SideBarRightComponent>('viewUserSidebar');
 
-    protected readonly UserEntity = UserEntity;
+    protected readonly UserEntity = ROLE;
     readonly defaultImages = ImageUrl.defaultImages;
     readonly store = inject(UserStore);
     private readonly toastr = inject(ToastrService);
@@ -79,7 +79,7 @@ export class UserTableComponent implements OnInit{
     };
 
     // Get role classes
-    getRoleClasses(role: UserEntity.ROLE): string {
+    getRoleClasses(role: ROLE): string {
         const classes = {
             'ADMIN': 'bg-blue-500/10 text-blue-500',
             'USER': 'bg-green-500/10 text-green-500',

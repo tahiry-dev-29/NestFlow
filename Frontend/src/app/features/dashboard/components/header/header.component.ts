@@ -27,6 +27,7 @@ import { sideLeftBarState } from '../../store/signal.store';
         </button>
         <div class="cursor-pointer hover:scale-105 transition-all duration-300 ease-in-out">
           <img [src]="getImageSrc()" alt="Profil" class="w-10 h-10 rounded-full">
+          <span class="text-white">{{ user?.role }}</span>
         </div>
       </section>
     </nav>
@@ -58,7 +59,7 @@ export class HeaderComponent {
     return `http://localhost:8080/api/images/upload/${imageUrl}`;
   }
 
-  private loadUserProfile(): void {
+  loadUserProfile(): void {
     const token = this.authService.getToken();
     this.authService.getUserByToken(token || '').subscribe({
       next: (user) => {
@@ -67,6 +68,7 @@ export class HeaderComponent {
     });
   }
 
+  
   toggleSidebar(): void {
     this.sidebarState.update(state => !state);
   }

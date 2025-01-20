@@ -14,11 +14,13 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAnimations(),
     provideToastr({
+      timeOut: 2000,
+      extendedTimeOut: 2000,
+      closeButton: false,
       positionClass: 'toast-bottom-right',
-      timeOut: 3000,
+      tapToDismiss: true,
       enableHtml: true,
-      extendedTimeOut: 1000,
-      closeButton: true,
+      preventDuplicates: false,
     }),
   ]
 };

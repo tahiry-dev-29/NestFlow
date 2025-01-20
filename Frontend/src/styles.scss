@@ -126,6 +126,11 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   }
 }
 
+// definier une animation apparition vers le droite
+.toast-container .ngx-toastr {
+  @apply rounded-full animate-fade-up;
+}
+
 @layer components {
   .header-menu {
     @apply fixed top-0 w-[-webkit-fill-available] flex flex-wrap items-center h-20 justify-between mx-3 mt-2 py-2 rounded-2xl lg:flex-nowrap px-5 content-style z-30;

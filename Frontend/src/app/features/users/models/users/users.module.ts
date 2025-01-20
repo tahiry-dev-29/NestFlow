@@ -1,3 +1,7 @@
+export enum ROLE {
+    ADMIN,
+    USER
+}
 export interface UserState {
     users: IUsers[];
     loading: boolean;
@@ -12,7 +16,7 @@ export interface IUsers {
     mail: string;
     password: string;
     imageUrl?: string;
-    role: UserEntity.ROLE;
+    role: ROLE;
 
     online: boolean;
 }
@@ -22,14 +26,7 @@ export interface UserUpdateRequest {
     firstName: string;
     mail: string;
     imageUrl?: string;
-    role: UserEntity.ROLE;
-}
-
-export namespace UserEntity {
-    export enum ROLE {
-        ADMIN,
-        USER
-    }
+    role: ROLE;
 }
 
 export interface IUserUpdateRequest {
@@ -43,17 +40,6 @@ export interface IUserUpdateResponse {
     error?: string;
 }
 
-// <Omit<IUsers, 'id' | 'online' >>
-/* export type TSignUp = {
-    name: string;
-    firstName: string;
-    mail: string;
-    password: string;
-    // imageUrl?: string;
-    role: UserEntity.ROLE;
-    
-    // online: boolean;
-} */
 
 export interface IUserSignupResponse {
     success: boolean;

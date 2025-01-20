@@ -3,10 +3,10 @@ import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieOptions, CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { ERROR_MESSAGES, SERVER_ERROR_MESSAGES } from '../../../../constantes';
 import { environment } from '../../../../environments/environment';
-import { IUsers } from '../../users/models/users/users.module';
+import { IUsers, ROLE } from '../../users/models/users/users.module';
 
 @Injectable({
   providedIn: 'root',
@@ -21,9 +21,6 @@ export class AuthService {
     domain: environment.cookieDomain || 'localhost'
   };
 
-  private currentUserSubject = new BehaviorSubject<IUsers | null>(null);
-  currentUser$ = this.currentUserSubject.asObservable();
-
   private readonly http = inject(HttpClient);
   private readonly cookieService = inject(CookieService);
   private readonly router = inject(Router);
@@ -35,7 +32,8 @@ export class AuthService {
       tap(token => {
         if (token) {
           this.setToken(token);
-          this.getCurrentUser().subscribe();
+          // this.getCurrentUser().subscribe();
+          this.getUserByToken(token).subscribe();
         }
       }),
       catchError(this.handleError.bind(this))
@@ -83,13 +81,11 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!this.getToken();
   }
-
+  
   // Gestion de l'utilisateur
   getCurrentUser(): Observable<IUsers | null> {
     return this.http.get<IUsers>(`${this.API_URL}/me`).pipe(
-      tap(user => this.currentUserSubject.next(user)),
       catchError(error => {
-        this.currentUserSubject.next(null);
         return of(null);
       })
     );
@@ -125,10 +121,9 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 
-  // Autres méthodes / Helpers
+  // Autres méthodes
   private clearUserSession(): void {
     this.deleteToken();
-    this.currentUserSubject.next(null);
   }
 
   logoutUserAndRedirect(): void {

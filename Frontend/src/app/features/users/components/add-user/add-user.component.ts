@@ -5,7 +5,7 @@ import { AuthStore } from '../../../auth/store/auth.store';
 import { UserStore } from '../../store/users.store';
 import { ViewUserComponent } from '../view-user/view-user.component';
 import { ERROR_MESSAGES_FORM } from '../../../../../constantes';
-import { UserEntity } from '../../models/users/users.module';
+import { ROLE } from '../../models/users/users.module';
 
 @Component({
     selector: 'app-add-user',

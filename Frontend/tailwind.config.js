@@ -507,7 +507,8 @@ module.exports = {
       ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
       pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       bounce: "bounce 1s infinite",
-      "fade-up": "fade-up 1.5s both",
+      "fade-up": "fade-up .5s both",
+      "fade-right": "fade-right .3s both",
     },
     aspectRatio: {
       auto: "auto",
@@ -1003,6 +1004,16 @@ module.exports = {
         },
         to: {
           opacity: "1",
+        },
+      },
+      "fade-right": {
+        from: {
+          opacity: "0",
+          transform: "translateX(100%)",
+        },
+        to: {
+          opacity: "1",
+          transform: "translateX(0)",
         },
       },
       spin: {

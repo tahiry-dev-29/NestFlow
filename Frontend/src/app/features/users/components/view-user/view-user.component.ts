@@ -1,7 +1,7 @@
 import { Component, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
-import { IUsers, UserEntity } from '../../models/users/users.module';
+import { IUsers,  } from '../../models/users/users.module';
 
 @Component({
     selector: 'app-view-user',
@@ -67,7 +67,6 @@ export class ViewUserComponent {
     isPreview = input<boolean>(false);
 
     readonly defaultImages = ImageUrl.defaultImages;
-    protected readonly UserEntity = UserEntity;
 
     readonly roleClasses = computed(() => {
         const role = this.user()?.role;
