@@ -55,9 +55,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
     
-    // Calculer dynamiquement les champs nécessaires
     private SubscriptionStatusResponse mapSubscriptionToStatusResponse(SubscriptionDetailsEntity subscription) {
-        // Récupération des données nécessaires
         LocalDateTime startDate = subscription.getSubscriptionStartDate();
         int duration = subscription.getDuration();
         SubscriptionDetailsEntity.TimeUnit timeUnit = subscription.getTimeUnit();
@@ -82,7 +80,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 ? (Math.max(0, Math.min(elapsedDays, totalDays)) / (double) totalDays) * 100
                 : 100.0;
     
-        if (progressPercentage > 10.0) {
+        if (progressPercentage < 10.0) {
             subscription.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
         } else {
             subscription.setStatus(SubscriptionDetailsEntity.Status.EXPIRED);

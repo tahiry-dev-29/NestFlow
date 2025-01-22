@@ -150,8 +150,8 @@
                   </div>
                   <div class="w-1/3 p-2">
                     <p><strong>Actif :</strong> <span
-                        [ngClass]="{'text-green-400': subscription.details.status || undefined === 'CLASSIC', 'text-gray-400': subscription.details.status || undefined === 'BASIC'}">
-                        {{ subscription.details.status }}</span></p>
+                        [ngClass]="{'text-green-400': subscription.status.expired === false, 'text-gray-400': subscription.status.expired === true}">
+                        {{ subscription.status.expired ? 'EXPIRED' : 'ACTIVE' }}</span></p>
                     <p><strong>Remaining hours :</strong> {{ subscription.details.remainingHours }}</p>
                     <p><strong>Remaining days :</strong> {{ subscription.details.remainingDays }}</p>
                   </div>

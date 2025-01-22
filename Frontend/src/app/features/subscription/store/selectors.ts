@@ -2,7 +2,7 @@
 import { computed } from "@angular/core";
 import { signalStoreFeature, withComputed, withState } from "@ngrx/signals";
 import { SubscriptionWithDetails } from "../interfaces/subscription.interface";
-import { SubscriptionType, TimeUnit } from "../models/subscription.model";
+import { Status, SubscriptionType, TimeUnit } from "../models/subscription.model";
 import { SubscriptionCalculator } from "../utils/subscription.constant";
 import { initialState, SubscriptionState } from "./states";
 
