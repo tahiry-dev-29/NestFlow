@@ -32,7 +32,6 @@ export class AuthService {
       tap(token => {
         if (token) {
           this.setToken(token);
-          // this.getCurrentUser().subscribe();
           this.getUserByToken(token).subscribe();
         }
       }),
@@ -121,7 +120,6 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 
-  // Autres méthodes
   private clearUserSession(): void {
     this.deleteToken();
   }

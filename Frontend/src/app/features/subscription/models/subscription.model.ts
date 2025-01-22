@@ -23,12 +23,18 @@ export class SubscriptionDetails {
   adresse: string | undefined;
   code!: string;
   subscriptionType: SubscriptionType | undefined;
+  
   channelCount: number | undefined;
+  price: number | undefined;
 
   subscriptionStartDate: Date | undefined;
   subscriptionEndDate: Date | undefined;
-  status: Status | undefined;
-  price: number | undefined;
-  remainingHours: number | undefined;
   remainingDays: number | undefined;
+
+  timeUnit: TimeUnit | undefined;
+  duration: number | undefined;
+
+
+  status: Status | undefined;
+  remainingHours: number | undefined;
 }

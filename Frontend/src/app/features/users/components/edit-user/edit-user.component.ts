@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject, OnChanges, SimpleChanges, OnInit, OnDestroy, output, viewChild, input } from '@angular/core';
+import { Component, ElementRef, inject, input, OnChanges, OnInit, output, SimpleChanges, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { slideInOut } from '../../../shared/animations/animations';
-import { UserStore } from '../../store/users.store';
-import { IUsers } from '../../models/users/users.module';
-import { ViewUserComponent } from '../view-user/view-user.component';
-import { ImageUrl } from '../../../../../../public/images/constant.images';
 import { tap } from 'rxjs';
+import { ImageUrl } from '../../../../../../public/images/constant.images';
+import { slideInOut } from '../../../shared/animations/animations';
+import { IUsers } from '../../models/users/users.module';
+import { UserStore } from '../../store/users.store';
+import { ViewUserComponent } from '../view-user/view-user.component';
 
 @Component({
   selector: 'app-edit-user',
@@ -35,9 +35,9 @@ import { tap } from 'rxjs';
                     </div>
                   </div>
                   <div class="mb-4">
-                    <input type="email" formControlName="email" class="input-theme w-full" placeholder="Email" />
-                    <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="error">
-                      {{ getErrorMessage('email') }}
+                    <input type="email" formControlName="mail" class="input-theme w-full" placeholder="Email" />
+                    <div *ngIf="userForm.get('mail')?.invalid && userForm.get('mail')?.touched" class="error">
+                      {{ getErrorMessage('mail') }}
                     </div>
                   </div>
                   <div class="mb-4">
@@ -64,7 +64,7 @@ import { tap } from 'rxjs';
   styleUrl: './edit-user.component.scss',
   animations: [slideInOut]
 })
-export class EditUserComponent implements OnInit, OnChanges, OnDestroy {
+export class EditUserComponent implements OnInit, OnChanges {
   // @ViewChild('fileInput') fileInput!: ElementRef;
   fileInput = viewChild<ElementRef>('fileInput');
   user = input<IUsers | null>(null);
@@ -93,16 +93,12 @@ export class EditUserComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // On destroy
-  ngOnDestroy(): void {
-    this.userStore.loadUsers(this.userStore.users());
-  }
 
   private initForm(): void {
     this.userForm = this.fb.group({
       name: [this.user()?.name || '', [Validators.required, Validators.minLength(2)]],
       firstName: [this.user()?.firstName || '', [Validators.required, Validators.minLength(2)]],
-      email: [this.user()?.mail || '', [Validators.required, Validators.email]],
+      mail: [this.user()?.mail || '', [Validators.required, Validators.email]],
       role: [this.user()?.role || 'USER', Validators.required]
     });
 
@@ -117,7 +113,7 @@ export class EditUserComponent implements OnInit, OnChanges, OnDestroy {
       this.userForm.patchValue({
         name: this.user()!.name || '',
         firstName: this.user()!.firstName || '',
-        email: this.user()!.mail || '',
+        mail: this.user()!.mail || '',
         role: this.user()!.role || 'USER'
       });
     }
@@ -131,15 +127,23 @@ export class EditUserComponent implements OnInit, OnChanges, OnDestroy {
 
       formData.append('name', userData.name);
       formData.append('firstName', userData.firstName);
-      formData.append('mail', userData.email);
+      formData.append('mail', userData.mail);
       formData.append('role', userData.role);
 
-      this.userStore.updateUser(this.user()!.id, userData).pipe(
-        tap(() => {
-          this.toastr.success(`${userData.firstName} updated successfully`);
-          this.userEdited.emit();
-        })
-      ).subscribe();
+
+      const user = this.user();
+      if (user) {
+        const userId = user.id;
+        this.userStore.updateUser(userId, userData).pipe(
+          tap(() => {
+            this.toastr.success(`${userData.firstName} updated successfully`);
+            this.userEdited.emit();
+            this.userStore.loadUsers(this.userStore.users());
+          })
+        ).subscribe();
+      } else {
+        this.toastr.error('User not found');
+      }
     }
   }
 
@@ -157,7 +161,7 @@ export class EditUserComponent implements OnInit, OnChanges, OnDestroy {
       ...this.previewUser,
       name: values.name,
       firstName: values.firstName,
-      mail: values.email,
+      mail: values.mail,
       role: values.role,
     };
   }
@@ -173,12 +177,12 @@ export class EditUserComponent implements OnInit, OnChanges, OnDestroy {
 
     const errors = control.errors;
     const errorMessages: { [key: string]: string } = {
-      required: 'Ce champ est requis',
-      email: 'Email invalide',
-      minlength: `Minimum ${control.errors['minlength']?.requiredLength} caractères`,
+      required: 'This field is required',
+      mail: 'Invalid email',
+      minlength: `Minimum ${control.errors['minlength']?.requiredLength} characters`,
     };
 
     const firstError = Object.keys(errors)[0];
-    return errorMessages[firstError] || 'Erreur de validation';
+    return errorMessages[firstError] || 'Validation error';
   }
 }

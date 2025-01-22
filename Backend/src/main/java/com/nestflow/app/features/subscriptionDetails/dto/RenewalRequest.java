@@ -19,7 +19,7 @@ public class RenewalRequest {
     private Integer renewalPeriod;
 
     @NotBlank(message = "L'unité de temps ne peut pas être vide")
-    private String unit; // Représentation textuelle de l'unité (ex: "MONTHS", "YEARS", "DAYS", "WEEKS")
+    private String unit;
 
     @NotNull(message = "Le nouveau type d'abonnement est requis")
     private SubscriptionType newType;

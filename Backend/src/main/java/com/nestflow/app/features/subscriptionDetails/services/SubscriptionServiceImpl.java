@@ -1,9 +1,6 @@
 package com.nestflow.app.features.subscriptionDetails.services;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,103 +29,87 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public List<SubscriptionStatusResponse> getAllSubscriptionsStatus() {
-        List<SubscriptionDetailsEntity> subscriptions = subscriptionRepository.findAllBlocking();
-        return subscriptions.stream()
-                .map(this::mapSubscriptionToStatusResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<SubscriptionWithDetailsResponse> getAllSubscriptionsWithDetails() {
         List<SubscriptionDetailsEntity> subscriptions = subscriptionRepository.findAllBlocking();
         return subscriptions.stream()
                 .map(subscription -> {
+                    // Calculer dynamiquement les champs nécessaires
                     SubscriptionStatusResponse status = mapSubscriptionToStatusResponse(subscription);
                     return new SubscriptionWithDetailsResponse(status, subscription);
                 })
                 .collect(Collectors.toList());
     }
 
+    private LocalDateTime calculateEndDate(LocalDateTime startDate, int duration, SubscriptionDetailsEntity.TimeUnit timeUnit) {
+        switch (timeUnit) {
+            case DAYS:
+                return startDate.plusDays(duration);
+            case WEEKS:
+                return startDate.plusWeeks(duration);
+            case MONTHS:
+                return startDate.plusMonths(duration);
+            case YEARS:
+                return startDate.plusYears(duration);
+            default:
+                throw new IllegalArgumentException("Unsupported time unit: " + timeUnit);
+        }
+    }
+    
+    // Calculer dynamiquement les champs nécessaires
     private SubscriptionStatusResponse mapSubscriptionToStatusResponse(SubscriptionDetailsEntity subscription) {
+        // Récupération des données nécessaires
         LocalDateTime startDate = subscription.getSubscriptionStartDate();
-        LocalDateTime endDate = subscription.getSubscriptionEndDate();
-
-        if (startDate == null || endDate == null) {
-            throw new IllegalStateException("Subscription start or end date is null for subscription ID: " + subscription.getId());
+        int duration = subscription.getDuration();
+        SubscriptionDetailsEntity.TimeUnit timeUnit = subscription.getTimeUnit();
+    
+        if (startDate == null || timeUnit == null || duration <= 0) {
+            throw new IllegalStateException(
+                    "Invalid subscription data for subscription ID: " + subscription.getId());
         }
-        if (endDate.isBefore(startDate)) {
-            throw new IllegalStateException("End date is before start date for subscription ID: " + subscription.getId());
-        }
-
-        ZoneId zoneId = ZoneId.of("UTC");
-        LocalDateTime now = LocalDateTime.now(zoneId);
-        startDate = startDate.atZone(zoneId).toLocalDateTime();
-        endDate = endDate.atZone(zoneId).toLocalDateTime();
-
+    
+        LocalDateTime endDate = calculateEndDate(startDate, duration, timeUnit);
+        subscription.setSubscriptionEndDate(endDate);
+    
+        LocalDateTime now = LocalDateTime.now();
+    
         long totalDays = ChronoUnit.DAYS.between(startDate, endDate);
+    
         long remainingDays = ChronoUnit.DAYS.between(now, endDate);
-
-        double progressPercentage = (totalDays <= 0) ? 100.0 : (double) Math.max(0, ChronoUnit.DAYS.between(startDate, now)) / totalDays * 100;
-        double reversedPercentage = 100.0 - progressPercentage;
-
-        return new SubscriptionStatusResponse(remainingDays, reversedPercentage, remainingDays <= 0);
-    }
-
-    private BigDecimal getBasePrice(SubscriptionDetailsEntity.SubscriptionType subscriptionType) {
-        switch (subscriptionType) {
-            case BASIC:
-                return new BigDecimal("30000");
-            case CLASSIC:
-                return new BigDecimal("50000");
-            default:
-                throw new IllegalArgumentException("Type d'abonnement inconnu : " + subscriptionType);
+    
+        long elapsedDays = ChronoUnit.DAYS.between(startDate, now);
+    
+        double progressPercentage = (totalDays > 0)
+                ? (Math.max(0, Math.min(elapsedDays, totalDays)) / (double) totalDays) * 100
+                : 100.0;
+    
+        if (progressPercentage > 10.0) {
+            subscription.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
+        } else {
+            subscription.setStatus(SubscriptionDetailsEntity.Status.EXPIRED);
         }
+    
+        return new SubscriptionStatusResponse(remainingDays, 100.0 - progressPercentage, remainingDays <= 0);
     }
-
-    private int calculateChannelCount(SubscriptionDetailsEntity.SubscriptionType subscriptionType) {
-        switch (subscriptionType) {
-            case BASIC:
-                return 250;
-            case CLASSIC:
-                return 500;
-            default:
-                throw new IllegalArgumentException("Type d'abonnement inconnu : " + subscriptionType);
-        }
-    }
+    
+    
 
     @Override
     public SubscriptionDetailsEntity createSubscription(SubscriptionDetailsEntity details) {
         LocalDateTime now = LocalDateTime.now();
         details.setSubscriptionStartDate(now);
-        details.setSubscriptionEndDate(now.plusMonths(1));
-        details.setChannelCount(calculateChannelCount(details.getSubscriptionType()));
-        details.setPrice(calculateRenewalPrice(details, 1, ChronoUnit.MONTHS));
+
+        LocalDateTime endDate = switch (details.getTimeUnit()) {
+            case DAYS -> now.plusDays(details.getDuration());
+            case WEEKS -> now.plusWeeks(details.getDuration());
+            case MONTHS -> now.plusMonths(details.getDuration());
+            case YEARS -> now.plusYears(details.getDuration());
+        };
+        details.setSubscriptionEndDate(endDate);
 
         String encodedPassword = passwordEncoder.encode(details.getCode());
         details.setCode(encodedPassword);
 
-        details.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
         return subscriptionRepository.save(details);
-    }
-
-    private BigDecimal calculateRenewalPrice(SubscriptionDetailsEntity subscription, int renewalPeriod,
-            ChronoUnit unit) {
-        BigDecimal basePrice = getBasePrice(subscription.getSubscriptionType());
-        BigDecimal duration = new BigDecimal(renewalPeriod);
-
-        switch (unit) {
-            case DAYS:
-                return basePrice.divide(new BigDecimal("30"), 2, RoundingMode.HALF_UP).multiply(duration);
-            case WEEKS:
-                return basePrice.divide(new BigDecimal("4"), 2, RoundingMode.HALF_UP).multiply(duration);
-            case MONTHS:
-                return basePrice.multiply(duration);
-            case YEARS:
-                return basePrice.multiply(duration.multiply(new BigDecimal("12")));
-            default:
-                throw new IllegalArgumentException("Unité de temps inconnue : " + unit);
-        }
     }
 
     @Override
@@ -144,11 +125,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         existingSubscription.setSubscriptionEndDate(newEndDate);
 
         updateSubscriptionDetails(existingSubscription, renewalRequest);
-        existingSubscription.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
+        // existingSubscription.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
 
-        BigDecimal renewalPrice = calculateRenewalPrice(existingSubscription, renewalPeriod, unit);
-        existingSubscription.setPrice(existingSubscription.getPrice() == null ? renewalPrice
-                : existingSubscription.getPrice().add(renewalPrice));
+        /*
+         * BigDecimal renewalPrice = calculateRenewalPrice(existingSubscription,
+         * renewalPeriod, unit);
+         * existingSubscription.setPrice(existingSubscription.getPrice() == null ?
+         * renewalPrice
+         * : existingSubscription.getPrice().add(renewalPrice));
+         */
 
         return subscriptionRepository.save(existingSubscription);
     }
@@ -170,7 +155,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private void updateSubscriptionDetails(SubscriptionDetailsEntity subscription, RenewalRequest renewalRequest) {
         if (renewalRequest != null && renewalRequest.getNewType() != null) {
             subscription.setSubscriptionType(renewalRequest.getNewType());
-            subscription.setChannelCount(calculateChannelCount(renewalRequest.getNewType()));
+            // subscription.setChannelCount(calculateChannelCount(renewalRequest.getNewType()));
         }
     }
 
@@ -234,11 +219,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found"));
         subscriptionRepository.deleteById(id);
-    }
-
-    @Override
-    public List<SubscriptionDetailsEntity> getAllSubscriptions() {
-        return subscriptionRepository.findAll();
     }
 
 }

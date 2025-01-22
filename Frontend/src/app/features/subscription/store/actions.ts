@@ -3,11 +3,11 @@ import { patchState, signalStoreFeature, withState } from '@ngrx/signals';
 import { inject } from '@angular/core';
 import { withMethods } from "@ngrx/signals";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, of, pipe, switchMap, tap } from 'rxjs';
+import { catchError, concatMap, of, pipe, switchMap, tap } from 'rxjs';
+import { AddSubscription, EditSubscription, RenewSubscriptionData, SubscriptionWithDetails } from '../interfaces/subscription.interface';
 import { SubscriptionDetails } from "../models/subscription.model";
 import { SubscriptionService } from '../services/subscription.service';
 import { initialState, SubscriptionState } from './states';
-import { AddSubscription, EditSubscription, SubscriptionWithDetails } from '../interfaces/subscription.interface';
 
 export const subscriptionActionsFeature = signalStoreFeature(
     withState<SubscriptionState>(initialState),
@@ -19,7 +19,7 @@ export const subscriptionActionsFeature = signalStoreFeature(
         LoadSubscriptionWithDetails: rxMethod<SubscriptionWithDetails[]>(
             pipe(
                 tap(() => patchState(store, { loading: true, error: null })),
-                switchMap(() =>
+                concatMap(() =>
                     subscriptionService.getStatusSubscriptions().pipe(
                         tap({
                             next: (subscriptions) => patchState(store, { subscriptionsWithDetails: subscriptions, loading: false }),
@@ -57,9 +57,9 @@ export const subscriptionActionsFeature = signalStoreFeature(
                     if (!subscription.id) {
                         return of(null);
                     }
-                    return subscriptionService.EditSubscription(subscription.id, subscription).pipe( 
+                    return subscriptionService.EditSubscription(subscription.id, subscription).pipe(
                         tap(() => {
-                            const updatedSubscriptions = store.subscriptions().map(sub => 
+                            const updatedSubscriptions = store.subscriptions().map(sub =>
                                 sub.id === subscription.id ? { ...sub, ...subscription } : sub
                             );
                             patchState(store, { subscriptions: updatedSubscriptions });
@@ -94,6 +94,28 @@ export const subscriptionActionsFeature = signalStoreFeature(
             )
         ),
 
+        reNewSubscription: rxMethod<RenewSubscriptionData>(
+            pipe(
+                tap(() => patchState(store, { loading: true, error: null })),
+                switchMap((subscription: RenewSubscriptionData) => subscriptionService.ReNewSubscription(subscription.id, subscription).pipe(
+                    tap(() => {
+                        patchState(store, {
+                            subscriptionsWithDetails: store.subscriptionsWithDetails().map(sub =>
+                                sub.details.id === subscription.id ? { ...sub, details: { ...sub.details, } } : sub
+                            )
+                        });
+                    }),
+                    catchError((error) => {
+                        patchState(store, { error: error.message || 'Erreur lors de la renouvellement', loading: false });
+                        return of(null);
+                    })
+                )),
+                tap(() => patchState(store, { loading: false }))
+            )
+
+        ),
+
+
         // Helpers methods
         toggleExpand(id: string | undefined): void {
             patchState(store, { expandedId: store.expandedId() === id ? null : id });
@@ -107,7 +129,7 @@ export const subscriptionActionsFeature = signalStoreFeature(
         closeExpandedMenu(): void {
             patchState(store, { expandedMenuId: null });
         },
-        
+
         toggleDetails(id: string | undefined): void {
             patchState(store, { expandedId: store.expandedId() === id ? null : id });
         },

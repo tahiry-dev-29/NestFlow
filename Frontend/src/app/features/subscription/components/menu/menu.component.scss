@@ -7,3 +7,16 @@
     }
   }
 }
+
+/* From Uiverse.io by absoluteSTrange */
+.card {
+  padding: 3px 1px;
+  border-radius: 20px;
+  transition: border-radius 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.shadow-card {
+  box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1),
+    0 0 0 2px #bebebeb0,
+    0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
+}

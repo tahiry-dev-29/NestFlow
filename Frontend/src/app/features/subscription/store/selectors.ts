@@ -37,21 +37,25 @@ export const subscriptionSelectorsFeature = signalStoreFeature(
             }
         }),
 
+
         getProgressClasses: computed(() => {
-            // Définir le type de la fonction retournée
-            return function (progress: number): string {
-                if (progress > 90) return 'bg-green-500';
-                if (progress > 80) return 'bg-green-400';
-                if (progress > 70) return 'bg-blue-500';
-                if (progress > 60) return 'bg-blue-400';
-                if (progress > 50) return 'bg-yellow-500';
-                if (progress > 40) return 'bg-yellow-400';
-                if (progress > 30) return 'bg-orange-500';
-                if (progress > 20) return 'bg-orange-400';
-                if (progress > 10) return 'bg-red-400';
-                return 'bg-red-500';
-            }
+            return (progress: number): string => {
+                let baseClasses = 'transition-all duration-300 ease-in-out shadow-md bg-gradient-to-r striped-progress';
+        
+                if (progress > 95) return `${baseClasses} from-green-400 to-green-600`;
+                if (progress > 90) return `${baseClasses} from-green-500 to-green-600`;
+                if (progress > 85) return `${baseClasses} from-green-400 to-green-500`;
+                if (progress > 80) return `${baseClasses} from-blue-400 to-blue-500`;
+                if (progress > 75) return `${baseClasses} from-blue-400 to-blue-500`;
+                if (progress > 50) return `${baseClasses} from-yellow-400 to-yellow-500`;
+                if (progress > 40) return `${baseClasses} from-yellow-400 to-yellow-500`;
+                if (progress > 30) return `${baseClasses} from-orange-400 to-orange-500`;
+                if (progress > 20) return `${baseClasses} from-orange-400 to-orange-500`;
+                if (progress > 10) return `${baseClasses} from-red-400 to-red-500`;
+                return `${baseClasses} from-red-400 to-red-500`;
+            };
         }),
+        
 
         calculateTimeBasedPrice: computed(() => {
             return (

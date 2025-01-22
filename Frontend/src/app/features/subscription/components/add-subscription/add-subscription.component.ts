@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { errorMessages } from '../../../../../constantes';
 import { SubscriptionType, TimeUnit } from '../../models/subscription.model';
 import { SubscriptionStore } from '../../store/store';
-import { SubscriptionCalculator } from '../../utils/subscription.constant';
+import { SUBSCRIPTION_CONFIG, SubscriptionCalculator } from '../../utils/subscription.constant';
 import { AddSubscription } from '../../interfaces/subscription.interface';
 import { Router } from '@angular/router';
 
@@ -37,7 +37,9 @@ export class AddSubscriptionComponent implements OnInit {
         code: ['', [Validators.required, Validators.minLength(4)]],
         subscriptionType: [SubscriptionType.BASIC, [Validators.required]],
         duration: [1, [Validators.required, Validators.min(1)]],
-        timeUnit: [TimeUnit.MONTHS, [Validators.required]]
+        timeUnit: [TimeUnit.MONTHS, [Validators.required]],
+        channelCount: [SUBSCRIPTION_CONFIG.BASIC.baseChannels, [Validators.required]],
+        price: [SUBSCRIPTION_CONFIG.BASIC.basePrice, [Validators.required]]
     });
 
     getInitialValues() {
@@ -97,10 +99,17 @@ export class AddSubscriptionComponent implements OnInit {
                 tel: formValues.tel!,
                 adresse: formValues.adresse!,
                 code: formValues.code!,
-                subscriptionType: formValues.subscriptionType as SubscriptionType
+                subscriptionType: formValues.subscriptionType as SubscriptionType,
+
+                channelCount: this.displayedChannelCount,
+                price: this.displayedPrice,
+                duration: formValues.duration!,
+                timeUnit: formValues.timeUnit!
             };
 
             this.store.addSubscription(subscription);
+            console.log(subscription);
+            
             this.toastr.success(`<span class="msg-class">${subscription.fullname}</span> subscription added successfully!`);
             setTimeout(() => {
               this.store.LoadSubscriptionWithDetails(this.store.subscriptionsWithDetails());

@@ -16,7 +16,7 @@ import { errorMessages } from '../../../../../constantes';
 })
 export class EditSubscriptionComponent {
   private fb = inject(FormBuilder);
-  private store = inject(SubscriptionStore);
+  store = inject(SubscriptionStore);
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private route = inject(ActivatedRoute);
@@ -75,11 +75,14 @@ export class EditSubscriptionComponent {
     };
 
     this.store.updateSubscription(updatedSubscription);
-    this.toastr.success('Subscription updated successfully.');
-    this.redirectToList();
+    setTimeout(() => {
+      this.toastr.success(`<span class="msg-class">${formValue.fullname}</span> updated successfully. 😎`);
+      this.redirectToList();
+    }, this.store.loading() === true ? 1000 : 0);
   }
 
   redirectToList(): void {
+    this.store.LoadSubscriptionWithDetails(this.store.subscriptionsWithDetails());
     this.router.navigate(['/dashboard/subscriptions/list']);
   }
 

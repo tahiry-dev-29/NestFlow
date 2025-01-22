@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { AddSubscription, EditSubscription, RenewSubscriptionData, SubscriptionWithDetails } from '../interfaces/subscription.interface';
 import { SubscriptionDetails } from '../models/subscription.model';
-import { AddSubscription, EditSubscription, ReNewSubscription, SubscriptionWithDetails } from '../interfaces/subscription.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -40,7 +40,7 @@ export class SubscriptionService {
     }
 
     // Re New Subscription
-    ReNewSubscription(id: string, subscription: ReNewSubscription): Observable<SubscriptionDetails> {
-        return this.http.patch<SubscriptionDetails>(`${this.baseUrl}/${id}/renew`, subscription);
+    ReNewSubscription(id: string, subscription: RenewSubscriptionData): Observable<RenewSubscriptionData> {
+        return this.http.patch<RenewSubscriptionData>(`${this.baseUrl}/${id}/renew`, subscription);
     }
 }

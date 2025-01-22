@@ -1,6 +1,5 @@
 package com.nestflow.app.features.Authentification.controllers;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nestflow.app.features.Authentification.services.AuthService;
-import com.nestflow.app.features.upload.services.ImageUploadService;
 import com.nestflow.app.features.users.model.UserEntity;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Créer un nouvel utilisateur")

@@ -7,6 +7,7 @@ export interface UserState {
     loading: boolean;
     error: string | null;
     currentUser: IUsers | null | undefined;
+    token: string | null;
 }
 
 export interface IUsers {

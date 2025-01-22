@@ -6,20 +6,22 @@ import { ToastrService } from 'ngx-toastr';
 import { DirectiveModule } from "../../../../modules";
 import { expandCollapse } from '../../../shared/animations/animations';
 import { PopupsComponent } from "../../../shared/components/popups/popups.component";
+import { RenewSubscriptionData, SubscriptionWithDetails } from '../../interfaces/subscription.interface';
 import { SubscriptionDetails } from '../../models/subscription.model';
 import { SubscriptionStore } from '../../store/store';
-import { SubscriptionWithDetails } from '../../interfaces/subscription.interface';
+import { RenewSubscriptionFormComponent } from '../re-new-subscription/re-new-subscription-form.component';
+import { ReNewSubscriptionComponent } from "../re-new-subscription/re-new-subscription.component";
 
 @Component({
   selector: 'app-detail-lists',
   standalone: true,
   templateUrl: './detail-lists.component.html',
   styleUrls: ['./detail-lists.component.scss'],
-  imports: [PopupsComponent, CommonModule, DirectiveModule, NgxPaginationModule],
+  imports: [PopupsComponent, CommonModule, DirectiveModule, NgxPaginationModule, ReNewSubscriptionComponent, RenewSubscriptionFormComponent],
   animations: [expandCollapse],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class DetailListsComponent {
+export class DetailListsComponent implements OnInit {
   toastr = inject(ToastrService);
   router = inject(Router);
 
@@ -30,9 +32,10 @@ export class DetailListsComponent {
   showPopup = signal(false);
   subscriberToDelete = signal<string | undefined>(undefined);
   currentPage = signal<number>(1);
-  maxSize = 4;
-
-  constructor() {
+  maxSize = 5;
+  itemsPerPage = signal<number>(10);
+  
+  ngOnInit() {
     this.store.LoadSubscriptionWithDetails(this.store.subscriptionsWithDetails());
   }
 
@@ -71,10 +74,13 @@ export class DetailListsComponent {
     return className;
   }
 
+  /* Pagination */
   setPage(page: number): void {
-    this.currentPage.set(page);
+    const filteredCount = this.store.filteredSubscriptions()(this.filter.menu, this.filter.search).length;
+    this.currentPage.set(filteredCount < 10 ? 1 : page);
   }
 
+  /* Popup */
   openPopup(subscriberId: string | undefined) {
     this.subscriberToDelete.set(subscriberId);
     this.showPopup.set(true);
@@ -83,5 +89,26 @@ export class DetailListsComponent {
     this.showPopup.set(false);
     this.subscriberToDelete.set(undefined);
   }
+
+
+  // renew
+  showRenewPopup = signal(false);
+  subscriberToRenew = signal('');
+
+  closeRenewPopup(): void {
+    this.showRenewPopup.set(false);
+  }
+
+  handleRenewSubmit(data: RenewSubscriptionData): void {
+    console.log('Renewal data:', data);
+    // Implémentez ici la logique de renouvellement
+    this.closeRenewPopup();
+  }
+
+  renewSubscription(id: string): void {
+    this.subscriberToRenew.set(id);
+    this.showRenewPopup.set(true);
+  }
+  
 
 }

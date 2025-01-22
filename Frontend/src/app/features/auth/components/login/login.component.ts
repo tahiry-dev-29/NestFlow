@@ -43,13 +43,16 @@ import { AuthStore } from '../../store/auth.store';
                     Remember me
                   </div>
                   <div class="text-center">
-                    <button type="submit" [disabled]="loginForm.invalid || store.loading()" class="focus:outline-none right-blue-400" [ngClass]="{'btn-desactived-bg': loginForm.invalid || store.loading(), 'btn-gradient-bg': !loginForm.invalid && !store.loading()}">Login</button>
+                    <button type="submit" [disabled]="loginForm.invalid || store.loading()" class="focus:outline-none right-blue-400" [ngClass]="{'btn-desactived-bg': loginForm.invalid || store.loading(), 'btn-gradient-bg': !loginForm.invalid && !store.loading()}">
+                      <span *ngIf="!store.loading()">Login</span>
+                        <span *ngIf="store.loading()" class="flex justify-center items-center gap-3">
+                          <span class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></span>
+                          <span class="ml-2 text-white animate-pulse duration-75">Chargement...</span>
+                        </span>
+                    </button>
                   </div>
                 </form>
-                <div *ngIf="store.loading()" class="flex justify-center items-center gap-3">
-                  <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
-                  <span class="ml-2 text-white animate-pulse duration-75">Chargement...</span>
-                </div>
+                
                 <div *ngIf="store.error()" class="error">{{ store.error() }}</div>
               </div>
             </div>
@@ -80,7 +83,7 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     if (this.loginForm.valid) {
       const { mail, password } = this.loginForm.value;
-      this.store.login({ mail, password });
+      this.store.login({ mail, password })
       this.loginForm.reset();
     }
   }

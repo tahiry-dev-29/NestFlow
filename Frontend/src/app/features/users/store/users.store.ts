@@ -10,20 +10,27 @@ const getInitialState = (): UserState => ({
   loading: false,
   error: null,
   currentUser: null,
+  token: null,
 });
 
 export const UserStore = signalStore(
   { providedIn: 'root' },
   withState(getInitialState()),
-  withComputed(({ users, loading, error }) => ({
+  withComputed(({ users, loading, error, token }) => ({
     activeUsers: computed(() => users().filter((user) => user.online)),
     inactiveUsers: computed(() => users().filter((user) => !user.online)),
     totalUsers: computed(() => users().length),
     userStatusClass: computed(() => (online: boolean) => (online ? 'online' : 'offline')),
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
+    selectToken: computed(() => token()),
   })),
   withMethods((store, usersService = inject(UsersService)) => ({
+    // Get user by id
+    getUserById: (userId: string): IUsers | undefined => {
+      return store.users().find((user) => user.id === userId);
+    },
+
     // Load users
     loadUsers: rxMethod<IUsers[]>(
       pipe(
@@ -66,7 +73,6 @@ export const UserStore = signalStore(
 
       return usersService.updateUser(userId, updates).pipe(
         switchMap(() => {
-          // use service to update user
           return usersService.updateUser(userId, updates).pipe(
             tap((updatedUser) => {
               patchState(store, { users: store.users().map((user) => user.id === userId ? updatedUser : user), loading: false });
@@ -81,10 +87,6 @@ export const UserStore = signalStore(
     },
 
 
-    // Get user by id
-    getUserById: (userId: string): IUsers | undefined => {
-      return store.users().find((user) => user.id === userId);
-    },
 
   }))
 );

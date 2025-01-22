@@ -64,17 +64,6 @@ public class SubscriptionController {
                 return ResponseEntity.ok(created);
         }
 
-        @GetMapping("/lists")
-        @Operation(summary = "Obtenir la liste de tous les abonnements", security = @SecurityRequirement(name = "bearerAuth"))
-        @PreAuthorize("hasRole('ADMIN')") // Assuming role-based authorization
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Liste des abonnements")
-        })
-        public ResponseEntity<List<SubscriptionDetailsEntity>> getAllSubscriptions() {
-                List<SubscriptionDetailsEntity> subscriptions = subscriptionService.getAllSubscriptions();
-                return ResponseEntity.ok(subscriptions);
-        }
-
         @GetMapping("/get/{id}")
         @Operation(summary = "Obtenir les informations d'un abonnement par son ID", security = @SecurityRequirement(name = "bearerAuth"))
         @PreAuthorize("hasRole('ADMIN')")
@@ -113,24 +102,6 @@ public class SubscriptionController {
                 return ResponseEntity.noContent().build();
         }
 
-        @GetMapping("/getAll/status")
-        @Operation(summary = "Obtenir le statut de tous les abonnements", security = @SecurityRequirement(name = "bearerAuth"))
-        @PreAuthorize("hasRole('ADMIN')")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Statut de l'abonnement", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SubscriptionStatusResponse.class))),
-                        @ApiResponse(responseCode = "403", description = "Accès interdit"),
-                        @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
-        })
-        public ResponseEntity<List<SubscriptionStatusResponse>> getAllSubscriptionsStatus() {
-                try {
-                        List<SubscriptionStatusResponse> statuses = subscriptionService.getAllSubscriptionsStatus();
-                        return ResponseEntity.ok(statuses);
-                } catch (IllegalStateException e) {
-                        return ResponseEntity.badRequest().body(null); // ou un message plus informatif
-                } catch (Exception e) {
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-                }
-        }
 
         @GetMapping("/getAll/withDetails") // Nouvelle route
         @Operation(summary = "Obtenir tous les abonnements avec les détails et le statut", security = @SecurityRequirement(name = "bearerAuth"))

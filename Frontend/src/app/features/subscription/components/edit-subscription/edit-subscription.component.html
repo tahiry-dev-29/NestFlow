@@ -9,42 +9,57 @@
                 </div>
                 <div class="flex-auto p-6">
                     @defer (on timer(500ms)) {
+                    @if (store.loading() === true) {
+                    <div class="flex w-full justify-center items-center gap-3">
+                        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+                        <span class="ml-2 text-white animate-pulse duration-75">Updating...</span>
+                    </div>
+                    }@else {
                     <form [formGroup]="editForm" (ngSubmit)="onSubmit()" role="form text-left">
                         <section class="grid grid-cols-2 gap-4">
                             <div class="col-span-1">
                                 <div class="mb-4">
                                     <input type="text" formControlName="fullname" class="input-theme"
-                                        placeholder="Nom complet" [ngClass]="{'input-error': editForm.get('fullname')?.invalid && editForm.get('fullname')?.touched}" />
+                                        placeholder="Nom complet"
+                                        [ngClass]="{'input-error': editForm.get('fullname')?.invalid && editForm.get('fullname')?.touched}" />
                                     <div *ngIf="editForm.get('fullname')?.invalid && editForm.get('fullname')?.touched"
                                         class="error">
-                                        <small *ngIf="editForm.get('fullname')?.errors?.['required']">{{ getMessageError('fullname', 'required') }}</small>
-                                        <small *ngIf="editForm.get('fullname')?.errors?.['minlength']">{{ getMessageError('fullname', 'minlength') }}</small>
-                                        <small *ngIf="editForm.get('fullname')?.errors?.['maxlength']">{{ getMessageError('fullname', 'maxlength') }}</small>
+                                        <small *ngIf="editForm.get('fullname')?.errors?.['required']">{{
+                                            getMessageError('fullname', 'required') }}</small>
+                                        <small *ngIf="editForm.get('fullname')?.errors?.['minlength']">{{
+                                            getMessageError('fullname', 'minlength') }}</small>
+                                        <small *ngIf="editForm.get('fullname')?.errors?.['maxlength']">{{
+                                            getMessageError('fullname', 'maxlength') }}</small>
                                     </div>
                                 </div>
                                 <div class="mb-4">
-                                    <input type="email" formControlName="email" class="input-theme"
-                                        placeholder="Email" [ngClass]="{'input-error': editForm.get('email')?.invalid && editForm.get('email')?.touched}" />
+                                    <input type="email" formControlName="email" class="input-theme" placeholder="Email"
+                                        [ngClass]="{'input-error': editForm.get('email')?.invalid && editForm.get('email')?.touched}" />
                                     <div *ngIf="editForm.get('email')?.invalid && editForm.get('email')?.touched"
                                         class="error">
-                                        <small *ngIf="editForm.get('email')?.errors?.['required']">{{ getMessageError('email', 'required') }}</small>
-                                        <small *ngIf="editForm.get('email')?.errors?.['email']">{{ getMessageError('email', 'email') }}</small>
+                                        <small *ngIf="editForm.get('email')?.errors?.['required']">{{
+                                            getMessageError('email', 'required') }}</small>
+                                        <small *ngIf="editForm.get('email')?.errors?.['email']">{{
+                                            getMessageError('email', 'email') }}</small>
                                     </div>
                                 </div>
                                 <div class="mb-4">
-                                    <input type="tel" formControlName="tel" class="input-theme"
-                                        placeholder="Téléphone" [ngClass]="{'input-error': editForm.get('tel')?.invalid && editForm.get('tel')?.touched}" />
+                                    <input type="tel" formControlName="tel" class="input-theme" placeholder="Téléphone"
+                                        [ngClass]="{'input-error': editForm.get('tel')?.invalid && editForm.get('tel')?.touched}" />
                                     <div *ngIf="editForm.get('tel')?.invalid && editForm.get('tel')?.touched"
                                         class="error">
-                                        <small *ngIf="editForm.get('tel')?.errors?.['required']">{{ getMessageError('tel', 'required') }}</small>
-                                        <small *ngIf="editForm.get('tel')?.errors?.['pattern']">{{ getMessageError('tel', 'pattern') }}</small>
+                                        <small *ngIf="editForm.get('tel')?.errors?.['required']">{{
+                                            getMessageError('tel', 'required') }}</small>
+                                        <small *ngIf="editForm.get('tel')?.errors?.['pattern']">{{
+                                            getMessageError('tel', 'pattern') }}</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-span-1">
                                 <div class="mb-4">
                                     <textarea formControlName="adresse" class="input-theme min-h-[100px]"
-                                        placeholder="Adresse" [ngClass]="{'input-error': editForm.get('adresse')?.invalid && editForm.get('adresse')?.touched}"></textarea>
+                                        placeholder="Adresse"
+                                        [ngClass]="{'input-error': editForm.get('adresse')?.invalid && editForm.get('adresse')?.touched}"></textarea>
                                     <div *ngIf="editForm.get('adresse')?.invalid && editForm.get('adresse')?.touched"
                                         class="error">
                                         <small *ngIf="editForm.get('adresse')?.errors?.['required']">Adresse
@@ -57,30 +72,36 @@
                                 </div>
                                 <div class="mb-4">
                                     <input type="password" formControlName="code" class="input-theme"
-                                        placeholder="Mot de passe" [ngClass]="{'input-error': editForm.get('code')?.invalid && editForm.get('code')?.touched}" />
+                                        placeholder="Mot de passe"
+                                        [ngClass]="{'input-error': editForm.get('code')?.invalid && editForm.get('code')?.touched}" />
                                     <div *ngIf="editForm.get('code')?.invalid && editForm.get('code')?.touched"
                                         class="error flex flex-col">
-                                        <small *ngIf="editForm.get('code')?.errors?.['required']">{{ getMessageError('code', 'required') }}</small>
-                                        <small *ngIf="editForm.get('code')?.errors?.['minlength']">{{ getMessageError('code', 'minlength') }}</small>
-                                        <small *ngIf="editForm.get('code')?.errors?.['maxlength']">{{ getMessageError('code', 'maxlength') }}</small>
-                                        <small *ngIf="editForm.get('code')?.errors?.['pattern']">{{ getMessageError('code', 'pattern') }}</small>
+                                        <small *ngIf="editForm.get('code')?.errors?.['required']">{{
+                                            getMessageError('code', 'required') }}</small>
+                                        <small *ngIf="editForm.get('code')?.errors?.['minlength']">{{
+                                            getMessageError('code', 'minlength') }}</small>
+                                        <small *ngIf="editForm.get('code')?.errors?.['maxlength']">{{
+                                            getMessageError('code', 'maxlength') }}</small>
+                                        <small *ngIf="editForm.get('code')?.errors?.['pattern']">{{
+                                            getMessageError('code', 'pattern') }}</small>
                                     </div>
                                 </div>
                             </div>
                         </section>
                         <div class="text-center flex justify-end gap-5">
-                            <button type="button"
-                                class="cancel-btn"
-                                (click)="redirectToList()">
+                            <button type="button" class="cancel-btn" (click)="redirectToList()">
                                 Cancel
                             </button>
                             <button type="submit" [disabled]="editForm.invalid" class="w-auto"
                                 [ngClass]="{'btn-desactived-bg': !editForm.valid, 'btn-gradient-bg': editForm.valid}">
-                                Update <span class="text-gradient" [ngClass]="{'msg-class': editForm.valid}">{{ editForm.get('fullname')?.value }}</span>
+                                Update <span class="text-gradient" [ngClass]="{'msg-class': editForm.valid}">{{
+                                    editForm.get('fullname')?.value }}</span>
                             </button>
                         </div>
                     </form>
-                    } @placeholder {
+                    }
+                    }
+                    @placeholder {
                     <div class="animate-pulse space-y-4">
                         <div class="h-4 bg-gray-300 rounded w-3/4"></div>
                         <div class="h-4 bg-gray-300 rounded"></div>
@@ -92,7 +113,7 @@
                     </div>
                     } @error {
                     <div class="text-red-500 text-center">
-                        Une erreur s'est produite lors du chargement du formulaire.
+                        {{store.error() || 'Une erreur s\'est produite lors du chargement du formulaire.'}}
                     </div>
                     }
                 </div>

@@ -9,9 +9,12 @@
 .tooltip-container {
     @apply absolute right-0 z-10 transform origin-top bg-slate-800/90 shadow-dark-xl text-white rounded-7 mt-2 py-2 duration-300 ease-out;
 }
-
+.liste-action{
+    @apply w-full;
+}
+ // Start of Selection
 .tooltip {
-    @apply hover:scale-110 hover:duration-300 flex items-center px-4 py-2 text-sm;
+    @apply hover:scale-110 duration-250 flex items-center px-4 py-2 text-sm hover:font-bold;
 }
 
 
@@ -31,6 +34,7 @@ table {
         @apply rounded-full px-4 py-2 font-bold shadow-md text-white;
         background-color: inherit;
     }
+
     .current.ng-star-inserted {
         @apply text-white;
     }
@@ -44,9 +48,11 @@ table {
             @apply hover:bg-transparent;
         }
     }
+
     .ng-star-inserted {
         @apply rounded-full text-gray-600;
     }
+
     .ng-star-inserted.current {
         @apply bg-blue-DEFAULT-800;
     }
@@ -58,5 +64,20 @@ table {
         &.disabled {
             @apply opacity-50 cursor-not-allowed;
         }
+    }
+}
+
+.striped-progress {
+    background-size: 20px 20px;
+    animation: moveStripes 1s linear infinite;
+}
+
+@keyframes moveStripes {
+    0% {
+        background-position: 40px 0;
+    }
+
+    100% {
+        background-position: 0 0;
     }
 }

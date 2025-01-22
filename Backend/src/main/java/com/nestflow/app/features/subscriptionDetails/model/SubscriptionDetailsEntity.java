@@ -25,31 +25,40 @@ public class SubscriptionDetailsEntity {
     private String adresse;
     private String code;
 
-    private SubscriptionType subscriptionType;
     private int channelCount;
+    private SubscriptionType subscriptionType;
+
     private LocalDateTime subscriptionStartDate;
     private LocalDateTime subscriptionEndDate;
+
+    private int duration;
+    private TimeUnit timeUnit;
+
     private Status status;
-    private BigDecimal price; // Ajout du champ price en BigDecimal
+    private BigDecimal price;
 
     public enum SubscriptionType {
         BASIC, CLASSIC
+    }
+
+    public enum TimeUnit {
+        DAYS, WEEKS, MONTHS, YEARS
     }
 
     public enum Status {
         ACTIVE, EXPIRED
     }
 
-    public long getRemainingDays() {
+     public long getRemainingDays() {
         if (subscriptionEndDate == null) {
-            return 0; // Gérer le cas où la date de fin est nulle
+            return 0;
         }
         return ChronoUnit.DAYS.between(LocalDateTime.now(), subscriptionEndDate);
     }
 
     public long getRemainingHours() {
         if (subscriptionEndDate == null) {
-            return 0; // Gérer le cas où la date de fin est nulle
+            return 0;
         }
         return ChronoUnit.HOURS.between(LocalDateTime.now(), subscriptionEndDate);
     }

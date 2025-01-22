@@ -25,9 +25,9 @@ import { sideLeftBarState } from '../../store/signal.store';
             notifications
           </span>
         </button>
-        <div class="cursor-pointer hover:scale-105 transition-all duration-300 ease-in-out">
-          <img [src]="getImageSrc()" alt="Profil" class="w-10 h-10 rounded-full">
-          <span class="text-white">{{ user?.role }}</span>
+        <div class="flex items-center cursor-pointer gap-3 transition-transform duration-300 ease-in-out"> 
+          <span class="text-white font-semibold ml-2">{{ user?.role }}</span>
+          <img [src]="getImageSrc()" alt="Profile" class="w-12 h-12 rounded-full border-2 border-gray-500/13 hover:scale-110">
         </div>
       </section>
     </nav>

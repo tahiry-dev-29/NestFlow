@@ -64,8 +64,9 @@
                           </div>
                           <div class="mb-4">
                               <div class="flex justify-between items-center gap-3">
-                                  <input type="text" [value]="displayedChannelCount" class="input-theme bg-gray-700/50" readonly placeholder="Nombre de chaînes" />
-                                  <input type="text" [value]="displayedPrice" class="input-theme bg-gray-700/50" readonly placeholder="Prix" />
+                                  <input type="text" formControlName="channelCount" [value]="displayedChannelCount" class="input-theme bg-gray-700/50" placeholder="Nombre de chaînes" [disabled]="true"/>
+
+                                  <input type="text" formControlName="price" [value]="displayedPrice" class="input-theme bg-gray-700/50" placeholder="Prix" [disabled]="true" />
                               </div>
                           </div>
                           <div class="text-gray-400 text-sm mt-1">
@@ -76,7 +77,7 @@
                   </section>
                   <div class="text-center flex justify-end gap-5 mt-4">
                       <button type="button" class="cancel-btn" (click)="redirectToList()">Annuler</button>
-                      <button type="submit" [disabled]="subscriptionForm.invalid" class="w-24" [ngClass]="{'btn-desactived-bg': !subscriptionForm.valid, 'btn-gradient-bg': subscriptionForm.valid}">Ajouter</button>
+                      <button type="submit" [disabled]="subscriptionForm.invalid" class="w-24" [ngClass]="{'btn-desactived-bg': subscriptionForm.invalid, 'btn-gradient-bg': subscriptionForm.valid}">Ajouter</button>
                   </div>
               </form>
           </div>

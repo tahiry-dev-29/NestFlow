@@ -112,27 +112,26 @@ public class UserServiceImpl implements UserService {
 
     /* Mise à jour des informations utilisateur */
     @Override
-public ResponseEntity<UserEntity> updateUser(String userId, UserEntity updateRequest) {
-    try {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
+    public ResponseEntity<UserEntity> updateUser(String userId, UserEntity updateRequest) {
+        try {
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserServiceException.UserNotFoundException(userId));
 
-        // Mise à jour conditionnelle des champs
-        Optional.ofNullable(updateRequest.getName()).ifPresent(user::setName);
-        Optional.ofNullable(updateRequest.getFirstName()).ifPresent(user::setFirstName);
-        Optional.ofNullable(updateRequest.getMail()).ifPresent(user::setMail);
-        Optional.ofNullable(updateRequest.getRole()).ifPresent(user::setRole);
+            // Mise à jour conditionnelle des champs
+            Optional.ofNullable(updateRequest.getName()).ifPresent(user::setName);
+            Optional.ofNullable(updateRequest.getFirstName()).ifPresent(user::setFirstName);
+            Optional.ofNullable(updateRequest.getMail()).ifPresent(user::setMail);
+            Optional.ofNullable(updateRequest.getRole()).ifPresent(user::setRole);
 
-        // Sauvegarde de l'utilisateur mis à jour
-        UserEntity updatedUser = userRepository.save(user);
-        return ResponseEntity.ok(updatedUser);
-    } catch (UserServiceException.UserNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            // Sauvegarde de l'utilisateur mis à jour
+            UserEntity updatedUser = userRepository.save(user);
+            return ResponseEntity.ok(updatedUser);
+        } catch (UserServiceException.UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
-}
-
 
     /* Mise à jour du mot de passe utilisateur */
     @Override

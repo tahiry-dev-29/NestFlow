@@ -29,10 +29,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
         switch (error.status) {
-          case 401:
+          case 401 || 403:
             cookieService.delete('Authorization', '/');
             router.navigate(['/login']);
-            toastr.error(ERROR_MESSAGES.FORBIDDEN);
+            toastr.error(ERROR_MESSAGES.TOKEN_EXPIRED);
             break;
           case 400:
             toastr.error(SERVER_ERROR_MESSAGES[400]);
