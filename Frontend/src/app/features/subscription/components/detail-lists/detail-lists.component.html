@@ -65,8 +65,8 @@
             </tr>
             } @else {
             @for (subscription of store.filteredSubscriptions()(filter.menu, filter.search) | paginate: {
-            itemsPerPage: 10,
-            currentPage: currentPage(), 
+            itemsPerPage: itemsPerPage(),
+            currentPage: currentPage(),
             }; track subscription.details.id) {
             <tr
               [ngClass]="{'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== subscription.details.id, 'bg-slate-700': store.expandedId() === subscription.details.id}">
@@ -173,7 +173,7 @@
         Find subscription number : <span class="text text-lg font-bold">{{ store.filteredSubscriptions()(filter.menu, filter.search).length }}</span>
       </p>
       <pagination-controls [totalItems]="store.filteredSubscriptions()(filter.menu, filter.search).length"
-        [itemsPerPage]="itemsPerPage()" (pageChange)="setPage($event)" [maxSize]="maxSize">
+        (pageChange)="setPage($event)" (pageBoundsCorrection)="setPage($event)" [maxSize]="maxSize">
       </pagination-controls>
 
     </div>

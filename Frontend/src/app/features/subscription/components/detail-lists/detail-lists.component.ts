@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, HostListener, inject, Input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ToastrService } from 'ngx-toastr';
@@ -31,9 +31,10 @@ export class DetailListsComponent implements OnInit {
   @Input() filter: { menu: string; search: string } = { menu: 'all', search: '' };
   showPopup = signal(false);
   subscriberToDelete = signal<string | undefined>(undefined);
-  currentPage = signal<number>(1);
-  maxSize = 5;
+  maxSize: number = 5;
   itemsPerPage = signal<number>(10);
+  currentPage = signal<number>(1);
+
   
   ngOnInit() {
     this.store.LoadSubscriptionWithDetails(this.store.subscriptionsWithDetails());
