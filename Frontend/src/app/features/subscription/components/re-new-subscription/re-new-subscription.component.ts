@@ -11,11 +11,11 @@ import { Component, computed, ElementRef, EventEmitter, Input, Output, signal, v
     @if (isOpen$()) {
       <div class="fixed z-990 inset-0 backdrop-blur flex items-center justify-center" 
            (click)="onClickOutside($event)">
-        <div class="bg-slate-900 shadow-lg flex flex-col w-[30rem] max-h-[80vh] rounded-lg" 
+        <div class="bg-slate-900/90 shadow-lg flex flex-col w-[35rem] max-h-[85vh] rounded-xl" 
              [@fadeInOut]
              (click)="$event.stopPropagation()">
           <div class="flex justify-between items-center p-4 border-b border-gray-700 rounded-t-lg">
-            <h2 class="text-xl font-bold text-white">{{ title$() }}</h2>
+            <h2 class="text-white ">{{ description$() }} <span class="text-gradient text-xl uppercase	">{{ title$() }}</span></h2>
             <button (click)="onClose()" class="text-white hover:text-gray-300">
               <i class="material-icons">close</i>
             </button>
@@ -42,17 +42,23 @@ import { Component, computed, ElementRef, EventEmitter, Input, Output, signal, v
 })
 export class ReNewSubscriptionComponent {
   private _isOpen = signal(false);
-  private _title = signal('Renouveler l\'abonnement');
+  private _title = signal('Renew subscription');
+  private _description = signal('');
 
   readonly isOpen$ = computed(() => this._isOpen());
   readonly title$ = computed(() => this._title());
-
+  readonly description$ = computed(() => this._description());
+  
   @Input() set isOpen(value: boolean) {
     this._isOpen.set(value);
   }
   
   @Input() set title(value: string) {
     this._title.set(value);
+  }
+
+  @Input() set description(value: string) {
+    this._description.set(value);
   }
   
   @Output() close = new EventEmitter<void>();

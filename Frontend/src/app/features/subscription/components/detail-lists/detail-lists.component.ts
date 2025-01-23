@@ -94,7 +94,7 @@ export class DetailListsComponent implements OnInit {
 
   // renew
   showRenewPopup = signal(false);
-  subscriberToRenew = signal('');
+  subscriberToRenew = signal<SubscriptionDetails | undefined>(undefined);
 
   closeRenewPopup(): void {
     this.showRenewPopup.set(false);
@@ -107,7 +107,7 @@ export class DetailListsComponent implements OnInit {
   }
 
   renewSubscription(id: string): void {
-    this.subscriberToRenew.set(id);
+    this.subscriberToRenew.set(this.store.subscriptionsWithDetails().find((subscription: SubscriptionWithDetails) => subscription.details.id === id)?.details);
     this.showRenewPopup.set(true);
   }
   

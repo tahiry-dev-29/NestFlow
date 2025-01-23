@@ -3,15 +3,12 @@ package com.nestflow.app.features.subscriptionDetails.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,13 +23,12 @@ import org.springframework.web.server.ResponseStatusException;
 import com.nestflow.app.features.subscriptionDetails.dto.RenewalRequest;
 import com.nestflow.app.features.subscriptionDetails.dto.SubscriptionWithDetailsResponse;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity;
-import com.nestflow.app.features.subscriptionDetails.model.SubscriptionStatusResponse;
 import com.nestflow.app.features.subscriptionDetails.services.SubscriptionService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.media.Content; // Import Content
-import io.swagger.v3.oas.annotations.media.Schema; // Import Schema
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -46,10 +42,10 @@ import jakarta.validation.Valid;
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 public class SubscriptionController {
 
-        private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
 
         @Autowired
         private SubscriptionService subscriptionService;
+
 
         @PostMapping("/add")
         @Operation(summary = "Créer un nouvel abonnement", security = @SecurityRequirement(name = "bearerAuth"))
@@ -102,7 +98,6 @@ public class SubscriptionController {
                 return ResponseEntity.noContent().build();
         }
 
-
         @GetMapping("/getAll/withDetails") // Nouvelle route
         @Operation(summary = "Obtenir tous les abonnements avec les détails et le statut", security = @SecurityRequirement(name = "bearerAuth"))
         @PreAuthorize("hasRole('ADMIN')")
@@ -134,25 +129,24 @@ public class SubscriptionController {
         public ResponseEntity<SubscriptionDetailsEntity> renewSubscription(
                         @PathVariable String id,
                         @Valid @RequestBody RenewalRequest renewalRequest,
-                        BindingResult bindingResult) throws MethodArgumentNotValidException {
+                        BindingResult bindingResult) {
 
                 if (bindingResult.hasErrors()) {
                         List<String> errors = bindingResult.getAllErrors().stream()
                                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                                         .collect(Collectors.toList());
-                        logger.error("Erreurs de validation : {}", errors);
                         return ResponseEntity.badRequest().body(null);
                 }
-
                 try {
                         SubscriptionDetailsEntity renewedSubscription = subscriptionService.renewSubscription(
                                         id,
-                                        renewalRequest.getRenewalPeriod(),
-                                        renewalRequest.getUnit(),
-                                        renewalRequest);
-                        return ResponseEntity.ok(renewedSubscription);
-                } catch (ResponseStatusException e) {
-                        return ResponseEntity.status(e.getStatusCode()).body(null);
+                                // Start of Selection
+                                renewalRequest.getRenewalPeriod(),
+                                renewalRequest.getUnitAsTimeUnit(),
+                                0); // Assuming a default value of 0 for channelCount since it's undefined
+                                return ResponseEntity.ok(renewedSubscription);
+                        } catch (ResponseStatusException e) {
+                                return ResponseEntity.status(e.getStatusCode()).body(null);
                 }
         }
 }

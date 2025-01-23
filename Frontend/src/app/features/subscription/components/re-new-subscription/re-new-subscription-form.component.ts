@@ -6,7 +6,6 @@ import { errorMessages } from '../../../../../constantes';
 import { RenewSubscriptionData } from '../../interfaces/subscription.interface';
 import { SubscriptionType, TimeUnit } from '../../models/subscription.model';
 import { SubscriptionCalculator } from '../../utils/subscription.constant';
-import { DetailListsComponent } from '../detail-lists/detail-lists.component';
 
 @Component({
     selector: 'app-renew-subscription-form',
@@ -14,12 +13,12 @@ import { DetailListsComponent } from '../detail-lists/detail-lists.component';
     imports: [CommonModule, ReactiveFormsModule],
     template: `
     <form [formGroup]="renewForm" (ngSubmit)="onSubmit()" class="space-y-4 p-2">
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-4 gap-y-6">
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-white">Type d'abonnement</label>
+          <label class="label-theme">Subscription type</label>
           <select formControlName="subscriptionType" class="input-theme w-full">
-            <option [value]="SubscriptionType.BASIC">Basique</option>
-            <option [value]="SubscriptionType.CLASSIC">Classique</option>
+            <option [value]="SubscriptionType.BASIC">Basic</option>
+            <option [value]="SubscriptionType.CLASSIC">Classic</option>
           </select>
           @if (renewForm.get('subscriptionType')?.invalid && renewForm.get('subscriptionType')?.touched) {
             <div class="error">
@@ -30,22 +29,22 @@ import { DetailListsComponent } from '../detail-lists/detail-lists.component';
 
         <div class="grid grid-cols-2 gap-3">
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-white">Durée</label>
+            <label class="label-theme">Duration</label>
             <input 
               type="number" 
               formControlName="duration" 
               class="input-theme w-full" 
               min="1" 
-              placeholder="Durée"
+              placeholder="Duration"
             />
           </div>
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-white">Unité</label>
+            <label class="label-theme">Unit</label>
             <select formControlName="timeUnit" class="input-theme w-full">
-              <option [value]="TimeUnit.DAYS">Jours</option>
-              <option [value]="TimeUnit.WEEKS">Semaines</option>
-              <option [value]="TimeUnit.MONTHS">Mois</option>
-              <option [value]="TimeUnit.YEARS">Années</option>
+              <option [value]="TimeUnit.DAYS">Days</option>
+              <option [value]="TimeUnit.WEEKS">Weeks</option>
+              <option [value]="TimeUnit.MONTHS">Months</option>
+              <option [value]="TimeUnit.YEARS">Years</option>
             </select>
           </div>
           @if ((renewForm.get('duration')?.invalid && renewForm.get('duration')?.touched) || 
@@ -64,54 +63,47 @@ import { DetailListsComponent } from '../detail-lists/detail-lists.component';
               [value]="displayedChannelCount()" 
               class="input-theme bg-gray-700/50" 
               readonly 
-              placeholder="Nombre de chaînes" 
+              placeholder="Number of channels" 
             />
             <input 
               type="text" 
               [value]="displayedPrice()" 
               class="input-theme bg-gray-700/50" 
               readonly 
-              placeholder="Prix" 
+              placeholder="Price" 
             />
           </div>
-          <div class="text-gray-400 text-sm mt-1">
-            Prix calculé pour {{ renewForm.get('duration')?.value || 0 }}
+          <div class="text-sm mt-3 px-3 text-gradient ">
+            Calculated price for {{ renewForm.get('duration')?.value || 0 }}
             {{ getTimeUnitLabel(renewForm.get('timeUnit')?.value || TimeUnit.MONTHS) }}
           </div>
         </div>
       </div>
 
-      <div class="flex justify-end space-x-3 mt-6">
+      <div class="flex justify-end space-x-3 mt-6 border-t border-gray-700">
         <button
           type="button"
-          (click)="close()"
+          (click)="OnClose()"
           class="cancel-btn px-4 py-2"
         >
-          Annuler
+          Cancel
         </button>
         <button
           type="submit"
           [disabled]="!renewForm.valid || isSubmitting()"
-          class="w-24 px-4 py-2"
+          class="w-24 px-4 py-2 flex justify-center items-center"
           [ngClass]="{'btn-desactived-bg': !renewForm.valid, 'btn-gradient-bg': renewForm.valid}"
         >
-          {{ isSubmitting() ? 'En cours...' : 'Renouveler' }}
+          {{ isSubmitting() ? 'Renewing...' : 'Renew' }}
         </button>
       </div>
     </form>
   `,
-    styles: [`
-    .input-theme {
-      @apply px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-white w-full;
-    }
-    .error {
-      @apply text-red-500 text-sm mt-1;
-    }
-  `]
+  styleUrl: './re-new-subscription.component.scss'
 })
 export class RenewSubscriptionFormComponent {
     subscriberId = input<string>();
-    close = input<void>();
+    close = output();
     submit = output<RenewSubscriptionData>();
 
     private fb = inject(FormBuilder);
@@ -193,8 +185,7 @@ export class RenewSubscriptionFormComponent {
         }
     }
 
-    /* onClose = inject(DetailListsComponent).showRenewPopup
-    onCancel(): void {
-        this.onClose()
-    } */
+    OnClose(){
+      this.close.emit()
+    }
 }

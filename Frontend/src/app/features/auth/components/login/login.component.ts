@@ -53,7 +53,7 @@ import { AuthStore } from '../../store/auth.store';
                   </div>
                 </form>
                 
-                <div *ngIf="store.error()" class="error">{{ store.error() }}</div>
+                <div *ngIf="store.error()" class="error flex justify-center">{{ store.error() }}</div>
               </div>
             </div>
           </div>

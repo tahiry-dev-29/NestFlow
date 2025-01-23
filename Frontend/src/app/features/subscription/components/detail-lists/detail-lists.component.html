@@ -170,7 +170,8 @@
     ">
     <div class="flex justify-between items-center w-full">
       <p class="text-white">
-        Find subscription number : <span class="text text-lg font-bold">{{ store.filteredSubscriptions()(filter.menu, filter.search).length }}</span>
+        Find subscription number : <span class="text text-lg font-bold">{{ store.filteredSubscriptions()(filter.menu,
+          filter.search).length }}</span>
       </p>
       <pagination-controls [totalItems]="store.filteredSubscriptions()(filter.menu, filter.search).length"
         (pageChange)="setPage($event)" (pageBoundsCorrection)="setPage($event)" [maxSize]="maxSize">
@@ -182,6 +183,7 @@
 
 <app-popups *ngIf="showPopup()" (confirm)="confirmDelete()" (cancel)="closePopup()"></app-popups>
 
-<app-re-new-subscription [isOpen]="showRenewPopup()" (close)="closeRenewPopup()" [title]="'Renouveler l\'abonnement'">
-  <app-renew-subscription-form [subscriberId]="subscriberToRenew()" />
+<app-re-new-subscription [isOpen]="showRenewPopup()" (close)="closeRenewPopup()" [description]="'Renew subscription ' "
+  [title]="subscriberToRenew()?.fullname ?? ''">
+  <app-renew-subscription-form [subscriberId]="subscriberToRenew()?.id" (close)="closeRenewPopup()" />
 </app-re-new-subscription>
