@@ -13,6 +13,18 @@ export const SUBSCRIPTION_CONFIG = {
   }
 } as const;
 
+export const MAX_DURATION = {
+  [TimeUnit.MONTHS]: 12,
+  [TimeUnit.DAYS]: 365,
+  [TimeUnit.WEEKS]: 52,
+  [TimeUnit.YEARS]: 1
+} as const;
+
+export const MAX_CHANNEL_COUNT = {
+  [SubscriptionType.BASIC]: 250,
+  [SubscriptionType.CLASSIC]: 500
+} as const;
+
 export class PriceCalculator {
   private value: number;
 

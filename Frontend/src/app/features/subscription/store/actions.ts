@@ -101,7 +101,7 @@ export const subscriptionActionsFeature = signalStoreFeature(
                     tap(() => {
                         patchState(store, {
                             subscriptionsWithDetails: store.subscriptionsWithDetails().map(sub =>
-                                sub.details.id === subscription.id ? { ...sub, details: { ...sub.details, } } : sub
+                                sub.details.id === subscription.id ? { ...sub, details: { ...sub.details, ...subscription } } : sub
                             )
                         });
                     }),

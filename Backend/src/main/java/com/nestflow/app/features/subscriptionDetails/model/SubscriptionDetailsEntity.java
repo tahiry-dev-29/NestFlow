@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.nestflow.app.features.subscriptionDetails.dto.RenewalRequest;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -31,7 +33,7 @@ public class SubscriptionDetailsEntity {
     private LocalDateTime subscriptionStartDate;
     private LocalDateTime subscriptionEndDate;
 
-    private int duration;
+    private int duration; // Mis à jour lors du renouvellement
     private TimeUnit timeUnit;
 
     private Status status;
@@ -49,7 +51,7 @@ public class SubscriptionDetailsEntity {
         ACTIVE, EXPIRED
     }
 
-     public long getRemainingDays() {
+    public long getRemainingDays() {
         if (subscriptionEndDate == null) {
             return 0;
         }
@@ -61,5 +63,33 @@ public class SubscriptionDetailsEntity {
             return 0;
         }
         return ChronoUnit.HOURS.between(LocalDateTime.now(), subscriptionEndDate);
+    }
+
+    public void updateSubscription(RenewalRequest request) {
+        this.duration = request.getRenewalPeriod();
+        this.timeUnit = request.getUnit();
+
+        LocalDateTime newStartDate = this.subscriptionEndDate.isBefore(LocalDateTime.now()) ? LocalDateTime.now() : this.subscriptionEndDate;
+        this.subscriptionStartDate = newStartDate;
+        this.subscriptionEndDate = calculateNewEndDate(newStartDate, duration, timeUnit);
+
+        if (this.status == Status.EXPIRED) {
+            this.status = Status.ACTIVE;
+        }
+    }
+
+    private LocalDateTime calculateNewEndDate(LocalDateTime startDate, int renewalPeriod, TimeUnit unit) {
+        switch (unit) {
+            case DAYS:
+                return startDate.plusDays(renewalPeriod);
+            case WEEKS:
+                return startDate.plusWeeks(renewalPeriod);
+            case MONTHS:
+                return startDate.plusMonths(renewalPeriod);
+            case YEARS:
+                return startDate.plusYears(renewalPeriod);
+            default:
+                throw new IllegalArgumentException("Unité de temps non supportée : " + unit);
+        }
     }
 }

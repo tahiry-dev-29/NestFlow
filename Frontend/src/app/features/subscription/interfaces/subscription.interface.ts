@@ -15,12 +15,19 @@ export type AddSubscription = Omit<SubscriptionDetails, 'id' | 'subscriptionStar
 export type EditSubscription = Omit<SubscriptionDetails, 'subscriptionStartDate' | 'subscriptionEndDate' | 'remainingHours' | 'remainingDays' | 'status' | 'price' | 'channelCount' |'subscriptionType' | 'timeUnit' | 'duration'>;
 
 
+
 export type RenewSubscriptionData = {
     id: string;
+    subscriptionType: SubscriptionType;
     renewalPeriod: number;
     unit: TimeUnit;
-    newType: SubscriptionType;
+    channelCount: number;
 }
 
-
+/* {
+    "subscriptionType": "CLASSIC", // ou "CLASSIC"
+    "renewalPeriod": 3,         // La durée du renouvellement
+    "unit": "DAYS",          // L'unité de temps ("DAYS", "WEEKS", "MONTHS", "YEARS")
+    "channelCount": 500       // Optionnel : Le nombre de chaînes souhaité (si changement)
+  } */
 

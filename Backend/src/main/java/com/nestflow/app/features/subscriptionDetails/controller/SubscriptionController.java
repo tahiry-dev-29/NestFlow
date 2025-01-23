@@ -42,10 +42,8 @@ import jakarta.validation.Valid;
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 public class SubscriptionController {
 
-
         @Autowired
         private SubscriptionService subscriptionService;
-
 
         @PostMapping("/add")
         @Operation(summary = "Créer un nouvel abonnement", security = @SecurityRequirement(name = "bearerAuth"))
@@ -119,34 +117,29 @@ public class SubscriptionController {
         }
 
         @PatchMapping("/set/{id}/renew")
-        @Operation(summary = "Renouveler un abonnement", security = @SecurityRequirement(name = "bearerAuth"))
-        @PreAuthorize("hasRole('ADMIN')")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Abonnement renouvelé avec succès", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SubscriptionDetailsEntity.class))),
-                        @ApiResponse(responseCode = "400", description = "Requête incorrecte"),
-                        @ApiResponse(responseCode = "404", description = "Abonnement non trouvé")
-        })
-        public ResponseEntity<SubscriptionDetailsEntity> renewSubscription(
-                        @PathVariable String id,
-                        @Valid @RequestBody RenewalRequest renewalRequest,
-                        BindingResult bindingResult) {
+    @Operation(summary = "Renouveler un abonnement", security = @SecurityRequirement(name = "bearerAuth"))
+    @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Abonnement renouvelé avec succès", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SubscriptionDetailsEntity.class))),
+            @ApiResponse(responseCode = "400", description = "Requête incorrecte"),
+            @ApiResponse(responseCode = "404", description = "Abonnement non trouvé")
+    })
+    public ResponseEntity<SubscriptionDetailsEntity> renewSubscription(
+            @PathVariable String id,
+            @Valid @RequestBody RenewalRequest renewalRequest,
+            BindingResult bindingResult) {
 
-                if (bindingResult.hasErrors()) {
-                        List<String> errors = bindingResult.getAllErrors().stream()
-                                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                                        .collect(Collectors.toList());
-                        return ResponseEntity.badRequest().body(null);
-                }
-                try {
-                        SubscriptionDetailsEntity renewedSubscription = subscriptionService.renewSubscription(
-                                        id,
-                                // Start of Selection
-                                renewalRequest.getRenewalPeriod(),
-                                renewalRequest.getUnitAsTimeUnit(),
-                                0); // Assuming a default value of 0 for channelCount since it's undefined
-                                return ResponseEntity.ok(renewedSubscription);
-                        } catch (ResponseStatusException e) {
-                                return ResponseEntity.status(e.getStatusCode()).body(null);
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(null); // Ou renvoyer les erreurs plus proprement
+        }
+        try {
+                SubscriptionDetailsEntity renewedSubscription = subscriptionService.renewSubscription(id, renewalRequest); // Appel CORRECT
+                return ResponseEntity.ok(renewedSubscription);
+            } catch (ResponseStatusException e) {
+                        return ResponseEntity.status(e.getStatusCode()).body(null);
                 }
         }
 }

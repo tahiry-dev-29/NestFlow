@@ -4,8 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { errorMessages } from '../../../../../constantes';
 import { RenewSubscriptionData } from '../../interfaces/subscription.interface';
-import { SubscriptionType, TimeUnit } from '../../models/subscription.model';
-import { SubscriptionCalculator } from '../../utils/subscription.constant';
+import { SubscriptionDetails, SubscriptionType, TimeUnit } from '../../models/subscription.model';
+import { MAX_CHANNEL_COUNT, MAX_DURATION, SUBSCRIPTION_CONFIG, SubscriptionCalculator } from '../../utils/subscription.constant';
 
 @Component({
     selector: 'app-renew-subscription-form',
@@ -123,8 +123,9 @@ export class RenewSubscriptionFormComponent {
 
     renewForm = this.fb.group({
         subscriptionType: [SubscriptionType.BASIC, [Validators.required]],
-        duration: [1, [Validators.required, Validators.min(1)]],
-        timeUnit: [TimeUnit.MONTHS, [Validators.required]]
+        duration: [1, [Validators.required, Validators.min(1), Validators.max(MAX_DURATION[TimeUnit.MONTHS])]],
+        timeUnit: [TimeUnit.MONTHS, [Validators.required]],
+        channelCount: [MAX_CHANNEL_COUNT[SubscriptionType.BASIC], [Validators.required, Validators.min(1)]]
     });
 
     constructor() {
@@ -147,10 +148,10 @@ export class RenewSubscriptionFormComponent {
 
     getTimeUnitLabel(unit: TimeUnit | null): string {
         switch (unit) {
-            case TimeUnit.DAYS: return 'jour(s)';
-            case TimeUnit.WEEKS: return 'semaine(s)';
-            case TimeUnit.MONTHS: return 'mois';
-            case TimeUnit.YEARS: return 'année(s)';
+            case TimeUnit.DAYS: return 'day(s)';
+            case TimeUnit.WEEKS: return 'week(s)';
+            case TimeUnit.MONTHS: return 'month(s)';
+            case TimeUnit.YEARS: return 'year(s)';
             default: return '';
         }
     }
@@ -172,9 +173,10 @@ export class RenewSubscriptionFormComponent {
 
             const submitData: RenewSubscriptionData = {
                 id: this.subscriberId() || '',
-                renewalPeriod: 0,
-                unit: TimeUnit.MONTHS,
-                newType: SubscriptionType.BASIC,
+                subscriptionType: formValue.subscriptionType || SubscriptionType.BASIC,
+                renewalPeriod: formValue.duration || 0,
+                unit: formValue.timeUnit || TimeUnit.MONTHS,
+                channelCount: formValue.channelCount || 0,
             };
 
             this.submit.emit(submitData);

@@ -82,7 +82,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 
 @layer components {
   .btn-gradient-bg {
-    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all bg-transparent border-0 rounded-3xl cursor-pointer active:opacity-85 hover:-translate-y-px leading-normal text-sm ease-in shadow-md hover:border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-2 ring-offset-2;
+    @apply bg-gradient-to-r from-[#a855f7] to-[#ec4899] inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all bg-transparent border-0 rounded-3xl cursor-pointer active:opacity-85 hover:scale-110 leading-normal text-sm ease-in shadow-md hover:border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-2 ring-offset-2;
   }
 
   .btn-desactived-bg {

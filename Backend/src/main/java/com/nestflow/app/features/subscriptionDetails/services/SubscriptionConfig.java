@@ -6,8 +6,8 @@ import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEn
 
 public class SubscriptionConfig {
     public static final Map<SubscriptionType, Config> CONFIGS = Map.of(
-        SubscriptionType.BASIC, new Config(30000, 250, 1.2),
-        SubscriptionType.CLASSIC, new Config(50000, 500, 1.5)
+            SubscriptionType.BASIC, new Config(30000, 250, 1.2),
+            SubscriptionType.CLASSIC, new Config(50000, 500, 1.5)
     );
 
     public static class Config {

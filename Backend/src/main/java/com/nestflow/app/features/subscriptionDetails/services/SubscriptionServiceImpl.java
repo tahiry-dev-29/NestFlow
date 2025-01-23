@@ -13,9 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.nestflow.app.features.subscriptionDetails.dto.RenewalRequest;
 import com.nestflow.app.features.subscriptionDetails.dto.SubscriptionWithDetailsResponse;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity;
-import com.nestflow.app.features.subscriptionDetails.model.SubscriptionDetailsEntity.TimeUnit;
 import com.nestflow.app.features.subscriptionDetails.model.SubscriptionStatusResponse;
 import com.nestflow.app.features.subscriptionDetails.repository.SubscriptionRepository;
 
@@ -56,21 +56,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    private LocalDateTime calculateNewEndDate(LocalDateTime startDate, int duration, TimeUnit unit) {
-        switch (unit) {
-            case DAYS:
-                return startDate.plusDays(duration);
-            case WEEKS:
-                return startDate.plusWeeks(duration);
-            case MONTHS:
-                return startDate.plusMonths(duration);
-            case YEARS:
-                return startDate.plusYears(duration);
-            default:
-                throw new IllegalArgumentException("Unité de temps non supportée : " + unit);
-        }
-    }
-    
 
     private SubscriptionStatusResponse mapSubscriptionToStatusResponse(SubscriptionDetailsEntity subscription) {
         LocalDateTime startDate = subscription.getSubscriptionStartDate();
@@ -220,38 +205,30 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.deleteById(id);
     }
 
-    @Override
-    public SubscriptionDetailsEntity renewSubscription(String id, int renewalPeriod, TimeUnit unit, int customChannelCount) {
 
-        // 1. Retrieve the existing subscription
+    @Override
+    public SubscriptionDetailsEntity renewSubscription(String id, RenewalRequest renewalRequest) {
         SubscriptionDetailsEntity subscription = subscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found"));
 
-        // 2. Créer une instance du calculateur
+        subscription.updateSubscription(renewalRequest);
+
+        int channelCount = renewalRequest.getChannelCount() != null ? renewalRequest.getChannelCount() : SubscriptionConfig.CONFIGS.get(renewalRequest.getSubscriptionType()).getBaseChannels();
+
         SubscriptionCalculator calculator = new SubscriptionCalculator(
-                subscription.getSubscriptionType(),
-                renewalPeriod,
-                unit,
-                customChannelCount);
+                renewalRequest.getSubscriptionType(),
+                renewalRequest.getRenewalPeriod(),
+                renewalRequest.getUnit(),
+                channelCount);
 
-        // 3. Calculer les nouvelles dates
-        LocalDateTime currentEndDate = subscription.getSubscriptionEndDate() != null
-                ? subscription.getSubscriptionEndDate()
-                : subscription.getSubscriptionStartDate();
-        LocalDateTime newStartDate = currentEndDate.plusDays(1); // Le jour suivant la fin actuelle
-        LocalDateTime newEndDate = calculateNewEndDate(newStartDate, renewalPeriod, unit);
-
-        // 4. Calculer le prix total
         double totalPrice = calculator.calculateTotalPrice();
+        subscription.setPrice(BigDecimal.valueOf(totalPrice));
+        subscription.setChannelCount(channelCount);
+        subscription.setSubscriptionType(renewalRequest.getSubscriptionType());
+        subscription.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
 
-        // 5. Mettre à jour l'entité SubscriptionDetailsEntity
-        subscription.setSubscriptionStartDate(newStartDate);
-        // Start of Selection
-        subscription.setSubscriptionEndDate(newEndDate);
-        subscription.setPrice(BigDecimal.valueOf(totalPrice));
-        subscription.setSubscriptionEndDate(newEndDate);
-        subscription.setPrice(BigDecimal.valueOf(totalPrice));
-        subscription.setChannelCount(customChannelCount); // Directly set customChannelCount, assuming it's always valid
         return subscriptionRepository.save(subscription);
     }
+
+
 }

@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { errorMessages } from '../../../../../constantes';
 import { SubscriptionType, TimeUnit } from '../../models/subscription.model';
 import { SubscriptionStore } from '../../store/store';
-import { SUBSCRIPTION_CONFIG, SubscriptionCalculator } from '../../utils/subscription.constant';
+import { MAX_CHANNEL_COUNT, MAX_DURATION, SUBSCRIPTION_CONFIG, SubscriptionCalculator } from '../../utils/subscription.constant';
 import { AddSubscription } from '../../interfaces/subscription.interface';
 import { Router } from '@angular/router';
 
@@ -36,9 +36,9 @@ export class AddSubscriptionComponent implements OnInit {
         adresse: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
         code: ['', [Validators.required, Validators.minLength(4)]],
         subscriptionType: [SubscriptionType.BASIC, [Validators.required]],
-        duration: [1, [Validators.required, Validators.min(1)]],
+        duration: [1, [Validators.required, Validators.min(1), Validators.max(MAX_DURATION[TimeUnit.MONTHS])]],
         timeUnit: [TimeUnit.MONTHS, [Validators.required]],
-        channelCount: [SUBSCRIPTION_CONFIG.BASIC.baseChannels, [Validators.required]],
+        channelCount: [MAX_CHANNEL_COUNT[SubscriptionType.BASIC], [Validators.required, Validators.min(1)]],
         price: [SUBSCRIPTION_CONFIG.BASIC.basePrice, [Validators.required]]
     });
 

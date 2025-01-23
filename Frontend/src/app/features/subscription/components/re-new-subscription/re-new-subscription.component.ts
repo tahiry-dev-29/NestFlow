@@ -16,8 +16,8 @@ import { Component, computed, ElementRef, EventEmitter, Input, Output, signal, v
              (click)="$event.stopPropagation()">
           <div class="flex justify-between items-center p-4 border-b border-gray-700 rounded-t-lg">
             <h2 class="text-white ">{{ description$() }} <span class="text-gradient text-xl uppercase	">{{ title$() }}</span></h2>
-            <button (click)="onClose()" class="text-white hover:text-gray-300">
-              <i class="material-icons">close</i>
+            <button (click)="onClose()" class="w-10 h-10 flex items-center justify-center rounded-full text-gray-200 p-2 hover:bg-slate-300/10 transition group ml-auto">
+              <i class="material-icons group-hover:text">close</i>
             </button>
           </div>
           <div #popupContent class="flex-grow overflow-y-auto p-4 custom-scrollbar">

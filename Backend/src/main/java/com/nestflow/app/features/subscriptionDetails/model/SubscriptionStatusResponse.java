@@ -14,5 +14,4 @@ public class SubscriptionStatusResponse {
         this.progressPercentage = progressPercentage;
         this.isExpired = isExpired;
     }
-
 }

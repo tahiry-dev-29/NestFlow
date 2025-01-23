@@ -17,7 +17,12 @@
     @apply hover:scale-110 duration-250 flex items-center px-4 py-2 text-sm hover:font-bold;
 }
 
-
+.expanded-details{
+    @apply w-full sm:w-1/2 md:w-1/2 lg:w-1/4 xl:w-1/4 p-2 flex flex-col gap-y-2;
+}
+.expanded-details>p{
+    @apply text-gray-400/80;
+}
 
 // Assurer que le tableau prend toute la largeur
 table {

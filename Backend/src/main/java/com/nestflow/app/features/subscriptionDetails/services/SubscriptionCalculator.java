@@ -11,11 +11,10 @@ public class SubscriptionCalculator {
     private final int duration;
     private final TimeUnit unit;
 
-    public SubscriptionCalculator(SubscriptionType type, int duration, TimeUnit unit, Integer customChannelCount) {
-        this.type = type != null ? type : SubscriptionType.BASIC;
+    public SubscriptionCalculator(SubscriptionType type, int duration, TimeUnit unit, int customChannelCount) {
+        this.type = type; // Pas de valeur par défaut ici, car le type est maintenant obligatoire dans la requête.
         this.duration = duration;
         this.unit = unit;
-
         SubscriptionConfig.Config config = SubscriptionConfig.CONFIGS.get(this.type);
         this.calculator = new PriceCalculator(config.getBasePrice());
         this.channelCalculator = new ChannelCalculator(this.type, customChannelCount);
