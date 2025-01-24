@@ -1,0 +1,56 @@
+// Colors
+$colors: (
+  'primary': (
+    'base': #0D6EFD,
+    'light': #66B2FF,
+    'dark': #0B5ED7,
+    'bg': rgba(13, 110, 253, 0.1)
+  ),
+  'success': (
+    'base': #198754,
+    'light': #3DDC84,
+    'dark': #157347,
+    'bg': rgba(25, 135, 84, 0.1)
+  ),
+  'warning': (
+    'base': #FFC107,
+    'light': #FFCA2D,
+    'dark': #D39E00,
+    'bg': rgba(255, 193, 7, 0.1)
+  ),
+  'danger': (
+    'base': #DC3545,
+    'light': #FF6B6B,
+    'dark': #BB2D3B,
+    'bg': rgba(220, 53, 69, 0.1)
+  )
+);
+
+// Card styles
+@mixin card-base {
+  @apply bg-slate-850 bg-opacity-80 backdrop-blur-lg rounded-xl border border-opacity-20 transition-all;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  
+  &:hover {
+    @apply border-opacity-40;
+    transform: translateY(-2px);
+  }
+}
+
+// Form controls
+@mixin form-control-base {
+  @apply bg-slate-850 bg-opacity-80 backdrop-blur-lg px-4 py-2 rounded-lg transition-all;
+  @apply border border-neon-primary border-opacity-20;
+  @apply hover:border-opacity-50 focus:outline-none focus:border-opacity-100;
+}
+
+// Button styles
+@mixin button-base {
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg transition-all;
+  @apply bg-slate-850 bg-opacity-80 backdrop-blur-lg;
+  @apply border border-opacity-20 hover:border-opacity-50;
+  
+  &:active {
+    transform: translateY(1px);
+  }
+} 

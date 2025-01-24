@@ -1,59 +1,135 @@
 <!-- cards -->
-<div class="w-full p-0 mx-auto">
-    <!-- row 1 -->
-    <div class="flex flex-wrap -mx-3">
-        <!-- card1 -->
-        <div class="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
-            <div class="relative flex flex-col min-w-0 break-words rounded-2xl bg-clip-border">
-                <div class="flex-auto p-4 bg-content rounded-2xl">
-                    <div class="flex flex-row -mx-3">
-                        <div class="flex-none w-2/3 max-w-full px-3">
-                            <div>
-                                <p
-                                    class="mb-0 font-sans text-sm font-semibold leading-normal uppercase text-white opacity-60">
-                                    Today's Money
-                                </p>
-                                <h5 class="mb-2 font-bold text-white">$53,000</h5>
-                                <p class="mb-0 text-white opacity-60">
-                                    <span class="text-sm font-bold leading-normal text-emerald-500">+55%</span>
-                                    since yesterday
-                                </p>
-                            </div>
-                        </div>
-                        <div class="px-3 text-right basis-1/3">
-                            <div
-                                class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-blue-500 to-violet-500">
-                                <i class="ni leading-none ni-money-coins text-lg relative top-3.5 text-white">x4</i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="chart-container" [@fadeInOut]>
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center gap-4">
+            <h2 class="text-xl font-semibold text-neon-primary">Risk Metrics</h2>
+            <div class="flex items-center gap-2 text-gray-400">
+                <span>Last update at {{lastUpdate | date:'HH:mm'}}</span>
+                <button class="action-button p-1" (click)="refreshData()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                        </path>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- cards row 2 -->
-    <div class="flex flex-wrap mt-6 -mx-3">
-        <div class="w-full max-w-full px-3 mt-0 lg:flex-none">
-            <div
-                class="border-black/12.5 bg-content relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-clip-border">
-                <div class="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid p-6 pt-4 pb-0">
-                    <h6 class="capitalize text-white">Sales overview</h6>
-                    <p class="mb-0 text-sm leading-normal text-white opacity-60">
-                        <i class="fa fa-arrow-up text-emerald-500"></i>
-                        <span class="font-semibold">4% more</span> in 2021
-                    </p>
-                </div>
-                <div class="flex-auto p-4">
-                    <div>
-                        <canvas id="chart-line" height="300"></canvas>
+    <!-- Metrics Cards -->
+    <div class="grid xl:grid-cols-4 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4 mb-8 metrics-grid">
+        <!-- Relationships Card -->
+        <div class="metric-card metric-card--primary">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-gray-400 text-sm">Relationships</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="metric-value text-neon-primary">852</h3>
+                        <span class="metric-change text-neon-success">+11%</span>
                     </div>
                 </div>
+                <span class="text-xs text-neon-primary bg-neon-primary bg-opacity-10 px-2 py-1 rounded">Live</span>
+            </div>
+            <div class="chart-wrapper">
+                <canvas baseChart [type]="'line'" [data]="miniChartData" [options]="miniChartOptions"></canvas>
             </div>
         </div>
 
+        <!-- Risk Card -->
+        <div class="metric-card metric-card--warning">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-gray-400 text-sm">Average Risk</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="metric-value text-neon-warning">42%</h3>
+                        <span class="metric-change text-neon-warning">High</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas baseChart [type]="'line'" [data]="riskChartData" [options]="miniChartOptions"></canvas>
+            </div>
+        </div>
+
+        <!-- Coverage Card -->
+        <div class="metric-card metric-card--success">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-gray-400 text-sm">Coverage</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="metric-value text-neon-success">94%</h3>
+                        <span class="metric-change text-neon-success">+3.1%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas baseChart [type]="'line'" [data]="coverageChartData" [options]="miniChartOptions"></canvas>
+            </div>
+        </div>
+
+        <!-- Performance Card -->
+        <div class="metric-card metric-card--danger">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-gray-400 text-sm">Performance</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="metric-value text-neon-danger">76%</h3>
+                        <span class="metric-change text-neon-danger">-2.5%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas baseChart [type]="'line'" [data]="performanceChartData" [options]="miniChartOptions"></canvas>
+            </div>
+        </div>
     </div>
 
+    <!-- Main Charts Section -->
+    <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
+        <!-- Main Chart -->
+        <div class="main-chart lg:col-span-2 md:col-span-2 col-span-1">
+            <div class="chart-header">
+                <h3>Average risk over time</h3>
+                <div class="controls">
+                    <select [(ngModel)]="mainChartDataType" 
+                            (change)="updateMainChart()"
+                            class="select-control">
+                        <option *ngFor="let type of dataTypes" [value]="type">{{type}}</option>
+                    </select>
+                    <select [(ngModel)]="mainChartType" 
+                            (change)="updateMainChart()"
+                            class="select-control">
+                        <option *ngFor="let type of chartTypes" [value]="type">{{type}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-body">
+                <canvas baseChart
+                    [type]="mainChartType"
+                    [data]="mainChartData"
+                    [options]="mainChartOptions">
+                </canvas>
+            </div>
+        </div>
 
-
+        <!-- Business Unit Chart -->
+        <div class="metric-card metric-card--primary lg:col-span-1 md:col-span-2 col-span-1">
+            <div class="chart-header">
+                <h3>Risk by business unit</h3>
+                <select [(ngModel)]="businessUnitChartType" 
+                        (change)="updateBusinessUnitChart()"
+                        class="select-control">
+                    <option *ngFor="let type of pieChartTypes" [value]="type">{{type}}</option>
+                </select>
+            </div>
+            <div class="chart-body">
+                <canvas baseChart
+                    [type]="businessUnitChartType"
+                    [data]="businessUnitData"
+                    [options]="doughnutOptions">
+                </canvas>
+            </div>
+        </div>
+    </div>
 </div>

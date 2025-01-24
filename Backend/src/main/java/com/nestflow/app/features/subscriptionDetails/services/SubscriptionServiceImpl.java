@@ -56,7 +56,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-
     private SubscriptionStatusResponse mapSubscriptionToStatusResponse(SubscriptionDetailsEntity subscription) {
         LocalDateTime startDate = subscription.getSubscriptionStartDate();
         int duration = subscription.getDuration();
@@ -205,30 +204,46 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.deleteById(id);
     }
 
-
     @Override
     public SubscriptionDetailsEntity renewSubscription(String id, RenewalRequest renewalRequest) {
         SubscriptionDetailsEntity subscription = subscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found"));
 
-        subscription.updateSubscription(renewalRequest);
+        boolean isExpired = subscription.getStatus() == SubscriptionDetailsEntity.Status.EXPIRED;
+        boolean isSameSubscription = !isExpired &&
+                subscription.getSubscriptionType() == renewalRequest.getSubscriptionType() &&
+                subscription.getDuration() == renewalRequest.getRenewalPeriod() &&
+                subscription.getTimeUnit() == renewalRequest.getUnit();
 
-        int channelCount = renewalRequest.getChannelCount() != null ? renewalRequest.getChannelCount() : SubscriptionConfig.CONFIGS.get(renewalRequest.getSubscriptionType()).getBaseChannels();
+        if (isExpired) {
+            updatePriceWithNewRequest(subscription, renewalRequest);
+        } else if (isSameSubscription) {
+            subscription.updateSubscription(renewalRequest);
+        } else {
+            double currentPrice = subscription.getPrice().doubleValue();
+            updatePriceWithNewRequest(subscription, renewalRequest);
+            double newPrice = subscription.getPrice().doubleValue();
+            subscription.setPrice(
+                    BigDecimal.valueOf(currentPrice + (newPrice - (currentPrice / subscription.getDuration()))));
+            subscription.updateSubscription(renewalRequest);
 
+        }
+
+        return subscriptionRepository.save(subscription);
+    }
+
+    private void updatePriceWithNewRequest(SubscriptionDetailsEntity subscription, RenewalRequest renewalRequest) {
+        int channelCount = renewalRequest.getChannelCount() != null ? renewalRequest.getChannelCount()
+                : SubscriptionConfig.CONFIGS.get(renewalRequest.getSubscriptionType()).getBaseChannels();
         SubscriptionCalculator calculator = new SubscriptionCalculator(
                 renewalRequest.getSubscriptionType(),
                 renewalRequest.getRenewalPeriod(),
                 renewalRequest.getUnit(),
                 channelCount);
-
-        double totalPrice = calculator.calculateTotalPrice();
-        subscription.setPrice(BigDecimal.valueOf(totalPrice));
+        double newPrice = calculator.calculateTotalPrice();
+        subscription.setPrice(BigDecimal.valueOf(newPrice));
         subscription.setChannelCount(channelCount);
         subscription.setSubscriptionType(renewalRequest.getSubscriptionType());
-        subscription.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
-
-        return subscriptionRepository.save(subscription);
     }
-
 
 }

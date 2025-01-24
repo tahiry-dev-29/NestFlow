@@ -6,6 +6,7 @@ import { errorMessages } from '../../../../../constantes';
 import { RenewSubscriptionData } from '../../interfaces/subscription.interface';
 import { SubscriptionDetails, SubscriptionType, TimeUnit } from '../../models/subscription.model';
 import { MAX_CHANNEL_COUNT, MAX_DURATION, SUBSCRIPTION_CONFIG, SubscriptionCalculator } from '../../utils/subscription.constant';
+import { SubscriptionStore } from '../../store/store';
 
 @Component({
     selector: 'app-renew-subscription-form',
@@ -121,6 +122,9 @@ export class RenewSubscriptionFormComponent {
     private _displayedPrice = signal(0);
     displayedPrice = computed(() => this._displayedPrice());
 
+    private readonly store = inject(SubscriptionStore);
+    private readonly toast = inject(ToastrService);
+
     renewForm = this.fb.group({
         subscriptionType: [SubscriptionType.BASIC, [Validators.required]],
         duration: [1, [Validators.required, Validators.min(1), Validators.max(MAX_DURATION[TimeUnit.MONTHS])]],
@@ -167,6 +171,7 @@ export class RenewSubscriptionFormComponent {
     }
 
     onSubmit(): void {
+      debugger;
         if (this.renewForm.valid) {
             this._isSubmitting.set(true);
             const formValue = this.renewForm.value;
@@ -181,6 +186,8 @@ export class RenewSubscriptionFormComponent {
 
             this.submit.emit(submitData);
             this._isSubmitting.set(false);
+            this.store.reNewSubscription(submitData);
+            this.toast.success(`${submitData.unit} Subscription renewed successfully`);
         } else {
             this.toastr.error('Le formulaire est invalide.');
             this.renewForm.markAllAsTouched();

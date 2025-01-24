@@ -41,6 +41,6 @@ export class SubscriptionService {
 
     // Re New Subscription
     ReNewSubscription(id: string, subscription: RenewSubscriptionData): Observable<RenewSubscriptionData> {
-        return this.http.patch<RenewSubscriptionData>(`${this.baseUrl}/${id}/renew`, subscription);
+        return this.http.patch<RenewSubscriptionData>(`${this.baseUrl}/set/${id}/renew`, subscription);
     }
 }

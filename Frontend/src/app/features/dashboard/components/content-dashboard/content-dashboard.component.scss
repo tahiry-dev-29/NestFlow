@@ -1,0 +1,223 @@
+@import '../../../../styles/theme';
+
+// Tailwind CSS classes for styling
+// Variables Cyberpunk modernes
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Define custom colors
+@layer components {
+  .text-neon-primary {
+    @apply text-blue-500/70;
+  }
+
+  .bg-neon-primary {
+    @apply bg-blue-500/70;
+  }
+
+  .text-neon-warning {
+    @apply text-yellow-500/70;
+  }
+
+  .bg-neon-warning {
+    @apply bg-yellow-500/70;
+  }
+
+  .text-neon-success {
+    @apply text-green-500/70;
+  }
+
+  .text-neon-danger {
+    @apply text-red-500/70;
+  }
+
+  // Adding the missing border-neon-primary class
+  .border-neon-primary {
+    @apply border-blue-500/70;
+  }
+
+  // Add border classes
+  .border-neon-success {
+    @apply border-green-500/70;
+  }
+
+  .border-neon-warning {
+    @apply border-yellow-500/70;
+  }
+
+  .border-neon-danger {
+    @apply border-red-500/70;
+  }
+}
+
+// Chart containers
+.chart-container {
+  @apply p-6;
+
+  .metric-card {
+    @include card-base;
+    @apply p-6;
+
+    &--primary { @apply border-neon-primary; }
+    &--success { @apply border-neon-success; }
+    &--warning { @apply border-neon-warning; }
+    &--danger { @apply border-neon-danger; }
+
+    .metric-value {
+      @apply text-2xl font-bold;
+    }
+
+    .metric-change {
+      @apply text-sm;
+    }
+
+    .chart-wrapper {
+      @apply h-[200px] md:h-[150px] sm:h-[120px];
+    }
+  }
+
+  .select-control {
+    @include form-control-base;
+    @apply text-neon-primary;
+  }
+
+  .action-button {
+    @include button-base;
+    @apply text-neon-primary border-neon-primary;
+
+    svg {
+      @apply w-4 h-4;
+    }
+  }
+
+  .main-chart {
+    @include card-base;
+    @apply p-6 border-neon-primary;
+
+    .chart-header {
+      @apply flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4;
+
+      h3 {
+        @apply text-neon-primary text-lg font-medium;
+      }
+
+      .controls {
+        @apply flex flex-col sm:flex-row gap-2 w-full md:w-auto;
+
+        .select-control {
+          @apply w-full sm:w-auto;
+        }
+      }
+    }
+
+    .chart-body {
+      @apply h-[400px] md:h-[300px] sm:h-[250px];
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .chart-container {
+    .metrics-grid {
+      @apply grid-cols-2;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .chart-container {
+    .metrics-grid {
+      @apply grid-cols-1;
+    }
+
+    .chart-header {
+      @apply flex-col gap-4;
+
+      .controls {
+        @apply w-full flex-col;
+      }
+    }
+  }
+}
+
+// Calendar styles (compact version)
+.calendar-widget {
+  @apply bg-slate-850 bg-opacity-80 backdrop-blur-lg rounded-lg p-4 max-w-xs my-4;
+
+  .calendar-header {
+    @apply flex justify-between items-center mb-3 text-neon-primary text-sm;
+
+    button {
+      @apply bg-transparent border-none text-neon-primary p-1 rounded;
+
+      &:hover {
+        @apply bg-neon-primary bg-opacity-10;
+      }
+    }
+  }
+
+  .calendar-grid {
+    @apply grid grid-cols-7 gap-1 text-xs;
+
+    .calendar-day {
+      @apply aspect-square flex items-center justify-center rounded cursor-pointer text-white;
+
+      &:hover {
+        @apply bg-neon-primary bg-opacity-10;
+      }
+
+      &.active {
+        @apply bg-neon-primary bg-opacity-20 text-neon-primary;
+      }
+
+      &.today {
+        @apply border border-yellow-500 border-opacity-50 text-yellow-500; // Updated to use Tailwind's default yellow color
+      }
+    }
+  }
+}
+
+// Controls
+.chart-controls {
+  select, button {
+    @apply bg-slate-850 text-white p-2 rounded-lg text-sm transition-all duration-200 ease-in-out;
+
+    &:hover {
+      @apply bg-slate-900 border border-neon-primary border-opacity-50;
+    }
+  }
+
+  select {
+    option {
+      @apply bg-slate-850;
+    }
+  }
+}
+
+// Chart tooltips
+:host ::ng-deep {
+  .chartjs-tooltip {
+    @apply bg-slate-850 rounded-lg p-2;
+
+    &::before {
+      @apply border border-white border-opacity-10;
+    }
+  }
+}
+
+// Status indicators
+.status {
+  &-up {
+    @apply text-neon-success;
+  }
+
+  &-down {
+    @apply text-neon-danger;
+  }
+
+  &-warning {
+    @apply text-neon-warning;
+  }
+}
