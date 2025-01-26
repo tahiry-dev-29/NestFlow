@@ -24,10 +24,3 @@ export type RenewSubscriptionData = {
     channelCount: number;
 }
 
-/* {
-    "subscriptionType": "CLASSIC", // ou "CLASSIC"
-    "renewalPeriod": 3,         // La durée du renouvellement
-    "unit": "DAYS",          // L'unité de temps ("DAYS", "WEEKS", "MONTHS", "YEARS")
-    "channelCount": 500       // Optionnel : Le nombre de chaînes souhaité (si changement)
-  } */
-

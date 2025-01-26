@@ -16,7 +16,8 @@ import { SideBarComponent } from '../side-bar/side-bar.component';
     fadeIn
   ]
 })
-export class DashboardOverviewComponent {
+export class DashboardOverviewComponent{
+
   sideLeftBarState = sideLeftBarState;
   isSmallScreen = false;
 
@@ -39,4 +40,5 @@ export class DashboardOverviewComponent {
   toggleSidebar() {
     this.sideLeftBarState.update((state) => !state);
   }
+
 }

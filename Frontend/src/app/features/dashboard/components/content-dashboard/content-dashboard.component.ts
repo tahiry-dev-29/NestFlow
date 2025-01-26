@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Chart, ChartData, ChartOptions, registerables } from 'chart.js';
-import { BaseChartDirective } from 'ng2-charts';
-import { SubscriptionChartService, ChartDataConfig } from '../../services/SubscriptionChartService.service';
-import { ChartTypeRegistry } from 'chart.js';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Chart, ChartOptions, ChartTypeRegistry, registerables } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
+import { Subscription } from 'rxjs';
+import { SubscriptionStore } from '../../../subscription/store/store';
+import { UserStore } from '../../../users/store/users.store';
+import { ChartDataConfig, SubscriptionChartService } from '../../services/SubscriptionChartService.service';
 
 // Enregistrer tous les composants Chart.js nécessaires
 Chart.register(...registerables);
@@ -29,13 +31,17 @@ Chart.register(...registerables);
   ]
 })
 export class ContentDashboardComponent implements OnInit {
+  private subscriptionStore = inject(SubscriptionStore);
+  private userStore = inject(UserStore);
+  private dataLoaded = false;
+
   // Chart Data
-  miniChartData: ChartDataConfig;
-  riskChartData: ChartDataConfig;
-  coverageChartData: ChartDataConfig;
-  performanceChartData: ChartDataConfig;
-  mainChartData: ChartDataConfig;
-  businessUnitData: ChartDataConfig;
+  miniChartData?: ChartDataConfig;
+  riskChartData?: ChartDataConfig;
+  coverageChartData?: ChartDataConfig;
+  performanceChartData?: ChartDataConfig;
+  mainChartData?: ChartDataConfig;
+  businessUnitData?: ChartDataConfig;
 
   // Chart Options
   chartOptions: ChartOptions;
@@ -55,43 +61,54 @@ export class ContentDashboardComponent implements OnInit {
 
   lastUpdate: Date = new Date();
 
-  // Restore required properties for charts
+  // Chart settings
   mainChartDataType = 'User Data';
   mainChartType: keyof ChartTypeRegistry = 'bar';
   businessUnitChartType: keyof ChartTypeRegistry = 'doughnut';
 
   constructor(private chartService: SubscriptionChartService) {
     this.dataTypes = this.chartService.getDataTypes();
-    this.chartTypes = ['line', 'bar', 'pie', 'doughnut']; // Simplified chart types
+    this.chartTypes = ['line', 'bar', 'pie', 'doughnut'];
     
-    // Initialize chart data
-    this.miniChartData = this.chartService.getMiniChartData() as ChartDataConfig;
-    this.riskChartData = this.chartService.getRiskChartData() as ChartDataConfig;
-    this.coverageChartData = this.chartService.getCoverageChartData() as ChartDataConfig;
-    this.performanceChartData = this.chartService.getPerformanceChartData() as ChartDataConfig;
-    this.mainChartData = this.chartService.formatChartData(this.mainChartDataType, this.mainChartType) as ChartDataConfig;
-    this.businessUnitData = this.chartService.formatChartData('Business Unit', 'doughnut') as ChartDataConfig;
-
-    // Initialize options
-    this.chartOptions = this.chartService.getChartOptions() as ChartOptions;
+    // Initialize chart options
+    this.chartOptions = this.chartService.getChartOptions();
     this.miniChartOptions = this.chartService.getMiniChartOptions();
     this.mainChartOptions = this.chartOptions;
     this.doughnutOptions = { ...this.chartOptions, scales: undefined };
   }
 
   ngOnInit() {
-    this.generateCalendarDays();
-    this.updateMainChart();
-    this.updateBusinessUnitChart();
+    this.loadInitialData();
+  }
+
+  private loadInitialData() {
+    // Un seul appel pour charger les données
+    Promise.all([
+      this.subscriptionStore.LoadSubscriptionWithDetails([]),
+      this.userStore.loadUsers([])
+    ]).then(() => {
+      setTimeout(() => {
+        this.dataLoaded = true;
+        this.updateAllCharts();
+      }, 2000);
+    }).catch(error => {
+      console.error('Error loading data:', error);
+    });
+  }
+
+  private updateAllCharts() {
+    if (!this.dataLoaded) return;
+    
+    this.mainChartData = this.chartService.formatChartData(this.mainChartDataType, this.mainChartType);
+    this.businessUnitData = this.chartService.formatChartData('Business Unit', this.businessUnitChartType);
   }
 
   updateMainChart() {
     this.mainChartData = this.chartService.formatChartData(
       this.mainChartDataType, 
       this.mainChartType
-    ) as ChartDataConfig;
+    );
     
-    // Mettre à jour les options en fonction du type
     this.mainChartOptions = {
       ...this.chartOptions,
       scales: this.mainChartType === 'pie' || this.mainChartType === 'doughnut' 
@@ -121,27 +138,6 @@ export class ContentDashboardComponent implements OnInit {
     };
   }
 
-  // Calendar methods
-  generateCalendarDays() {
-    const year = this.currentDate.getFullYear();
-    const month = this.currentDate.getMonth();
-    const lastDay = new Date(year, month + 1, 0);
-    this.calendarDays = Array.from(
-      { length: lastDay.getDate() },
-      (_, i) => new Date(year, month, i + 1)
-    );
-  }
-
-  previousMonth() {
-    this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() - 1));
-    this.generateCalendarDays();
-  }
-
-  nextMonth() {
-    this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() + 1));
-    this.generateCalendarDays();
-  }
-
   isSelectedDate(date: Date): boolean {
     return this.selectedDate?.toDateString() === date.toDateString();
   }
@@ -156,7 +152,6 @@ export class ContentDashboardComponent implements OnInit {
 
   refreshData() {
     this.lastUpdate = new Date();
-    this.updateMainChart();
-    this.updateBusinessUnitChart();
+    this.loadInitialData();
   }
 }

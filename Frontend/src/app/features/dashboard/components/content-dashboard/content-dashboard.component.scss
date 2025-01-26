@@ -1,7 +1,14 @@
 @import '../../../../styles/theme';
 
-// Tailwind CSS classes for styling
-// Variables Cyberpunk modernes
+@font-face {
+  font-family: 'shantellasans';
+  src: url('../../../../../../public/fonts/ShantellSans-Regular.ttf');
+  font-weight: normal;
+}
+
+*{
+  font-family: 'shantellasans'
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,11 +16,11 @@
 // Define custom colors
 @layer components {
   .text-neon-primary {
-    @apply text-blue-500/70;
+    @apply text-blue-500/95;
   }
 
   .bg-neon-primary {
-    @apply bg-blue-500/70;
+    @apply bg-slate-800/70;
   }
 
   .text-neon-warning {
