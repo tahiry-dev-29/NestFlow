@@ -51,3 +51,9 @@ Revenir a la dernier commit
   50. `git reset --merge HEAD~1`: Resets the current branch to the previous commit and keeps uncommitted changes.
   51. `git reset --keep HEAD~1`: Resets the current branch to the previous commit and keeps uncommitted changes.
 
+<!-- # lancer MongoDB in ubuntu -->
+  sudo systemctl start mongod
+  sudo systemctl stop mongod
+  sudo systemctl restart mongod
+
+  sudo systemctl daemon-reload
