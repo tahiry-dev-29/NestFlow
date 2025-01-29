@@ -58,10 +58,10 @@ export const fadeIn = trigger('slideInOut', [
   state('in', style({
     transform: 'translateX(0)',
     opacity: 1,
-    width: '250px',
+    width: '270px',
   })),
   state('out', style({
-    transform: 'translateX(-250px)',
+    transform: 'translateX(-270px)',
     opacity: 0,
     width: '0',
   })),

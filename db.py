@@ -50,7 +50,7 @@ def map_subscription_to_status_response(subscription):
         "status": status
     }
 
-def generate_restricted_duration_subscriptions(n=2000):
+def generate_restricted_duration_subscriptions(n=389):
     """Génère des abonnements avec une durée entre 4 et 6 semaines et des informations détaillées."""
     subscriptions = []
     for i in tqdm(range(n), desc="Generating subscriptions", unit="subscription"):
