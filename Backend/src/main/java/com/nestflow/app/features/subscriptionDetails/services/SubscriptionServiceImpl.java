@@ -33,7 +33,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         List<SubscriptionDetailsEntity> subscriptions = subscriptionRepository.findAllBlocking();
         return subscriptions.stream()
                 .map(subscription -> {
-                    // Calculer dynamiquement les champs nécessaires
                     SubscriptionStatusResponse status = mapSubscriptionToStatusResponse(subscription);
                     return new SubscriptionWithDetailsResponse(status, subscription);
                 })
@@ -60,33 +59,31 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         LocalDateTime startDate = subscription.getSubscriptionStartDate();
         int duration = subscription.getDuration();
         SubscriptionDetailsEntity.TimeUnit timeUnit = subscription.getTimeUnit();
-
+    
         if (startDate == null || timeUnit == null || duration <= 0) {
-            throw new IllegalStateException(
-                    "Invalid subscription data for subscription ID: " + subscription.getId());
+            throw new IllegalStateException("Invalid subscription data for subscription ID: " + subscription.getId());
         }
-
+    
         LocalDateTime endDate = calculateEndDate(startDate, duration, timeUnit);
         subscription.setSubscriptionEndDate(endDate);
-
+    
         LocalDateTime now = LocalDateTime.now();
-
-        long totalDays = ChronoUnit.DAYS.between(startDate, endDate);
-
-        long remainingDays = ChronoUnit.DAYS.between(now, endDate);
-
-        long elapsedDays = ChronoUnit.DAYS.between(startDate, now);
-
-        double progressPercentage = (totalDays > 0)
-                ? (Math.max(0, Math.min(elapsedDays, totalDays)) / (double) totalDays) * 100
+    
+        long totalHours = ChronoUnit.HOURS.between(startDate, endDate);
+        long elapsedHours = ChronoUnit.HOURS.between(startDate, now);
+    
+        double progressPercentage = (totalHours > 0)
+                ? (Math.max(0, Math.min(elapsedHours, totalHours)) / (double) totalHours) * 100
                 : 100.0;
-
-        if (progressPercentage < 10.0) {
+    
+        if (progressPercentage < 20.00) {
             subscription.setStatus(SubscriptionDetailsEntity.Status.ACTIVE);
         } else {
             subscription.setStatus(SubscriptionDetailsEntity.Status.EXPIRED);
         }
-
+    
+        long remainingDays = ChronoUnit.DAYS.between(now, endDate);
+    
         return new SubscriptionStatusResponse(remainingDays, 100.0 - progressPercentage, remainingDays <= 0);
     }
 
@@ -108,47 +105,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         return subscriptionRepository.save(details);
     }
-
-    /*
-     * private void validateSubscriptionStatus(SubscriptionDetailsEntity
-     * subscription) {
-     * if (subscription.getStatus() != SubscriptionDetailsEntity.Status.ACTIVE
-     * && subscription.getStatus() != SubscriptionDetailsEntity.Status.EXPIRED) {
-     * throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-     * "Statut invalide.");
-     * }
-     * }
-     */
-
-    /*
-     * private LocalDateTime calculateNewEndDate(SubscriptionDetailsEntity
-     * subscription, int renewalPeriod,
-     * ChronoUnit unit) {
-     * LocalDateTime currentEndDate = subscription.getSubscriptionEndDate();
-     * return (currentEndDate == null ? subscription.getSubscriptionStartDate() :
-     * currentEndDate).plus(renewalPeriod,
-     * unit);
-     * }
-     */
-    /*
-     * private void updateSubscriptionDetails(SubscriptionDetailsEntity
-     * subscription, RenewalRequest renewalRequest) {
-     * if (renewalRequest != null && renewalRequest.getNewType() != null) {
-     * subscription.setSubscriptionType(renewalRequest.getNewType());
-     * //
-     * subscription.setChannelCount(calculateChannelCount(renewalRequest.getNewType(
-     * )));
-     * }
-     * }
-     * 
-     * private TimeUnit parseTimeUnit(String unitString) {
-     * try {
-     * return TimeUnit.valueOf(unitString.toUpperCase());
-     * } catch (IllegalArgumentException e) {
-     * throw new InvalidTimeUnitException("Unité invalide : " + unitString);
-     * }
-     * }
-     */
 
     @Scheduled(cron = "0 0 0 * * *")
     public void updateAllSubscriptionStatuses() {

@@ -87,7 +87,7 @@
                   <span
                     [ngClass]="{'text': subscription.details.subscriptionType === 'CLASSIC', 'text-green-400': subscription.details.subscriptionType === 'BASIC'}">{{
                     subscription.details.subscriptionType }}</span>
-                  <span class="text-xs text-gray-400">{{ subscription.status.remainingDays }} Remaining days</span>
+                  <span class="text-xs text-gray-400">{{ subscription.details.remainingDays }} Remaining days</span>
                 </div>
               </td>
               <td class="px-6 py-4 text-center">
@@ -140,7 +140,9 @@
                   </div>
 
                   <div class="expanded-details">
-                    <p>Duration : <span class="text">{{ subscription.details.duration }} {{ subscription.details.timeUnit }}</span></p>
+                    <p>New Duration : <span class="text">{{ subscription.details.duration }} {{ subscription.details.timeUnit }}</span></p>
+                    <p>Bouquet: <span [ngClass]="{'text': subscription.details.subscriptionType === 'CLASSIC', 'text-green-400': subscription.details.subscriptionType === 'BASIC'}">{{
+                      subscription.details.subscriptionType }}</span></p>
                     <p>Price : <span class="text">{{ subscription.details.price | currency:'Ar ' }}</span></p>
                   </div>
 
@@ -156,8 +158,8 @@
                   </div>
 
                   <div class="expanded-details">
-                    <p>Subscription start date : <span class="text">{{ subscription.details.subscriptionStartDate | date:'dd/MM/yyyy à HH:mm' }}</span></p>
-                    <p>Subscription end date : <span class="text">{{ subscription.details.subscriptionEndDate | date:'dd/MM/yyyy à HH:mm' }}</span></p>
+                    <p>Start date : <span class="text">{{ subscription.details.subscriptionStartDate | date:'dd/MM/yyyy à HH:mm' }}</span></p>
+                    <p>End date : <span class="text">{{ subscription.details.subscriptionEndDate | date:'dd/MM/yyyy à HH:mm' }}</span></p>
                   </div>
                 </div>
               </td>
