@@ -16,7 +16,7 @@ import { sideLeftBarState } from '../../store/signal.store';
           menu
         </span>
       </button>
-      @let title = "NEST FLOW";
+      @let title = "Welcome to Nest Flow";
       <span class="font-bold text-2xl sm:text-3xl text-uppercase text">{{ title }}</span>
       </section>
       <section class="flex items-center gap-3">

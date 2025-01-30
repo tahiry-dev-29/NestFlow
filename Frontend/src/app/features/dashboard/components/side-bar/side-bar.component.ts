@@ -6,9 +6,10 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, ActivatedRoute } from '@angular/router';
 import { sideLeftBarState } from '../../store/signal.store';
 import { AuthStore } from '../../../auth/store/auth.store';
+import { ImageUrl } from '../../../../../../public/images/constant.images';
 
 @Component({
   selector: 'app-side-bar',
@@ -22,6 +23,8 @@ export class SideBarComponent {
   private readonly userStore = inject(AuthStore);
   private readonly LOADING_DELAY = 1500;
   timer = signal<boolean>(false);
+
+  ImageUrl = ImageUrl.logo_nest_flow;
 
   constructor() {
     setTimeout(() => {
