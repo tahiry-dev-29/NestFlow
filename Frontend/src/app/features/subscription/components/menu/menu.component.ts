@@ -20,16 +20,16 @@ export class MenuComponent {
   store = inject(SubscriptionStore);
 
   menuItems = signal([
-    { label: 'Tous', icon: 'apps', filter: 'all' },
-    { label: 'Actifs', icon: 'check_circle', filter: 'active' },
-    { label: 'Inactifs', icon: 'cancel', filter: 'inactive' },
+    { label: 'All', icon: 'apps', filter: 'all' },
+    { label: 'Actives', icon: 'check_circle', filter: 'active' },
+    { label: 'Expired', icon: 'cancel', filter: 'inactive' },
   ]);
 
   setActiveMenu(index: number, filter: string) {
     this.activeMenu.set(index);
     this.filterChange.emit(filter);
   }
-  
+
   onSearch(searchTerm: string) {
     this.search.emit(searchTerm);
   }

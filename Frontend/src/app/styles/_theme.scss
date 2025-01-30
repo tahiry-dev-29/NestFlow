@@ -27,9 +27,9 @@ $colors: (
 
 // Card styles
 @mixin card-base {
-  @apply bg-slate-850 bg-opacity-80 backdrop-blur-lg rounded-xl border border-opacity-20 transition-all;
+  @apply bg-slate-900/25 backdrop-blur-2xl rounded-xl border border-opacity-90 transition-all;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  
+
   &:hover {
     @apply border-opacity-40;
     transform: translateY(-2px);
@@ -38,7 +38,7 @@ $colors: (
 
 // Form controls
 @mixin form-control-base {
-  @apply bg-slate-850 bg-opacity-80 backdrop-blur-lg px-4 py-2 rounded-lg transition-all;
+  @apply bg-slate-850/80 backdrop-blur-lg px-4 py-2 rounded-lg transition-all;
   @apply border border-neon-primary border-opacity-20;
   @apply hover:border-opacity-50 focus:outline-none focus:border-opacity-100;
 }
@@ -46,10 +46,10 @@ $colors: (
 // Button styles
 @mixin button-base {
   @apply flex items-center gap-2 px-4 py-2 rounded-lg transition-all;
-  @apply bg-slate-850 bg-opacity-80 backdrop-blur-lg;
+  @apply bg-slate-850/80 backdrop-blur-lg;
   @apply border border-opacity-20 hover:border-opacity-50;
-  
+
   &:active {
     transform: translateY(1px);
   }
-} 
+}

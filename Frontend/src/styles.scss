@@ -133,7 +133,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 
 @layer components {
   .header-menu {
-    @apply fixed top-0 w-[-webkit-fill-available] flex flex-wrap items-center h-20 justify-between mx-3 mt-2 py-2 rounded-2xl lg:flex-nowrap px-5 content-style z-30;
+        @apply fixed top-0 w-[-webkit-fill-available] w-[-moz-available] flex flex-wrap items-center h-20 justify-between mx-3 mt-2 py-2 rounded-2xl lg:flex-nowrap px-5 content-style z-30;
   }
 
   .content-style {
@@ -171,29 +171,29 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 
 @layer utilities {
 
-  .custom-scrolbar::-webkit-scrollbar {
+  .custom-scrollbar::-webkit-scrollbar {
     width: 10px;
   }
 
-  .custom-scrolbar::-webkit-scrollbar-track {
+  .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .custom-scrolbar::-webkit-scrollbar-thumb {
+  .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #a7a6a6e0;
     border-radius: 10px;
   }
 
-  .custom-scrolbar::-webkit-scrollbar-thumb:hover {
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #f8f8f8e5;
   }
 
-  .no-custom-scrolbar {
+  .no-custom-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
 
-  .no-custom-scrolbar::-webkit-scrollbar {
+  .no-custom-scrollbar::-webkit-scrollbar {
     display: none;
   }
 }

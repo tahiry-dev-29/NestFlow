@@ -29,13 +29,13 @@ export const expandCollapse = trigger('expandCollapse', [
   transition(':enter', [
     style({ transform: 'translateY(-40px)', opacity: 0 }),
     animate(
-      '300ms ease-out',
+      '250ms ease-out',
       style({ transform: 'translateY(0)', opacity: 1 })
     ),
   ]),
   transition(':leave', [
     animate(
-      '500ms ease-in',
+      '300ms ease-in',
       style({ opacity: 0, transform: 'translateY(-20px)' })
     ),
   ]),

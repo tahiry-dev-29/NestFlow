@@ -7,14 +7,13 @@
 }
 
 .tooltip-container {
-    @apply absolute right-0 z-10 transform origin-top bg-slate-800/90 shadow-dark-xl text-white rounded-7 mt-2 py-2 duration-300 ease-out;
+    @apply absolute right-0 z-10 transform origin-top bg-slate-800/25 backdrop-blur-lg  shadow-dark-xl text-white rounded-7 mt-2 py-2 duration-150 ease-out;
 }
 .liste-action{
-    @apply w-full;
+    @apply w-[155px];
 }
- // Start of Selection
 .tooltip {
-    @apply hover:scale-110 duration-250 flex items-center px-4 py-2 text-sm hover:font-bold;
+    @apply hover:scale-110 duration-150 flex text-nowrap items-center px-4 py-2 text-sm hover:font-bold;
 }
 
 .expanded-details{

@@ -41,8 +41,8 @@ import { ReNewSubscriptionComponent } from '../re-new-subscription/re-new-subscr
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DetailListsComponent implements OnInit {
-  toastr = inject(ToastrService);
-  router = inject(Router);
+  private toaster = inject(ToastrService);
+  private router = inject(Router);
 
   store = inject(SubscriptionStore);
 
@@ -74,7 +74,7 @@ export class DetailListsComponent implements OnInit {
         )?.details.fullname ?? '';
     if (id !== null) {
       this.store.deleteSubscription({ id: id! });
-      this.toastr.info(
+      this.toaster.info(
         `<span class="msg-class">${fullname}</span> deletion successful`
       );
     }

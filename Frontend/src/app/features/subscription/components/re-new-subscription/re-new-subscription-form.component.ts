@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { errorMessages } from '../../../../../constantes';
+import {ERROR_MESSAGES_FORM, errorMessages} from '../../../../../constantes';
 import { RenewSubscriptionData } from '../../interfaces/subscription.interface';
-import { SubscriptionDetails, SubscriptionType, TimeUnit } from '../../models/subscription.model';
-import { MAX_CHANNEL_COUNT, MAX_DURATION, SUBSCRIPTION_CONFIG, SubscriptionCalculator } from '../../utils/subscription.constant';
+import { SubscriptionType, TimeUnit } from '../../models/subscription.model';
+import { MAX_CHANNEL_COUNT, MAX_DURATION, SubscriptionCalculator } from '../../utils/subscription.constant';
 import { SubscriptionStore } from '../../store/store';
 
 @Component({
@@ -31,11 +31,11 @@ import { SubscriptionStore } from '../../store/store';
         <div class="grid grid-cols-2 gap-3">
           <div class="space-y-2">
             <label class="label-theme">Duration</label>
-            <input 
-              type="number" 
-              formControlName="duration" 
-              class="input-theme w-full" 
-              min="1" 
+            <input
+              type="number"
+              formControlName="duration"
+              class="input-theme w-full"
+              min="1"
               placeholder="Duration"
             />
           </div>
@@ -48,7 +48,7 @@ import { SubscriptionStore } from '../../store/store';
               <option [value]="TimeUnit.YEARS">Years</option>
             </select>
           </div>
-          @if ((renewForm.get('duration')?.invalid && renewForm.get('duration')?.touched) || 
+          @if ((renewForm.get('duration')?.invalid && renewForm.get('duration')?.touched) ||
                (renewForm.get('timeUnit')?.invalid && renewForm.get('timeUnit')?.touched)) {
             <div class="error col-span-2">
               <small *ngFor="let error of getErrors('duration')">{{ error }}</small>
@@ -59,19 +59,19 @@ import { SubscriptionStore } from '../../store/store';
 
         <div class="col-span-2">
           <div class="flex justify-between items-center gap-3">
-            <input 
-              type="text" 
-              [value]="displayedChannelCount()" 
-              class="input-theme bg-gray-700/50" 
-              readonly 
-              placeholder="Number of channels" 
+            <input
+              type="text"
+              [value]="displayedChannelCount()"
+              class="input-theme bg-gray-700/50"
+              readonly
+              placeholder="Number of channels"
             />
-            <input 
-              type="text" 
-              [value]="displayedPrice()" 
-              class="input-theme bg-gray-700/50" 
-              readonly 
-              placeholder="Price" 
+            <input
+              type="text"
+              [value]="displayedPrice()"
+              class="input-theme bg-gray-700/50"
+              readonly
+              placeholder="Price"
             />
           </div>
           <div class="text-sm mt-3 px-3 text-gradient ">
@@ -108,7 +108,7 @@ export class RenewSubscriptionFormComponent {
     submit = output<RenewSubscriptionData>();
 
     private fb = inject(FormBuilder);
-    private toastr = inject(ToastrService);
+    private toaster = inject(ToastrService);
 
     SubscriptionType = SubscriptionType;
     TimeUnit = TimeUnit;
@@ -187,9 +187,10 @@ export class RenewSubscriptionFormComponent {
             this.submit.emit(submitData);
             this._isSubmitting.set(false);
             this.store.reNewSubscription(submitData);
-            this.toast.success(`${submitData.unit} Subscription renewed successfully`);
+            this.toast.success(`<span class="msg-class">${submitData.unit}</span> Subscription renewed successfully`);
+            this.close.emit();
         } else {
-            this.toastr.error('Le formulaire est invalide.');
+            this.toaster.error(ERROR_MESSAGES_FORM.VALIDATION_ERROR);
             this.renewForm.markAllAsTouched();
         }
     }

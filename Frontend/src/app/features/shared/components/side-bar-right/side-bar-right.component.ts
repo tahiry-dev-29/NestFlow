@@ -16,7 +16,7 @@ import { slideInOut } from '../../animations/animations';
               <i class="material-icons">close</i>
             </button>
           </div>
-          <div #sidebarContent class="flex-grow overflow-y-auto p-4 custom-scrolbar">
+          <div #sidebarContent class="flex-grow overflow-y-auto p-4 custom-scrollbar">
             <ng-content></ng-content>
           </div>
         </div>
@@ -65,8 +65,8 @@ export class SideBarRightComponent {
     }
 
     const clickedElement = event.target as HTMLElement;
-    
-    const isToggleButton = clickedElement.closest('[data-toggle-sidebar]') || 
+
+    const isToggleButton = clickedElement.closest('[data-toggle-sidebar]') ||
                           clickedElement.closest('button[data-toggle-sidebar] *');
     if (isToggleButton) {
         return;

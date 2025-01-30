@@ -1,12 +1,12 @@
 <section class="flex flex-wrap w-full justify-center">
-  <div class="overflow-auto custom-scrolbar w-full rounded-2xl">
+  <div class="overflow-auto custom-scrollbar w-full rounded-2xl">
     <div class="align-middle inline-block min-w-full rounded-t-2xl bg-content pl-6 pr-3 pt-3 h-[63vh] py-5 relative">
-      <div class="h-full overflow-y-auto custom-scrolbar">
+      <div class="h-full overflow-y-auto custom-scrollbar">
         <table class="min-w-full border-collapse text-white">
-          <thead class="sticky top-0 z-50 bg-slate-850/25 backdrop-blur-md border-b-2 border-gray-200">
+          <thead class="sticky top-0 z-50 bg-slate-850 backdrop-blur border-b-2 border-gray-200">
             <tr class="text-center">
+              <th class="th hidden sm:table-cell">Full Name</th>
               <th class="th">Tel</th>
-              <th class="th hidden sm:table-cell">Nom complet</th>
               <th class="th hidden sm:table-cell">Email</th>
               <th class="th">Progression</th>
               <th class="th hidden sm:table-cell">Status</th>
@@ -69,9 +69,9 @@
             currentPage: currentPage(),
             }; track subscription.details.id) {
             <tr
-              [ngClass]="{'bg-slate-850 border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== subscription.details.id, 'bg-slate-700': store.expandedId() === subscription.details.id}">
-              <td class="td hidden sm:table-cell">{{ subscription.details.tel }}</td>
+              [ngClass]="{'bg-slate-850/25 hover:backdrop-blur-lg border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== subscription.details.id, 'bg-slate-700 backdrop-blur-xl': store.expandedId() === subscription.details.id}">
               <td class="td hidden sm:table-cell">{{ subscription.details.fullname | titlecase }}</td>
+              <td class="td hidden sm:table-cell text text-lg">{{ subscription.details.tel }}</td>
               <td class="td hidden sm:table-cell">{{ subscription.details.email }}</td>
               <td class="td">
                 <div class="relative flex justify-center w-full h-2 bg-gray-700 rounded-full">
@@ -99,20 +99,20 @@
                       [ngClass]="{ 'rotate-180': store.expandedMenuId() === subscription.details.id }">more_vert</span>
                   </button>
                   <div *ngIf="store.expandedMenuId() === subscription.details.id">
-                    <div class="tooltip-container tooltip-container transition-all scale-y-100" [@expandCollapse]>
+                    <div class="tooltip-container transition-all scale-y-100" [@expandCollapse]>
                       <ul class="flex flex-col items-center justify-between gap-2">
                         <li class="liste-action"><button class="tooltip hover:text text-red-600"
                             (click)="openPopup(subscription.details.id)"><span class="material-icons mr-2">delete</span>
-                            Supprimer</button></li>
+                            Delete</button></li>
                         <li class="liste-action"><button class="tooltip hover:text text-blue-600"
                             (click)="editSubscriber(subscription.details.id)"><span
                               class="material-icons mr-2">edit</span>
-                            Modifier</button></li>
+                            Edit Property</button></li>
                         <li class="liste-action">
                           <button class="tooltip hover:text text-green-600"
                             (click)="renewSubscription(subscription.details.id)">
                             <span class="material-icons mr-2">autorenew</span>
-                            Réactiver
+                            Reactivate
                           </button>
                         </li>
                       </ul>
@@ -131,22 +131,22 @@
             </tr>
             @if (store.expandedId() === subscription.details.id) {
             <tr [@expandCollapse]>
-              <td colspan="6" class="px-6 py-4 bg-slate-700/13 backdrop-blur-sm border-b border-gray-600">
+              <td colspan="6" class="px-6 py-4 bg-slate-700/25 border-b border-gray-600">
                 <div class="flex flex-wrap text-sm text-white">
                   <div class="expanded-details">
                     <p>Adress : <span class="text">{{ subscription.details.adresse }}</span></p>
                     <p>Channel count : <span class="msg-class">{{ subscription.details.channelCount }}</span></p>
                     <p>Code : {{ subscription.details.code | hidePassword }}</p>
                   </div>
-                
+
                   <div class="expanded-details">
                     <p>Duration : <span class="text">{{ subscription.details.duration }} {{ subscription.details.timeUnit }}</span></p>
                     <p>Price : <span class="text">{{ subscription.details.price | currency:'Ar ' }}</span></p>
                   </div>
-                
+
                   <div class="expanded-details">
                     <p>
-                      Status : 
+                      Status :
                       <span [ngClass]="{'text-green-400': !subscription.status.expired, 'text-gray-400': subscription.status.expired}">
                         {{ subscription.status.expired ? 'EXPIRED' : 'ACTIVE' }}
                       </span>
@@ -154,7 +154,7 @@
                     <p>Remaining hours : <span class="text">{{ subscription.details.remainingHours }}</span></p>
                     <p>Remaining days : <span class="text">{{ subscription.details.remainingDays }}</span></p>
                   </div>
-                
+
                   <div class="expanded-details">
                     <p>Subscription start date : <span class="text">{{ subscription.details.subscriptionStartDate | date:'dd/MM/yyyy à HH:mm' }}</span></p>
                     <p>Subscription end date : <span class="text">{{ subscription.details.subscriptionEndDate | date:'dd/MM/yyyy à HH:mm' }}</span></p>
