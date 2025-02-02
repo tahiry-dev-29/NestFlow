@@ -1,48 +1,76 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
 import { AuthService } from '../../../auth/services/auth.service';
+import { expandCollapse } from '../../../shared/animations/animations';
+import { ViewUserComponent } from "../../../users/components/view-user/view-user.component";
 import { IUsers } from '../../../users/models/users/users.module';
 import { sideLeftBarState } from '../../store/signal.store';
 
-
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [ViewUserComponent],
   template: `
-    <nav class="flex flex-nowrap w-full items-center gap-3 justify-between text-white">
+    <nav
+      class="flex flex-nowrap w-full items-center gap-3 justify-between text-white"
+    >
       <section class="flex items-center gap-3">
-      <button (click)="toggleSidebar()" class="text-white flex items-center group">
-        <span class="material-icons text-3xl transition-transform duration-100 ease-in-out group-hover:text group-hover:scale-90 w-10 group-hover:transform-cpu">
-          menu
-        </span>
-      </button>
-      @let title = "Welcome to Nest Flow";
-      <span class="font-bold text-2xl sm:text-3xl text-uppercase text">{{ title }}</span>
+        <button
+          (click)="toggleSidebar()"
+          class="text-white flex items-center group"
+        >
+          <span
+            class="material-icons text-3xl transition-transform duration-100 ease-in-out group-hover:text group-hover:scale-90 w-10 group-hover:transform-cpu"
+          >
+            menu
+          </span>
+        </button>
+        @let title = "Welcome ";
+        <span class="font-bold text-2xl sm:text-3xl text-uppercase text"
+          >{{ title }} {{ user?.name }} {{ user?.firstName }}</span
+        >
       </section>
       <section class="flex items-center gap-3">
         <button class="text-white flex items-center group">
-          <span class="material-icons text-3xl transition-transform duration-100 ease-in-out group-hover:text group-hover:scale-90 w-10 group-hover:transform-cpu">
+          <span
+            class="material-icons text-3xl transition-transform duration-100 ease-in-out group-hover:text group-hover:scale-90 w-10 group-hover:transform-cpu"
+          >
             notifications
           </span>
         </button>
-        <div class="flex items-center cursor-pointer gap-3 transition-transform duration-300 ease-in-out"> 
+        <div
+          class="flex items-center cursor-pointer gap-3 transition-transform duration-200 ease-in-out"
+          (click)="toggleDetailsProfil()"
+        >
           <span class="text-white font-semibold ml-2">{{ user?.role }}</span>
-          <img [src]="getImageSrc()" alt="Profile" class="w-12 h-12 rounded-full border-2 border-gray-500/13 hover:scale-110">
+          <img
+            [src]="getImageSrc()"
+            alt="Profile"
+            class="w-12 h-12 rounded-full border-2 border-gray-500/13 hover:scale-110"
+          />
         </div>
       </section>
     </nav>
 
+    @if (toggleProfil()) {
+    <div class="absolute top-full right-0 flex justify-end z-100 w-full h-screen backdrop-blur" [@expandCollapse]>
+      <div class="w-85">
+      <h3 (click)="showEditUserDetails()" class="text-white">Edit <i class="material-icons">edit</i></h3>
+      <app-view-user [user]="user" (closeEvent)="toggleProfil()">
+      </app-view-user>  
+      </div>
+    </div>
+    }
   `,
   styleUrl: './header.component.scss',
   standalone: true,
-
+  animations: [expandCollapse]
 })
 export class HeaderComponent {
   sidebarState = sideLeftBarState;
   user: IUsers | null = null;
   defaultImages = ImageUrl.defaultImages;
 
-  authService= inject(AuthService);
+  authService = inject(AuthService);
 
   ngOnInit(): void {
     this.loadUserProfile();
@@ -64,12 +92,23 @@ export class HeaderComponent {
     this.authService.getUserByToken(token || '').subscribe({
       next: (user) => {
         this.user = user;
-      }
+      },
     });
   }
 
-  
   toggleSidebar(): void {
-    this.sidebarState.update(state => !state);
+    this.sidebarState.update((state) => !state);
   }
+
+  toggleProfil = signal<boolean>(false);
+
+  toggleDetailsProfil() {
+    this.toggleProfil.set(!this.toggleProfil());
+  }
+
+  showEditUserDetails() {
+    console.log(this.user);
+    
+  }
+  
 }

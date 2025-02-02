@@ -88,7 +88,7 @@ export class UserTableComponent implements OnInit{
     }
 
     ngOnInit() {
-        this.store.loadUsers(this.store.users()); 
+        this.store.loadUsers(this.store.users()).unsubscribe; 
     }
 
     /** Sidebar **/

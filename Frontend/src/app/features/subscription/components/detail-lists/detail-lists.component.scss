@@ -7,7 +7,7 @@
 }
 
 .tooltip-container {
-    @apply absolute right-0 z-10 transform origin-top bg-slate-800/25 backdrop-blur-lg  shadow-dark-xl text-white rounded-7 mt-2 py-2 duration-150 ease-out;
+    @apply absolute right-0 z-10 transform origin-top bg-slate-800/90 backdrop-blur-lg  shadow-dark-xl text-white rounded-7 mt-2 py-2 duration-150 ease-out;
 }
 .liste-action{
     @apply w-[155px];

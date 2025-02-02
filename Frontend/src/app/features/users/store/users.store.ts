@@ -40,7 +40,7 @@ export const UserStore = signalStore(
             tap((users) => patchState(store, { users, loading: false })),
             catchError((error) => {
               patchState(store, { error: error.message, loading: false });
-              return of(error);
+              return of([]);
             })
           );
         })

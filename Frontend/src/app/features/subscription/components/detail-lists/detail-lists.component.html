@@ -1,9 +1,13 @@
 <section class="flex flex-wrap w-full justify-center">
   <div class="overflow-auto custom-scrollbar w-full rounded-2xl">
-    <div class="align-middle inline-block min-w-full rounded-t-2xl bg-content pl-6 pr-3 pt-3 h-[63vh] py-5 relative">
+    <div
+      class="align-middle inline-block min-w-full rounded-t-2xl bg-content pl-6 pr-3 pt-3 h-[63vh] py-5 relative"
+    >
       <div class="h-full overflow-y-auto custom-scrollbar">
         <table class="min-w-full border-collapse text-white">
-          <thead class="sticky top-0 z-50 bg-slate-850 backdrop-blur border-b-2 border-gray-200">
+          <thead
+            class="sticky top-0 z-20 bg-slate-850 backdrop-blur border-b-2 border-gray-200"
+          >
             <tr class="text-center">
               <th class="th hidden sm:table-cell">Full Name</th>
               <th class="th">Tel</th>
@@ -14,19 +18,22 @@
             </tr>
           </thead>
           <tbody>
-            @if (store.loading()) {
-            @defer (on timer(500ms)) {
+            @if (store.loading()) { @defer (on timer(500ms)) {
             <tr>
               <td colspan="6" class="text-center py-4">
                 <div class="flex w-full justify-center items-center gap-3">
-                  <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
-                  <span class="ml-2 text-white animate-pulse duration-75">Chargement...</span>
+                  <div
+                    class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"
+                  ></div>
+                  <span class="ml-2 text-white animate-pulse duration-75"
+                    >Chargement...</span
+                  >
                 </div>
               </td>
             </tr>
 
-            } @placeholder {
-            @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
+            } @placeholder { @for (skeleton of [1, 2, 3, 4, 5]; track skeleton)
+            {
             <tr class="animate-pulse">
               <td class="td">
                 <div class="h-4 bg-gray-300 rounded w-1/2"></div>
@@ -52,65 +59,129 @@
                 </div>
               </td>
             </tr>
-            }
-            }
-            } @else if (store.filteredSubscriptions()(filter.menu, filter.search).length === 0) {
+            } } } @else if (store.filteredSubscriptions()(filter.menu,
+            filter.search).length === 0) {
             <tr>
-              <td colspan="6" class="h-[50vh] text-center align-middle text-gray-400">
-                <div class="flex flex-col items-center justify-center h-full"><span
-                    class="material-icons text-5xl mb-2 animate-bounce">search_off</span>
+              <td
+                colspan="6"
+                class="h-[50vh] text-center align-middle text-gray-400"
+              >
+                <div class="flex flex-col items-center justify-center h-full">
+                  <span class="material-icons text-5xl mb-2 animate-bounce"
+                    >search_off</span
+                  >
                   <p class="text-xl">Aucun abonné trouvé</p>
                 </div>
               </td>
             </tr>
-            } @else {
-            @for (subscription of store.filteredSubscriptions()(filter.menu, filter.search) | paginate: {
-            itemsPerPage: itemsPerPage(),
-            currentPage: currentPage(),
-            }; track subscription.details.id) {
+            } @else { @for (subscription of
+            store.filteredSubscriptions()(filter.menu, filter.search) |
+            paginate: { itemsPerPage: itemsPerPage(), currentPage:
+            currentPage(), }; track subscription.details.id) {
             <tr
-              [ngClass]="{'bg-slate-850/25 hover:backdrop-blur-lg border-b-2 border-gray-600 hover:bg-gray-700/10': store.expandedId() !== subscription.details.id, 'bg-slate-700 backdrop-blur-xl': store.expandedId() === subscription.details.id}">
-              <td class="td hidden sm:table-cell">{{ subscription.details.fullname | titlecase }}</td>
-              <td class="td hidden sm:table-cell text text-lg">{{ subscription.details.tel }}</td>
-              <td class="td hidden sm:table-cell">{{ subscription.details.email }}</td>
+              [ngClass]="{
+                'bg-slate-850/25 hover:backdrop-blur-lg border-b-2 border-gray-600 hover:bg-gray-700/10':
+                  store.expandedId() !== subscription.details.id,
+                'bg-slate-700 backdrop-blur-xl':
+                  store.expandedId() === subscription.details.id
+              }"
+            >
+              <td class="td hidden sm:table-cell">
+                {{ subscription.details.fullname | titlecase }}
+              </td>
+              <td class="td hidden sm:table-cell text text-lg">
+                {{ subscription.details.tel }}
+              </td>
+              <td class="td hidden sm:table-cell">
+                {{ subscription.details.email }}
+              </td>
               <td class="td">
-                <div class="relative flex justify-center w-full h-2 bg-gray-700 rounded-full">
-                  <div class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
-                    [ngClass]="store.getProgressClasses()(subscription.status.progressPercentage ?? 0)"
-                    [style.width.%]="subscription.status.progressPercentage ?? 0"></div>
-                  <span class="block text-sm mt-2 text-gray-400">{{ (subscription.status.progressPercentage ?? 0) |
-                    number:'1.2-2' }}%</span>
+                <div
+                  class="relative flex justify-center w-full h-2 bg-gray-700 rounded-full"
+                >
+                  <div
+                    class="absolute top-0 left-0 h-2 rounded-full transition-all duration-500"
+                    [ngClass]="
+                      store.getProgressClasses()(
+                        subscription.status.progressPercentage ?? 0
+                      )
+                    "
+                    [style.width.%]="
+                      subscription.status.progressPercentage ?? 0
+                    "
+                  ></div>
+                  <span class="block text-sm mt-2 text-gray-400"
+                    >{{
+                      subscription.status.progressPercentage ?? 0
+                        | number : "1.2-2"
+                    }}%</span
+                  >
                 </div>
               </td>
               <td class="td">
                 <div class="flex flex-col items-center">
                   <span
-                    [ngClass]="{'text': subscription.details.subscriptionType === 'CLASSIC', 'text-green-400': subscription.details.subscriptionType === 'BASIC'}">{{
-                    subscription.details.subscriptionType }}</span>
-                  <span class="text-xs text-gray-400">{{ subscription.details.remainingDays }} Remaining days</span>
+                    [ngClass]="{
+                      text: subscription.details.subscriptionType === 'CLASSIC',
+                      'text-green-400':
+                        subscription.details.subscriptionType === 'BASIC'
+                    }"
+                    >{{ subscription.details.subscriptionType }}</span
+                  >
+                  <span class="text-xs text-gray-400"
+                    >{{ subscription.details.remainingDays }} Remaining
+                    days</span
+                  >
                 </div>
               </td>
-              <td class="px-6 py-4 text-center">
+              <td class="px-6 py-4 text-center flex">
                 <div class="relative inline-block ml-2">
-                  <button class="text-gray-100 hover:text-gray-500 relative top-3"
-                    (click)="store.toggleMenuExpand(subscription.details.id)">
+                  <button
+                    class="text-gray-100 hover:text-gray-500 relative top-3"
+                    (click)="store.toggleMenuExpand(subscription.details.id)"
+                  >
                     <span
                       class="material-icons transition-all duration-300 transform rounded-full hover:bg-slate-300/10"
-                      [ngClass]="{ 'rotate-180': store.expandedMenuId() === subscription.details.id }">more_vert</span>
+                      [ngClass]="{
+                        'rotate-180':
+                          store.expandedMenuId() === subscription.details.id
+                      }"
+                      >more_vert</span
+                    >
                   </button>
-                  <div *ngIf="store.expandedMenuId() === subscription.details.id">
-                    <div class="tooltip-container transition-all scale-y-100" [@expandCollapse]>
-                      <ul class="flex flex-col items-center justify-between gap-2">
-                        <li class="liste-action"><button class="tooltip hover:text text-red-600"
-                            (click)="openPopup(subscription.details.id)"><span class="material-icons mr-2">delete</span>
-                            Delete</button></li>
-                        <li class="liste-action"><button class="tooltip hover:text text-blue-600"
-                            (click)="editSubscriber(subscription.details.id)"><span
-                              class="material-icons mr-2">edit</span>
-                            Edit Property</button></li>
+                  <div
+                    *ngIf="store.expandedMenuId() === subscription.details.id"
+                  >
+                    <div
+                      class="tooltip-container transition-all scale-y-100"
+                      [@expandCollapse]
+                    >
+                      <ul
+                        class="flex flex-col items-center justify-between gap-2"
+                      >
                         <li class="liste-action">
-                          <button class="tooltip hover:text text-green-600"
-                            (click)="renewSubscription(subscription.details.id)">
+                          <button
+                            class="tooltip hover:text text-red-600"
+                            (click)="openPopup(subscription.details.id)"
+                          >
+                            <span class="material-icons mr-2">delete</span>
+                            Delete
+                          </button>
+                        </li>
+                        <li class="liste-action">
+                          <button
+                            class="tooltip hover:text text-blue-600"
+                            (click)="editSubscriber(subscription.details.id)"
+                          >
+                            <span class="material-icons mr-2">edit</span> Edit
+                            Property
+                          </button>
+                        </li>
+                        <li class="liste-action">
+                          <button
+                            class="tooltip hover:text text-green-600"
+                            (click)="renewSubscription(subscription.details.id)"
+                          >
                             <span class="material-icons mr-2">autorenew</span>
                             Reactivate
                           </button>
@@ -119,77 +190,164 @@
                     </div>
                   </div>
                 </div>
-                <button class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2"
-                  (click)="store.toggleDetails(subscription.details.id)">
+                <button
+                  class="text-gray-100 hover:text-gray-500 text-8 float-right relative top-2"
+                  (click)="store.toggleDetails(subscription.details.id)"
+                >
                   <span
                     class="material-icons transition-all duration-300 transform text-8 rounded-full hover:bg-slate-300/10"
-                    [ngClass]="{ 'rotate-180': store.expandedId() === subscription.details.id }">{{ store.expandedId()
-                    ===
-                    subscription.details.id ? 'expand_less' : 'expand_more' }}</span>
+                    [ngClass]="{
+                      'rotate-180':
+                        store.expandedId() === subscription.details.id
+                    }"
+                    >{{
+                      store.expandedId() === subscription.details.id
+                        ? "expand_less"
+                        : "expand_more"
+                    }}</span
+                  >
                 </button>
               </td>
             </tr>
             @if (store.expandedId() === subscription.details.id) {
             <tr [@expandCollapse]>
-              <td colspan="6" class="px-6 py-4 bg-slate-700/25 border-b border-gray-600">
+              <td
+                colspan="6"
+                class="px-6 py-4 bg-slate-700/25 border-b border-gray-600"
+              >
                 <div class="flex flex-wrap text-sm text-white">
                   <div class="expanded-details">
-                    <p>Adress : <span class="text">{{ subscription.details.adresse }}</span></p>
-                    <p>Channel count : <span class="msg-class">{{ subscription.details.channelCount }}</span></p>
+                    <p>
+                      Adress :
+                      <span class="text">{{
+                        subscription.details.adresse
+                      }}</span>
+                    </p>
+                    <p>
+                      Channel count :
+                      <span class="msg-class">{{
+                        subscription.details.channelCount
+                      }}</span>
+                    </p>
                     <p>Code : {{ subscription.details.code | hidePassword }}</p>
                   </div>
 
                   <div class="expanded-details">
-                    <p>New Duration : <span class="text">{{ subscription.details.duration }} {{ subscription.details.timeUnit }}</span></p>
-                    <p>Bouquet: <span [ngClass]="{'text': subscription.details.subscriptionType === 'CLASSIC', 'text-green-400': subscription.details.subscriptionType === 'BASIC'}">{{
-                      subscription.details.subscriptionType }}</span></p>
-                    <p>Price : <span class="text">{{ subscription.details.price | currency:'Ar ' }}</span></p>
+                    <p>
+                      New Duration :
+                      <span class="text"
+                        >{{ subscription.details.duration }}
+                        {{ subscription.details.timeUnit }}</span
+                      >
+                    </p>
+                    <p>
+                      Bouquet:
+                      <span
+                        [ngClass]="{
+                          text:
+                            subscription.details.subscriptionType === 'CLASSIC',
+                          'text-green-400':
+                            subscription.details.subscriptionType === 'BASIC'
+                        }"
+                        >{{ subscription.details.subscriptionType }}</span
+                      >
+                    </p>
+                    <p>
+                      Price :
+                      <span class="text">{{
+                        subscription.details.price | currency : "Ar "
+                      }}</span>
+                    </p>
                   </div>
 
                   <div class="expanded-details">
                     <p>
                       Status :
-                      <span [ngClass]="{'text-green-400': !subscription.status.expired, 'text-gray-400': subscription.status.expired}">
-                        {{ subscription.status.expired ? 'EXPIRED' : 'ACTIVE' }}
+                      <span
+                        [ngClass]="{
+                          'text-green-400': !subscription.status.expired,
+                          'text-gray-400': subscription.status.expired
+                        }"
+                      >
+                        {{ subscription.status.expired ? "EXPIRED" : "ACTIVE" }}
                       </span>
                     </p>
-                    <p>Remaining hours : <span class="text">{{ subscription.details.remainingHours }}</span></p>
-                    <p>Remaining days : <span class="text">{{ subscription.details.remainingDays }}</span></p>
+                    <p>
+                      Remaining hours :
+                      <span class="text">{{
+                        subscription.details.remainingHours
+                      }}</span>
+                    </p>
+                    <p>
+                      Remaining days :
+                      <span class="text">{{
+                        subscription.details.remainingDays
+                      }}</span>
+                    </p>
                   </div>
 
                   <div class="expanded-details">
-                    <p>Start date : <span class="text">{{ subscription.details.subscriptionStartDate | date:'dd/MM/yyyy à HH:mm' }}</span></p>
-                    <p>End date : <span class="text">{{ subscription.details.subscriptionEndDate | date:'dd/MM/yyyy à HH:mm' }}</span></p>
+                    <p>
+                      Start date :
+                      <span class="text">{{
+                        subscription.details.subscriptionStartDate
+                          | date : "dd/MM/yyyy à HH:mm"
+                      }}</span>
+                    </p>
+                    <p>
+                      End date :
+                      <span class="text">{{
+                        subscription.details.subscriptionEndDate
+                          | date : "dd/MM/yyyy à HH:mm"
+                      }}</span>
+                    </p>
                   </div>
                 </div>
               </td>
             </tr>
-            }
-            }
-            }
+            } } }
           </tbody>
         </table>
       </div>
     </div>
   </div>
-  <div class="sticky mt-7 w-9/10 left-0 bottom-0 z-50 flex justify-between items-center text-white content-style py-2 px-4
-    ">
+  <div
+    class="sticky mt-7 w-9/10 left-0 bottom-0 z-20 flex justify-between items-center text-white content-style py-2 px-4"
+  >
     <div class="flex justify-between items-center w-full">
       <p class="text-white">
-        Find subscription number : <span class="text text-lg font-bold">{{ store.filteredSubscriptions()(filter.menu,
-          filter.search).length }}</span>
+        Find subscription number :
+        <span class="text text-lg font-bold">{{
+          store.filteredSubscriptions()(filter.menu, filter.search).length
+        }}</span>
       </p>
-      <pagination-controls [totalItems]="store.filteredSubscriptions()(filter.menu, filter.search).length"
-        (pageChange)="setPage($event)" (pageBoundsCorrection)="setPage($event)" [maxSize]="maxSize">
+      <pagination-controls
+        [totalItems]="
+          store.filteredSubscriptions()(filter.menu, filter.search).length
+        "
+        (pageChange)="setPage($event)"
+        (pageBoundsCorrection)="setPage($event)"
+        [maxSize]="maxSize"
+      >
       </pagination-controls>
-
     </div>
   </div>
 </section>
 
-<app-popups *ngIf="showPopup()" (confirm)="confirmDelete()" (cancel)="closePopup()"></app-popups>
+<app-popups
+  *ngIf="showPopup()"
+  (confirm)="confirmDelete()"
+  (cancel)="closePopup()"
+></app-popups>
 
-<app-re-new-subscription [isOpen]="showRenewPopup()" (close)="closeRenewPopup()" [description]="'Renew subscription ' "
-  [title]="subscriberToRenew()?.fullname ?? ''">
-  <app-renew-subscription-form [subscriberId]="subscriberToRenew()?.id" (close)="closeRenewPopup()" />
+<app-re-new-subscription
+  [isOpen]="showRenewPopup()"
+  (close)="closeRenewPopup()"
+  [description]="'Renew subscription '"
+  [title]="subscriberToRenew()?.fullname ?? ''"
+>
+  <app-renew-subscription-form
+    [subscriberId]="subscriberToRenew()?.id"
+    (close)="closeRenewPopup()"
+  />
 </app-re-new-subscription>

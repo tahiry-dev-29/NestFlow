@@ -27,7 +27,7 @@ export const subscriptionSelectorsFeature = signalStoreFeature(
                         sub.details.fullname?.toLowerCase().includes(searchLower) ||
                         sub.details.email?.toLowerCase().includes(searchLower) ||
                         sub.details.tel?.toLowerCase().includes(searchLower) ||
-                        sub.details.id?.toString().includes(searchLower)
+                        sub.details.subscriptionType?.toLowerCase().includes(searchLower) 
                     );
                 }
                 return filtered;
