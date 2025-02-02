@@ -1,7 +1,21 @@
 import { computed, inject } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, Observable, of, pipe, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  Observable,
+  of,
+  pipe,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { IUsers, UserState } from '../models/users/users.module';
 import { UsersService } from '../services/users.service';
 
@@ -20,7 +34,9 @@ export const UserStore = signalStore(
     activeUsers: computed(() => users().filter((user) => user.online)),
     inactiveUsers: computed(() => users().filter((user) => !user.online)),
     totalUsers: computed(() => users().length),
-    userStatusClass: computed(() => (online: boolean) => (online ? 'online' : 'offline')),
+    userStatusClass: computed(
+      () => (online: boolean) => online ? 'online' : 'offline'
+    ),
     selectLoading: computed(() => loading()),
     selectError: computed(() => error()),
     selectToken: computed(() => token()),
@@ -35,15 +51,17 @@ export const UserStore = signalStore(
     loadUsers: rxMethod<IUsers[]>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
-        switchMap(() => {
-          return usersService.getUsers().pipe(
-            tap((users) => patchState(store, { users, loading: false })),
-            catchError((error) => {
-              patchState(store, { error: error.message, loading: false });
-              return of([]);
+        concatMap(() =>
+          usersService.getUsers().pipe(
+            tap({
+              next: (subscriptions) =>
+                patchState(store, { users: subscriptions, loading: false }),
+              error: (error) =>
+                patchState(store, { error: error.message, loading: false }),
             })
-          );
-        })
+          )
+        ),
+        tap(() => patchState(store, { loading: false }))
       )
     ),
 
@@ -75,7 +93,12 @@ export const UserStore = signalStore(
         switchMap(() => {
           return usersService.updateUser(userId, updates).pipe(
             tap((updatedUser) => {
-              patchState(store, { users: store.users().map((user) => user.id === userId ? updatedUser : user), loading: false });
+              patchState(store, {
+                users: store
+                  .users()
+                  .map((user) => (user.id === userId ? updatedUser : user)),
+                loading: false,
+              });
             })
           );
         }),
@@ -85,8 +108,5 @@ export const UserStore = signalStore(
         })
       );
     },
-
-
-
   }))
 );

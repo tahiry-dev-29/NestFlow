@@ -65,7 +65,6 @@ import { ViewUserComponent } from '../view-user/view-user.component';
   animations: [slideInOut]
 })
 export class EditUserComponent implements OnInit, OnChanges {
-  // @ViewChild('fileInput') fileInput!: ElementRef;
   fileInput = viewChild<ElementRef>('fileInput');
   user = input<IUsers | null>(null);
   userEdited = output<void>();
@@ -79,13 +78,11 @@ export class EditUserComponent implements OnInit, OnChanges {
   private readonly userStore = inject(UserStore);
   private readonly toastr = inject(ToastrService);
 
-  // On init
   ngOnInit(): void {
     this.initForm();
     this.initPreview();
   }
 
-  // On changes
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['user'] && !changes['user'].firstChange) {
       this.patchForm();
@@ -107,7 +104,6 @@ export class EditUserComponent implements OnInit, OnChanges {
     });
   }
 
-  // Patch form
   private patchForm(): void {
     if (this.userForm && this.user()) {
       this.userForm.patchValue({
@@ -119,7 +115,6 @@ export class EditUserComponent implements OnInit, OnChanges {
     }
   }
 
-  // On submit
   onSubmit(): void {
     if (this.userForm.valid && this.user) {
       const formData = new FormData();
@@ -136,7 +131,7 @@ export class EditUserComponent implements OnInit, OnChanges {
         const userId = user.id;
         this.userStore.updateUser(userId, userData).pipe(
           tap(() => {
-            this.toastr.success(`${userData.firstName} updated successfully`);
+            this.toastr.success(`<span class="msg-class">${userData.firstName}</span> updated successfully`);
             this.userEdited.emit();
             this.userStore.loadUsers(this.userStore.users());
           })

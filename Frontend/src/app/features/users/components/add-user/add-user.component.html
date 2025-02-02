@@ -4,8 +4,8 @@
         <div class="flex flex-col items-center">
             <div class="w-85 max-w-md px-3 mx-auto">
                 <div class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
-                    <button type="button" (click)="restForm()" class="text-gray-300 hover:text-white flex flex-row-reverse items-center pt-4 pr-4">
-                        <i class="material-icons">refresh</i>
+                    <button type="button" (click)="restForm()" class="text-gray-300 hover:text-white flex flex-row-reverse items-center pt-4 pr-4 transition">
+                        <i class="material-icons text-gray-50 hover:text">refresh</i>
                     </button>
                     <div class="flex-auto p-6">
                         <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left" class="flex flex-col">

@@ -1,0 +1,48 @@
+<div class="backdrop-blur w-full rounded-2xl px-3 py-3 shadow-dark-blur">
+
+<nav class="flex w-full items-center justify-between gap-3 text-white">
+  <!-- Partie gauche : Menu et Titre -->
+  <section class="flex items-center gap-3">
+    <button (click)="toggleSidebar()" class="text-white flex items-center hover:bg-slate-500/25 px-1 rounded-full group">
+      <span class="material-icons text-3xl transition-transform duration-100 ease-in-out group-hover:scale-90 group-hover:text">
+        menu
+      </span>
+    </button>
+    @let userFullName = user?.name + ' ' + user?.firstName;
+    <span class="font-bold sm:text-2xl truncate max-w-[150px] sm:max-w-none">
+      <span class="text uppercase">Welcome</span> {{ userFullName }}
+    </span>
+  </section>
+  
+  <section class="relative">
+    <div class="flex items-center gap-2 cursor-pointer hover:bg-slate-500/25 p-2 rounded-10 duration-250 group" (click)="toggleDropdown()">
+      <span class="hidden sm:inline font-semibold text">{{ user?.role }}</span>
+      <img [src]="getImageSrc()" alt="Profile"
+           class="w-10 h-10 rounded-full border-2 border-gray-500 group-hover:scale-105 transition-transform duration-200" />
+    </div>
+
+    <div *ngIf="isDropdownOpen()" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50"
+         (click)="$event.stopPropagation()" [@expandCollapse]>
+      <ul class="py-2 text-gray-800">
+        <li (click)="viewProfile()" class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+          <span class="material-icons text-sm">visibility</span> View Profile
+        </li>
+        <li (click)="editProfile()" class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+          <span class="material-icons text-sm">edit</span> Edit Profile
+        </li>
+        <li (click)="logout()" class="px-4 py-2 hover:bg-red-100 text-red-600 cursor-pointer flex items-center gap-2">
+          <span class="material-icons text-sm">logout</span> Logout
+        </li>
+      </ul>
+    </div>
+  </section>
+</nav>
+</div>
+<!-- Sidebars pour l'édition et la visualisation du profil -->
+<app-side-bar-right #editUserSidebar>
+  <app-edit-user *ngIf="userToEdit()" [user]="userToEdit()" (userEdited)="onUserEdited()"></app-edit-user>
+</app-side-bar-right>
+
+<app-side-bar-right #viewUserSidebar>
+  <app-view-user *ngIf="userToView()" [user]="userToView()" (closeEvent)="onUserViewed()"></app-view-user>
+</app-side-bar-right>

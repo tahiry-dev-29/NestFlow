@@ -148,7 +148,7 @@ export const AuthStore = signalStore(
                     patchState(store, resetAuthState());
                     authService.deleteToken();
                     router.navigate(['/login']);
-                    toastr.success('Déconnexion réussie');
+                    toastr.success('🚪 Logging out...');
                   }),
                   catchError((error: ErrorResponse) => {
                     const errorMessage = error.error?.message || ERROR_MESSAGES.LOGOUT_ERROR;

@@ -1,114 +1,113 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
 import { AuthService } from '../../../auth/services/auth.service';
-import { expandCollapse } from '../../../shared/animations/animations';
-import { ViewUserComponent } from "../../../users/components/view-user/view-user.component";
 import { IUsers } from '../../../users/models/users/users.module';
 import { sideLeftBarState } from '../../store/signal.store';
+import { expandCollapse } from '../../../shared/animations/animations';
+import { AuthStore } from '../../../auth/store/auth.store';
+import { SideBarRightComponent } from '../../../shared/components/side-bar-right/side-bar-right.component';
+import { EditUserComponent } from '../../../users/components/edit-user/edit-user.component';
+import { ViewUserComponent } from '../../../users/components/view-user/view-user.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  imports: [ViewUserComponent],
-  template: `
-    <nav
-      class="flex flex-nowrap w-full items-center gap-3 justify-between text-white"
-    >
-      <section class="flex items-center gap-3">
-        <button
-          (click)="toggleSidebar()"
-          class="text-white flex items-center group"
-        >
-          <span
-            class="material-icons text-3xl transition-transform duration-100 ease-in-out group-hover:text group-hover:scale-90 w-10 group-hover:transform-cpu"
-          >
-            menu
-          </span>
-        </button>
-        @let title = "Welcome ";
-        <span class="font-bold text-2xl sm:text-3xl text-uppercase text"
-          >{{ title }} {{ user?.name }} {{ user?.firstName }}</span
-        >
-      </section>
-      <section class="flex items-center gap-3">
-        <button class="text-white flex items-center group">
-          <span
-            class="material-icons text-3xl transition-transform duration-100 ease-in-out group-hover:text group-hover:scale-90 w-10 group-hover:transform-cpu"
-          >
-            notifications
-          </span>
-        </button>
-        <div
-          class="flex items-center cursor-pointer gap-3 transition-transform duration-200 ease-in-out"
-          (click)="toggleDetailsProfil()"
-        >
-          <span class="text-white font-semibold ml-2">{{ user?.role }}</span>
-          <img
-            [src]="getImageSrc()"
-            alt="Profile"
-            class="w-12 h-12 rounded-full border-2 border-gray-500/13 hover:scale-110"
-          />
-        </div>
-      </section>
-    </nav>
-
-    @if (toggleProfil()) {
-    <div class="absolute top-full right-0 flex justify-end z-100 w-full h-screen backdrop-blur" [@expandCollapse]>
-      <div class="w-85">
-      <h3 (click)="showEditUserDetails()" class="text-white">Edit <i class="material-icons">edit</i></h3>
-      <app-view-user [user]="user" (closeEvent)="toggleProfil()">
-      </app-view-user>  
-      </div>
-    </div>
-    }
-  `,
-  styleUrl: './header.component.scss',
   standalone: true,
-  animations: [expandCollapse]
+  imports: [SideBarRightComponent, EditUserComponent, ViewUserComponent, CommonModule],
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss'],
+  animations: [expandCollapse],
 })
 export class HeaderComponent {
   sidebarState = sideLeftBarState;
   user: IUsers | null = null;
   defaultImages = ImageUrl.defaultImages;
-
   authService = inject(AuthService);
-
+  authStore = inject(AuthStore);
+  isDropdownOpen = signal(false);
+  
+  @ViewChild('editUserSidebar') editUserSidebar!: SideBarRightComponent;
+  @ViewChild('viewUserSidebar') viewUserSidebar!: SideBarRightComponent;
+  
+  userToEdit = signal<IUsers | null>(null);
+  userToView = signal<IUsers | null>(null);
+  
+  constructor(private elementRef: ElementRef) {}
+  
   ngOnInit(): void {
     this.loadUserProfile();
   }
-
+  
   getImageSrc(): string {
     const imageUrl = this.user?.imageUrl;
-    if (!imageUrl) return this.defaultImages;
-
-    if (imageUrl.startsWith('data:') || imageUrl.startsWith('../')) {
-      return imageUrl;
-    }
-
-    return `http://localhost:8080/api/images/upload/${imageUrl}`;
+    return imageUrl ? `http://localhost:8080/api/images/upload/${imageUrl}` : this.defaultImages;
   }
-
+  
   loadUserProfile(): void {
     const token = this.authService.getToken();
     this.authService.getUserByToken(token || '').subscribe({
-      next: (user) => {
-        this.user = user;
-      },
+      next: (user) => { this.user = user; }
     });
   }
-
+  
   toggleSidebar(): void {
-    this.sidebarState.update((state) => !state);
-  }
-
-  toggleProfil = signal<boolean>(false);
-
-  toggleDetailsProfil() {
-    this.toggleProfil.set(!this.toggleProfil());
-  }
-
-  showEditUserDetails() {
-    console.log(this.user);
-    
+    this.sidebarState.update(state => !state);
   }
   
+  toggleDropdown(): void {
+    this.isDropdownOpen.update(state => !state);
+  }
+  
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.isDropdownOpen.set(false);
+    }
+  }
+  
+  viewProfile(): void {
+    if (this.user) {
+      this.userToView.set(this.user);
+      // On attend que la référence à la sidebar soit prête
+      setTimeout(() => {
+        if (this.viewUserSidebar) {
+          this.viewUserSidebar.setIsOpen(true);
+        }
+      }, 0);
+    }
+    this.isDropdownOpen.set(false);
+  }
+  
+  editProfile(): void {
+    if (this.user) {
+      this.userToEdit.set(this.user);
+      setTimeout(() => {
+        if (this.editUserSidebar) {
+          this.editUserSidebar.setIsOpen(true);
+        }
+      }, 0);
+    }
+    this.isDropdownOpen.set(false);
+  }
+  
+  logout(): void {
+    this.authStore.logout();
+    this.isDropdownOpen.set(false);
+  }
+  
+  onUserEdited(): void {
+    if (this.editUserSidebar) {
+      this.editUserSidebar.setIsOpen(false);
+    }
+    this.userToEdit.set(null);
+    // Recharger éventuellement le profil
+    this.loadUserProfile();
+  }
+  
+  onUserViewed(): void {
+    if (this.viewUserSidebar) {
+      this.viewUserSidebar.setIsOpen(false);
+    }
+    this.userToView.set(null);
+  }
 }

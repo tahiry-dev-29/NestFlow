@@ -8,11 +8,11 @@ import { slideInOut } from '../../animations/animations';
   imports: [CommonModule],
   template: `
     @if (isOpen()) {
-      <div class="fixed z-990 inset-0 backdrop-blur">
+      <div class="fixed z-[990] inset-0 backdrop-blur">
         <div class="fixed top-0 right-0 h-full bg-slate-900 shadow-lg flex flex-col" [@slideInOut]>
           <div class="flex justify-between items-center p-4 border-b border-gray-700">
             <h2 class="title animate-pulse">{{ title() }}</h2>
-            <button (click)="onClose()" class="text-white hover:text-gray-300">
+            <button (click)="onClose()" class="flex items-center text-white hover:text-red-700/80 hover:bg-slate-500/25 p-2 duration-250 rounded-full">
               <i class="material-icons">close</i>
             </button>
           </div>
