@@ -1,26 +1,10 @@
-// subscription-chart.service.ts
+// src/app/subscription/services/subscription-chart.service.ts
+
 import { Injectable, inject } from '@angular/core';
 import { ChartOptions } from 'chart.js';
 import { UserStore } from '../../users/store/users.store';
 import { SubscriptionStore } from '../../subscription/store/store';
-
-export interface ChartDataSet {
-  label: string;
-  value: number;
-}
-
-export interface ChartDataConfig {
-  labels: string[];
-  datasets: {
-    label?: string;
-    data: number[];
-    backgroundColor: string | string[];
-    borderColor?: string | string[];
-    borderWidth?: number;
-    fill?: boolean;
-    tension?: number;
-  }[];
-}
+import { ChartDataSet, ChartDataConfig } from '../models/chart.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +13,7 @@ export class SubscriptionChartService {
   private userStore = inject(UserStore);
   private subscriptionStore = inject(SubscriptionStore);
 
+  /** Liste des types de données pour les charts */
   getDataTypes(): string[] {
     return [
       'User Data',
@@ -39,6 +24,7 @@ export class SubscriptionChartService {
     ];
   }
 
+  /** Retourne un tableau de statistiques en fonction du dataType */
   getChartData(dataType: string): ChartDataSet[] {
     const subscriptions = this.subscriptionStore.subscriptionsWithDetails();
     const users = this.userStore.users();
@@ -50,13 +36,12 @@ export class SubscriptionChartService {
 
     const stats = this.subscriptionStore.subscriptionStats();
 
-    switch(dataType) {
-      case 'User Data': {
+    switch (dataType) {
+      case 'User Data':
         return [
           { label: 'Active Users', value: users.filter(user => user.online).length },
           { label: 'Total Users', value: users.length }
         ];
-      }
 
       case 'Business Unit': {
         const totalRevenue = subscriptions.reduce((total, sub) => total + (sub.details.price || 0), 0);
@@ -66,12 +51,11 @@ export class SubscriptionChartService {
         ];
       }
 
-      case 'Subscription Status': {
+      case 'Subscription Status':
         return [
           { label: 'Active', value: stats.active },
           { label: 'Expired', value: stats.expired }
         ];
-      }
 
       case 'User Status': {
         const activeUsers = users.filter(user => user.online === true).length;
@@ -96,6 +80,7 @@ export class SubscriptionChartService {
     }
   }
 
+  /** Définit les couleurs globales */
   getChartColors() {
     return {
       primary: {
@@ -121,36 +106,39 @@ export class SubscriptionChartService {
     };
   }
 
+  /**
+   * Retourne une configuration de chart formatée en fonction du type de données et du type de chart.
+   */
   formatChartData(dataType: string, chartType: string): ChartDataConfig {
     const data = this.getChartData(dataType);
     const colors = this.getChartColors();
-    
-    let backgroundColor: string | string[], borderColor: string | string[];
-    switch(dataType) {
-      case 'User Data':
-        backgroundColor = [colors.primary.bg, colors.success.bg];
-        borderColor = [colors.primary.base, colors.success.base];
-        break;
-      case 'Business Unit':
-        backgroundColor = [colors.success.bg, colors.warning.bg];
-        borderColor = [colors.success.base, colors.warning.base];
-        break;
-      case 'Subscription Status':
-        backgroundColor = [colors.success.bg, colors.danger.bg];
-        borderColor = [colors.success.base, colors.danger.base];
-        break;
-      case 'User Status':
-        backgroundColor = [colors.primary.bg, colors.warning.bg];
-        borderColor = [colors.primary.base, colors.warning.base];
-        break;
-      case 'Subscription Revenue':
-        backgroundColor = [colors.success.bg, colors.primary.bg];
-        borderColor = [colors.success.base, colors.primary.base];
-        break;
-      default:
-        backgroundColor = colors.primary.bg;
-        borderColor = colors.primary.base;
-    }
+
+    // Dictionnaire pour associer chaque dataType aux couleurs souhaitées
+    const colorMapping: Record<string, { backgroundColor: string | string[]; borderColor: string | string[] }> = {
+      'User Data': {
+        backgroundColor: [colors.primary.bg, colors.success.bg],
+        borderColor: [colors.primary.base, colors.success.base]
+      },
+      'Business Unit': {
+        backgroundColor: [colors.success.bg, colors.warning.bg],
+        borderColor: [colors.success.base, colors.warning.base]
+      },
+      'Subscription Status': {
+        backgroundColor: [colors.success.bg, colors.danger.bg],
+        borderColor: [colors.success.base, colors.danger.base]
+      },
+      'User Status': {
+        backgroundColor: [colors.primary.bg, colors.warning.bg],
+        borderColor: [colors.primary.base, colors.warning.base]
+      },
+      'Subscription Revenue': {
+        backgroundColor: [colors.success.bg, colors.primary.bg],
+        borderColor: [colors.success.base, colors.primary.base]
+      }
+    };
+
+    // Valeurs par défaut si le dataType n'est pas défini dans le mapping
+    const { backgroundColor, borderColor } = colorMapping[dataType] || { backgroundColor: colors.primary.bg, borderColor: colors.primary.base };
 
     const chartConfig: ChartDataConfig = {
       labels: data.map(item => item.label),
@@ -159,20 +147,16 @@ export class SubscriptionChartService {
         data: data.map(item => item.value),
         backgroundColor,
         borderColor,
-        borderWidth: 2,
+        borderWidth: chartType === 'pie' || chartType === 'doughnut' ? 1 : 2,
         fill: chartType === 'line',
         tension: chartType === 'line' ? 0.4 : undefined
       }]
     };
 
-    if (chartType === 'pie' || chartType === 'doughnut') {
-      chartConfig.datasets[0].borderWidth = 1;
-      chartConfig.datasets[0].fill = true;
-    }
-
     return chartConfig;
   }
 
+  /** Options générales pour les charts */
   getChartOptions(): ChartOptions {
     return {
       responsive: true,
@@ -190,12 +174,8 @@ export class SubscriptionChartService {
         },
         tooltip: {
           backgroundColor: 'rgba(15, 23, 42, 0.9)',
-          titleFont: {
-            family: 'shantellasans'
-          },
-          bodyFont: {
-            family: 'shantellasans'
-          }
+          titleFont: { family: 'shantellasans' },
+          bodyFont: { family: 'shantellasans' }
         }
       },
       scales: {
@@ -204,24 +184,21 @@ export class SubscriptionChartService {
           grid: { color: 'rgba(255, 255, 255, 0.1)' },
           ticks: { 
             color: 'white',
-            font: {
-              family: 'shantellasans'
-            }
+            font: { family: 'shantellasans' }
           }
         },
         x: {
           grid: { color: 'rgba(255, 255, 255, 0.1)' },
           ticks: { 
             color: 'white',
-            font: {
-              family: 'shantellasans'
-            }
+            font: { family: 'shantellasans' }
           }
         }
       }
     };
   }
 
+  /** Options spécifiques pour les mini charts */
   getMiniChartOptions(): ChartOptions {
     return {
       responsive: true,
@@ -232,30 +209,26 @@ export class SubscriptionChartService {
           position: 'bottom',
           labels: {
             color: 'white',
-            font: {
-              family: 'shantellasans'
-            },
+            font: { family: 'shantellasans' },
             padding: 20
           }
         },
         tooltip: {
           enabled: true,
           backgroundColor: 'rgba(15, 23, 42, 0.9)',
-          titleFont: {
-            family: 'shantellasans'
-          },
-          bodyFont: {
-            family: 'shantellasans'
-          },
+          titleFont: { family: 'shantellasans' },
+          bodyFont: { family: 'shantellasans' },
           callbacks: {
-            label: function(context) {
+            label: (context) => {
               const value = context.raw as number;
-              if (context.dataIndex === 0) {
-                return `Revenue: ${value.toLocaleString()} €`;
-              } else if (context.dataIndex === 1) {
-                return `Abonnements: ${value}`;
-              } else {
-                return `Utilisateurs: ${value}`;
+              // Personnalisation en fonction de l'indice de donnée
+              switch (context.dataIndex) {
+                case 0:
+                  return `Revenue: ${value.toLocaleString()} €`;
+                case 1:
+                  return `Abonnements: ${value}`;
+                default:
+                  return `Utilisateurs: ${value}`;
               }
             }
           }

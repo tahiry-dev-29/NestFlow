@@ -2,5 +2,10 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.debug.settings.onBuildFailureProceed": true,
-    "chat.editor.wordWrap": "on"
+    "chat.editor.wordWrap": "on",
+    "angular-schematics.schematicsDefaultOptions": {
+        "angular-*": {
+            "inlineStyle": true
+        }
+    }
 }
