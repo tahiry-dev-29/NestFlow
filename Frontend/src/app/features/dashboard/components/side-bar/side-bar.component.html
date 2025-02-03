@@ -2,133 +2,200 @@
 
 <aside
   class="content-style lg:static z-30 text-white rounded-2xl overflow-x-hidden h-[calc(100vh-50px)]"
-  [class.content-style]="sideLeftBarState()">
-
+  [class.content-style]="sideLeftBarState()"
+>
   <div class="flex flex-col space-y-6 my-0 mx-2 h-full">
     <!-- Logo -->
-    <div class="flex items-center justify-center border-b border-gray-700 my-2 ">
-      <img [src]="ImageUrl" alt="Site Logo" class="w-full rounded-full " />
+    <div class="flex items-center justify-center border-b border-gray-700 my-2">
+      <img [src]="ImageUrl" alt="Site Logo" class="w-full rounded-full" />
     </div>
 
     <!-- Navigation avec Defer -->
     <section
       class="flex flex-col flex-grow mt-4 mb-0 overflow-y-auto overflow-x-hidden custom-scrollbar"
-      [ngClass]="sideLeftBarState() ? 'hover:custom-scrollbar' : 'no-custom-scrollbar'"
+      [ngClass]="
+        sideLeftBarState() ? 'hover:custom-scrollbar' : 'no-custom-scrollbar'
+      "
     >
-
       @defer (when timer()) {
-        <ul class="flex flex-col pl-0 mb-0 space-y-2 gap-y-3">
-          <!-- Dashboard -->
-          <li class="flex items-center hover-lists" routerLink="overview" routerLinkActive="active-lists"
-            [routerLinkActiveOptions]="{ exact: true }">
-            <a class="flex items-center text-blue-500/85">
-              <span class="menu-icon" [ngClass]="classes().menuIconClass('overview')">
-                dashboard
-              </span>
-              <span class="font-semibold" [ngClass]="classes().textClassList('overview')">
-                Dashboard
-              </span>
-            </a>
-          </li>
+      <ul class="flex flex-col pl-0 mb-0 space-y-2 gap-y-3">
+        <!-- Dashboard -->
+        <li
+          class="flex w-full justify-between items-center hover-lists"
+          routerLink="overview"
+          routerLinkActive="active-lists"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a class="flex items-center text-blue-500/85">
+            <span
+              class="menu-icon"
+              [ngClass]="classes().menuIconClass('overview')"
+            >
+              dashboard
+            </span>
+            <span
+              class="font-semibold"
+              [ngClass]="classes().textClassList('overview')"
+            >
+              Dashboard
+            </span>
+          </a>
+          <span
+            class="menu-icon"
+            [ngClass]="classes().menuIconClass('overview')"
+          >
+            equalizer
+          </span>
+        </li>
 
-          <!-- Dropdowns -->
-          <li *ngFor="let dropdown of dropdowns; let i = index" class="flex flex-col hover-dropdown-lists"
-            [ngClass]="classes().dropdownListClasses(i)">
-            <div class="group w-full flex flex-col gap-y-4">
-              <button class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
-                (click)="toggleDropdownState(i)">
-                <div class="flex gap-2 items-center justify-between">
-                  <span class="material-icons text-5" [ngClass]="classes().dropdownIconClasses(i)">
-                    {{ dropdown.icon }}
-                  </span>
-                  <span class="font-semibold" [ngClass]="classes().dropdownTextClasses(i)">
-                    {{ dropdown.label }}
-                  </span>
-                </div>
-                <span class="material-icons text-lg transition-transform" [ngClass]="classes().dropdownArrowClasses(i)">
-                  arrow_forward_ios
+        <!-- Dropdowns -->
+        <li
+          *ngFor="let dropdown of dropdowns; let i = index"
+          class="flex flex-col hover-dropdown-lists"
+          [ngClass]="classes().dropdownListClasses(i)"
+        >
+          <div class="group w-full flex flex-col gap-y-4">
+            <button
+              class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
+              (click)="toggleDropdownState(i)"
+            >
+              <div class="flex gap-2 items-center justify-between">
+                <span
+                  class="material-icons text-5"
+                  [ngClass]="classes().dropdownIconClasses(i)"
+                >
+                  {{ dropdown.icon }}
                 </span>
-              </button>
+                <span
+                  class="font-semibold"
+                  [ngClass]="classes().dropdownTextClasses(i)"
+                >
+                  {{ dropdown.label }}
+                </span>
+              </div>
+              <span
+                class="material-icons text-lg transition-transform"
+                [ngClass]="classes().dropdownArrowClasses(i)"
+              >
+                arrow_forward_ios
+              </span>
+            </button>
 
-              <!-- Sous-menu avec Defer -->
-                <div class="transition-all duration-300" [class.hidden]="activeDropdown() !== i">
-                  <ul class="flex flex-col gap-2 text-white">
-                    <li *ngFor="let subItem of dropdown.subItems" class="flex items-center hover-lists"
-                      [routerLink]="subItem.link" routerLinkActive="active-lists"
-                      [routerLinkActiveOptions]="{ exact: true }">
-                      <a class="flex items-center gap-2 text-yellow-500/85">
-                        <span class="material-icons text-5" [ngClass]="classes().menuIconClass(subItem.link)">
-                          {{ subItem.icon }}
-                        </span>
-                        <span class="font-semibold" [ngClass]="classes().textClassList(subItem.link)">
-                          {{ subItem.label }}
-                        </span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-
-            </div>
-          </li>
-        </ul>
-      } @placeholder {
-        <div class="p-4 space-y-4">
-          <div class="animate-pulse space-y-6">
-            <div class="flex items-center space-x-4">
-              <div class="h-8 w-8 bg-slate-700 rounded"></div>
-              <div class="h-4 bg-slate-700 rounded w-24"></div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <div class="h-8 w-8 bg-slate-700 rounded"></div>
-              <div class="h-4 bg-slate-700 rounded w-32"></div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <div class="h-8 w-8 bg-slate-700 rounded"></div>
-              <div class="h-4 bg-slate-700 rounded w-28"></div>
+            <!-- Sous-menu avec Defer -->
+            <div
+              class="transition-all duration-300"
+              [class.hidden]="activeDropdown() !== i"
+            >
+              <ul class="flex flex-col gap-2 text-white">
+                <li
+                  *ngFor="let subItem of dropdown.subItems"
+                  class="flex items-center hover-lists"
+                  [routerLink]="subItem.link"
+                  routerLinkActive="active-lists"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  <a class="flex items-center gap-2 text-yellow-500/85">
+                    <span
+                      class="material-icons text-5"
+                      [ngClass]="classes().menuIconClass(subItem.link)"
+                    >
+                      {{ subItem.icon }}
+                    </span>
+                    <span
+                      class="font-semibold"
+                      [ngClass]="classes().textClassList(subItem.link)"
+                    >
+                      {{ subItem.label }}
+                    </span>
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
+        </li>
+      </ul>
+      } @placeholder {
+      <div class="p-4 space-y-4">
+        <div class="animate-pulse space-y-6">
+          <div class="flex items-center space-x-4">
+            <div class="h-8 w-8 bg-slate-700 rounded"></div>
+            <div class="h-4 bg-slate-700 rounded w-24"></div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="h-8 w-8 bg-slate-700 rounded"></div>
+            <div class="h-4 bg-slate-700 rounded w-32"></div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="h-8 w-8 bg-slate-700 rounded"></div>
+            <div class="h-4 bg-slate-700 rounded w-28"></div>
+          </div>
         </div>
+      </div>
       }
 
       <!-- Settings avec Defer -->
       @defer (when timer()) {
-        <ul class="sticky bottom-0 mt-auto border-t border-gray-700 py-4">
-          <li class="flex items-center hover-lists" [ngClass]="dropdownClasses().listClasses">
-            <div class="group w-full">
-              <div class="transition-all duration-300" [class.hidden]="!sideRightbarState()">
-                <ul class="flex flex-col gap-2 text-white">
-                  <li class="flex items-center group-hover:shadow-dark-blur group rounded-3 transition mb-3">
-                    <button (click)="logout()" class="flex w-full justify-around gap-2 p-2 items-center space-x-3">
-                      <span class="font-semibold group-hover:text">Logout</span>
-                      <span class="material-icons text-5 group-hover:text">logout</span>
-                    </button>
-                  </li>
-                </ul>
-              </div>
-              <button class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
-                (click)="toggleDropdown()">
-                <div class="flex items-center gap-5">
-                  <span class="material-icons text-5" [ngClass]="dropdownClasses().iconClasses">
-                    settings
-                  </span>
-                  <span class="font-semibold" [ngClass]="dropdownClasses().textClasses">
-                    Settings
-                  </span>
-                </div>
-                <span class="material-icons text-lg transition-transform" [ngClass]="dropdownClasses().arrowClasses">
-                  arrow_forward_ios
-                </span>
-              </button>
+      <ul class="sticky bottom-0 mt-auto border-t border-gray-700 py-4">
+        <li
+          class="flex items-center hover-lists"
+          [ngClass]="dropdownClasses().listClasses"
+        >
+          <div class="group w-full">
+            <div
+              class="transition-all duration-300"
+              [class.hidden]="!sideRightbarState()"
+            >
+              <ul class="flex flex-col gap-2 text-white">
+                <li
+                  class="flex items-center group-hover:shadow-dark-blur group rounded-3 transition mb-3"
+                >
+                  <button
+                    (click)="logout()"
+                    class="flex w-full justify-around gap-2 p-2 items-center space-x-3"
+                  >
+                    <span class="font-semibold group-hover:text">Logout</span>
+                    <span class="material-icons text-5 group-hover:text"
+                      >logout</span
+                    >
+                  </button>
+                </li>
+              </ul>
             </div>
-          </li>
-        </ul>
-      } @placeholder {
-        <div class="mt-auto border-t border-gray-700 py-4">
-          <div class="animate-pulse flex items-center space-x-4 p-4">
-            <div class="h-8 w-8 bg-slate-700 rounded"></div>
-            <div class="h-4 bg-slate-700 rounded w-20"></div>
+            <button
+              class="flex items-center justify-between gap-2 font-medium cursor-pointer rounded-lg w-full"
+              (click)="toggleDropdown()"
+            >
+              <div class="flex items-center gap-5">
+                <span
+                  class="material-icons text-5"
+                  [ngClass]="dropdownClasses().iconClasses"
+                >
+                  settings
+                </span>
+                <span
+                  class="font-semibold"
+                  [ngClass]="dropdownClasses().textClasses"
+                >
+                  Settings
+                </span>
+              </div>
+              <span
+                class="material-icons text-lg transition-transform"
+                [ngClass]="dropdownClasses().arrowClasses"
+              >
+                arrow_forward_ios
+              </span>
+            </button>
           </div>
+        </li>
+      </ul>
+      } @placeholder {
+      <div class="mt-auto border-t border-gray-700 py-4">
+        <div class="animate-pulse flex items-center space-x-4 p-4">
+          <div class="h-8 w-8 bg-slate-700 rounded"></div>
+          <div class="h-4 bg-slate-700 rounded w-20"></div>
         </div>
+      </div>
       }
     </section>
   </div>

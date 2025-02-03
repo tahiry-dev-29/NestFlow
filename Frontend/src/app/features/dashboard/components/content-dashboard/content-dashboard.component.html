@@ -1,15 +1,25 @@
-<div class="chart-container rounded-2xl bg-slate-900/80" [@fadeInOut]>
+<div class="chart-container rounded-2xl bg-slate-900/80">
   <!-- En-tête -->
   <div class="flex justify-between items-center mb-8">
     <div class="flex items-center gap-4">
-      <h2 class="text-xl font-semibold text-neon-primary">Risk Metrics Dashboard</h2>
+      <h2 class="text-xl font-semibold text-neon-primary">
+        Risk Metrics Dashboard
+      </h2>
       <div class="flex items-center gap-2 text-gray-400">
-        <span>Last update at {{ lastUpdate | date:'HH:mm' }}</span>
+        <span>Last update at {{ lastUpdate | date : "HH:mm" }}</span>
         <button class="action-button p-1" (click)="refreshData()">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-            </path>
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            ></path>
           </svg>
         </button>
       </div>
@@ -17,7 +27,9 @@
   </div>
 
   <!-- Mini Charts -->
-  <div class="grid xl:grid-cols-4 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4 mb-8 metrics-grid">
+  <div
+    class="grid xl:grid-cols-4 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4 mb-8 metrics-grid"
+  >
     <!-- Relationships -->
     <div class="metric-card metric-card--primary">
       <div class="flex justify-between items-start mb-4">
@@ -25,11 +37,17 @@
           <p class="text-gray-400 text-sm">Relationships</p>
           <div class="flex items-baseline gap-2">
             <!-- Utilisation du computed signal -->
-            <h3 class="metric-value text-neon-primary">{{ formattedRelationships() }}</h3>
+            <h3 class="metric-value text-neon-primary">
+              {{ formattedRelationships() }}
+            </h3>
           </div>
         </div>
       </div>
-      <app-mini-chart [data]="miniChartData" [options]="miniChartOptions" chartType="line"></app-mini-chart>
+      <app-mini-chart
+        [data]="miniChartData"
+        [options]="miniChartOptions"
+        chartType="line"
+      ></app-mini-chart>
     </div>
     <!-- Average Risk -->
     <div class="metric-card metric-card--warning">
@@ -37,11 +55,17 @@
         <div>
           <p class="text-gray-400 text-sm">Average Risk</p>
           <div class="flex items-baseline gap-2">
-            <h3 class="metric-value text-neon-warning">{{ formattedAverageRisk() }}</h3>
+            <h3 class="metric-value text-neon-warning">
+              {{ formattedAverageRisk() }}
+            </h3>
           </div>
         </div>
       </div>
-      <app-mini-chart [data]="riskChartData" [options]="miniChartOptions" chartType="line"></app-mini-chart>
+      <app-mini-chart
+        [data]="riskChartData"
+        [options]="miniChartOptions"
+        chartType="line"
+      ></app-mini-chart>
     </div>
     <!-- Coverage -->
     <div class="metric-card metric-card--success">
@@ -49,11 +73,17 @@
         <div>
           <p class="text-gray-400 text-sm">Coverage</p>
           <div class="flex items-baseline gap-2">
-            <h3 class="metric-value text-neon-success">{{ formattedCoverage() }}</h3>
+            <h3 class="metric-value text-neon-success">
+              {{ formattedCoverage() }}
+            </h3>
           </div>
         </div>
       </div>
-      <app-mini-chart [data]="coverageChartData" [options]="miniChartOptions" chartType="line"></app-mini-chart>
+      <app-mini-chart
+        [data]="coverageChartData"
+        [options]="miniChartOptions"
+        chartType="line"
+      ></app-mini-chart>
     </div>
     <!-- Performance -->
     <div class="metric-card metric-card--danger">
@@ -61,11 +91,17 @@
         <div>
           <p class="text-gray-400 text-sm">Performance</p>
           <div class="flex items-baseline gap-2">
-            <h3 class="metric-value text-neon-danger">{{ formattedPerformance() }}</h3>
+            <h3 class="metric-value text-neon-danger">
+              {{ formattedPerformance() }}
+            </h3>
           </div>
         </div>
       </div>
-      <app-mini-chart [data]="performanceChartData" [options]="miniChartOptions" chartType="line"></app-mini-chart>
+      <app-mini-chart
+        [data]="performanceChartData"
+        [options]="miniChartOptions"
+        chartType="line"
+      ></app-mini-chart>
     </div>
   </div>
 
@@ -76,29 +112,56 @@
       <div class="chart-header">
         <h3>Average Risk Over Time</h3>
         <div class="controls">
-          <select [(ngModel)]="mainChartDataType" (change)="updateMainChart()" class="select-control">
-            <option *ngFor="let type of dataTypes" [value]="type">{{ type }}</option>
+          <select
+            [(ngModel)]="mainChartDataType"
+            (change)="updateMainChart()"
+            class="select-control"
+          >
+            <option *ngFor="let type of dataTypes" [value]="type">
+              {{ type }}
+            </option>
           </select>
-          <select [(ngModel)]="mainChartType" (change)="updateMainChart()" class="select-control">
-            <option *ngFor="let type of chartTypes" [value]="type">{{ type }}</option>
+          <select
+            [(ngModel)]="mainChartType"
+            (change)="updateMainChart()"
+            class="select-control"
+          >
+            <option *ngFor="let type of chartTypes" [value]="type">
+              {{ type }}
+            </option>
           </select>
         </div>
       </div>
       <div class="chart-body">
-        <app-main-chart [data]="mainChartData" [options]="mainChartOptions" [chartType]="mainChartType"></app-main-chart>
+        <app-main-chart
+          [data]="mainChartData"
+          [options]="mainChartOptions"
+          [chartType]="mainChartType"
+        ></app-main-chart>
       </div>
     </div>
 
-    <!-- Right Chart : Risk by business unit -->
-    <div class="metric-card metric-card--primary lg:col-span-1 md:col-span-2 col-span-1">
+    <div
+      class="metric-card metric-card--primary lg:col-span-1 md:col-span-2 col-span-1"
+    >
       <div class="chart-header">
         <h3 class="text-neon-primary mb-5">Risk by Business Unit</h3>
-        <select [(ngModel)]="businessUnitChartType" (change)="updateBusinessUnitChart()" class="select-control">
-          <option *ngFor="let type of pieChartTypes" [value]="type">{{ type }}</option>
+        <select
+          [(ngModel)]="businessUnitChartType"
+          (change)="updateBusinessUnitChart()"
+          class="select-control"
+        >
+          <option *ngFor="let type of pieChartTypes" [value]="type">
+            {{ type }}
+          </option>
         </select>
       </div>
       <div class="chart-body">
-        <app-right-chart [data]="businessUnitData" [options]="doughnutOptions" [chartType]="businessUnitChartType"></app-right-chart>
+        <app-right-chart
+          [data]="businessUnitData"
+          [options]="doughnutOptions"
+          [chartType]="businessUnitChartType"
+        ></app-right-chart>
       </div>
     </div>
   </div>

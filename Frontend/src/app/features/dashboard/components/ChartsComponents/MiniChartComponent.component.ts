@@ -24,5 +24,5 @@ import { BaseChartDirective } from 'ng2-charts';
 export class MiniChartComponentComponent {
   @Input() data: any;
   @Input() options: ChartOptions = {};
-  @Input() chartType: 'line' | 'bar' | 'radar' | 'doughnut' | 'pie' | 'polarArea' | 'bubble' | 'scatter' = 'line';
+  @Input() chartType: 'line' | 'bar' | 'doughnut' | 'pie' | 'polarArea' | 'bubble' = 'line';
 }

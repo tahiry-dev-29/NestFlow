@@ -20,5 +20,5 @@ import { BaseChartDirective } from 'ng2-charts';
 export class MainChartComponent {
   @Input() data: any;
   @Input() options: ChartOptions = {};
-  @Input() chartType: 'bar' | 'line' | 'scatter' | 'pie' | 'doughnut' = 'bar';
+  @Input() chartType: 'bar' | 'line' | 'pie' | 'doughnut' = 'bar';
 }

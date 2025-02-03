@@ -1,44 +1,45 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Chart, ChartOptions, ChartTypeRegistry, registerables } from 'chart.js';
-import { SubscriptionStore } from '../../../subscription/store/store';
-import { UserStore } from '../../../users/store/users.store';
+import {
+  Chart,
+  ChartOptions,
+  ChartTypeRegistry,
+  registerables,
+} from 'chart.js';
+import { ToastrService } from 'ngx-toastr';
 import { MainChartComponent } from '../ChartsComponents/MainChartComponent.component';
 import { MiniChartComponentComponent } from '../ChartsComponents/MiniChartComponent.component';
 import { RightChartComponent } from '../ChartsComponents/RightChartComponent.component';
 import { ChartDataConfig } from '../../models/chart.model';
+import { SubscriptionStore } from '../../../subscription/store/store';
+import { UserStore } from '../../../users/store/users.store';
 import { SubscriptionChartService } from '../../services/SubscriptionChartService.service';
-import { ToastrService } from 'ngx-toastr';
 
-// Enregistrer les composants Chart.js nécessaires
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-content-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainChartComponent, MiniChartComponentComponent, RightChartComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MainChartComponent,
+    MiniChartComponentComponent,
+    RightChartComponent,
+  ],
   templateUrl: './content-dashboard.component.html',
   styleUrls: ['./content-dashboard.component.scss'],
-  animations: [
-    trigger('fadeInOut', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ]),
-      transition(':leave', [
-        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(10px)' }))
-      ])
-    ])
-  ]
 })
 export class ContentDashboardComponent implements OnInit {
+  // Injection des stores et services
   private subscriptionStore = inject(SubscriptionStore);
   private userStore = inject(UserStore);
   private chartService = inject(SubscriptionChartService);
-  private dataLoaded = false;
-  private readonly toaster = inject(ToastrService);
+  private toaster = inject(ToastrService);
+
+  // Indicateur de chargement
+  dataLoaded = false;
 
   // Données des charts
   miniChartData?: ChartDataConfig;
@@ -54,51 +55,50 @@ export class ContentDashboardComponent implements OnInit {
   mainChartOptions: ChartOptions;
   doughnutOptions: ChartOptions;
 
-  // Listes et sélections
+  // Listes de types de données et de graphiques
   dataTypes: string[] = [];
   chartTypes: (keyof ChartTypeRegistry)[] = ['line', 'bar', 'pie', 'doughnut'];
-  pieChartTypes: (keyof ChartTypeRegistry)[] = ['pie', 'doughnut', 'polarArea', 'radar'];
+  pieChartTypes: (keyof ChartTypeRegistry)[] = ['pie', 'doughnut'];
 
-  // Autres propriétés
-  currentDate: Date = new Date();
-  selectedDate: Date | null = null;
-  calendarDays: Date[] = [];
-  lastUpdate: Date = new Date();
-
-  // Paramètres des charts
+  // Paramètres des graphiques
   mainChartDataType = 'Average risk over time';
-  mainChartType: 'bar' | 'line' | 'scatter' | 'pie' | 'doughnut' = 'bar';
+  mainChartType: 'bar' | 'line' | 'pie' | 'doughnut' = 'bar';
   businessUnitDataType: string = 'Risk by business unit';
   businessUnitChartType: keyof ChartTypeRegistry = 'doughnut';
 
-  // Signals pour les mini charts (exemple : Relationships, Average Risk, Coverage, Performance)
+  // Signals pour les mini charts (exemples statiques initiaux)
   relationshipsSignal = signal({ count: 852, change: 11 });
   averageRiskSignal = signal({ value: 42, change: 0 });
   coverageSignal = signal({ value: 94, change: 0 });
   performanceSignal = signal({ value: 76, change: 0 });
 
-  // Exemple de computed signal pour formater l'affichage (nombre et pourcentage)
-  formattedRelationships = computed(() =>
-    `${this.relationshipsSignal().count} (${this.relationshipsSignal().change > 0 ? '+' : ''}${this.relationshipsSignal().change}%)`
+  // Signals computed pour l'affichage formaté
+  formattedRelationships = computed(
+    () =>
+      `${this.relationshipsSignal().count} (${
+        this.relationshipsSignal().change > 0 ? '+' : ''
+      }${this.relationshipsSignal().change}%)`
   );
-  formattedAverageRisk = computed(() =>
-    `${this.averageRiskSignal().value}%`
-  );
-  formattedCoverage = computed(() =>
-    `${this.coverageSignal().value}%`
-  );
-  formattedPerformance = computed(() =>
-    `${this.performanceSignal().value}%`
-  );
+  formattedAverageRisk = computed(() => `${this.averageRiskSignal().value}%`);
+  formattedCoverage = computed(() => `${this.coverageSignal().value}%`);
+  formattedPerformance = computed(() => `${this.performanceSignal().value}%`);
+
+  currentDate: Date = new Date();
+  selectedDate: Date | null = null;
+  calendarDays: Date[] = [];
+  lastUpdate: Date = new Date();
+
+  totalSubscriptions: number = 0;
 
   constructor() {
     this.dataTypes = this.chartService.getDataTypes();
-    this.chartTypes = ['line', 'bar', 'pie', 'doughnut', 'scatter'];
-
     this.chartOptions = this.chartService.getChartOptions();
     this.miniChartOptions = this.chartService.getMiniChartOptions();
     this.mainChartOptions = this.chartOptions;
-    this.doughnutOptions = { ...this.chartOptions, scales: undefined };
+    this.doughnutOptions = {
+      ...this.chartOptions,
+      scales: undefined,
+    };
   }
 
   ngOnInit() {
@@ -108,38 +108,44 @@ export class ContentDashboardComponent implements OnInit {
   private loadInitialData() {
     Promise.all([
       this.subscriptionStore.LoadSubscriptionWithDetails([]),
-      this.userStore.loadUsers([])
-    ]).then(() => {
-      setTimeout(() => {
-        this.dataLoaded = true;
-        this.updateAllCharts();
-      }, 500);
-    }).catch(error => {
-      this.toaster.error('Error loading data:', error);
-    });
+      this.userStore.loadUsers([]),
+    ])
+      .then(() => {
+        setTimeout(() => {
+          this.dataLoaded = true;
+          this.updateAllCharts();
+          this.updateBusinessUnitChart();
+        }, 500);
+      })
+      .catch((error) => {
+        this.toaster.error('Error loading data:', error);
+      });
   }
 
   private updateAllCharts() {
     if (!this.dataLoaded) return;
-
-    // *** MAIN CHART : "Average risk over time" ***
     {
-      const userData = this.chartService.getChartData('User Data');            // [Active Users, Total Users]
-      const subStatus = this.chartService.getChartData('Subscription Status');   // [Active, Expired]
-      const subDuration = this.chartService.getChartData('Subscription Duration'); // Données mensuelles
+      const userData = this.chartService.getChartData('User Data');
+      const subStatus = this.chartService.getChartData('Subscription Status');
+      const subDuration = this.chartService.getChartData(
+        'Subscription Duration'
+      );
 
-      const labels = subDuration.map(item => item.label);
-      const activeUsersValue = userData.find(item => item.label === 'Active Users')?.value || 0;
-      const totalUsersValue = userData.find(item => item.label === 'Total Users')?.value || 0;
-      const subActiveValue = subStatus.find(item => item.label === 'Active')?.value || 0;
-      const subExpiredValue = subStatus.find(item => item.label === 'Expired')?.value || 0;
-      
-      // On duplique les valeurs globales sur chaque mois
+      const labels = subDuration.map((item) => item.label);
+      const activeUsersValue =
+        userData.find((item) => item.label === 'Active Users')?.value || 0;
+      const totalUsersValue =
+        userData.find((item) => item.label === 'Total Users')?.value || 0;
+      const subActiveValue =
+        subStatus.find((item) => item.label === 'Active')?.value || 0;
+      const subExpiredValue =
+        subStatus.find((item) => item.label === 'Expired')?.value || 0;
+
       const activeUsersArray = labels.map(() => activeUsersValue);
       const totalUsersArray = labels.map(() => totalUsersValue);
       const subActiveArray = labels.map(() => subActiveValue);
       const subExpiredArray = labels.map(() => subExpiredValue);
-      const avgDurationArray = subDuration.map(item => item.value);
+      const avgDurationArray = subDuration.map((item) => item.value);
 
       this.mainChartData = {
         labels,
@@ -147,306 +153,262 @@ export class ContentDashboardComponent implements OnInit {
           {
             label: 'Total Users',
             data: totalUsersArray,
-            backgroundColor: 'rgba(13, 110, 253, 0.1)', // primary.bg
-            borderColor: '#0D6EFD',                      // primary.base
+            backgroundColor: this.chartService.getChartColors().primary.bg,
+            borderColor: this.chartService.getChartColors().primary.base,
             borderWidth: 2,
             fill: false,
-            tension: 0.4
+            tension: 0.4,
           },
           {
             label: 'Active Users',
             data: activeUsersArray,
-            backgroundColor: 'rgba(25, 135, 84, 0.1)', // success.bg
-            borderColor: '#198754',                     // success.base
+            backgroundColor: this.chartService.getChartColors().success.bg,
+            borderColor: this.chartService.getChartColors().success.base,
             borderWidth: 2,
             fill: false,
-            tension: 0.4
+            tension: 0.4,
           },
           {
             label: 'Active Subscriptions',
             data: subActiveArray,
-            backgroundColor: 'rgba(255, 193, 7, 0.1)', // warning.bg
-            borderColor: '#FFC107',                    // warning.base
+            backgroundColor: this.chartService.getChartColors().warning.bg,
+            borderColor: this.chartService.getChartColors().warning.base,
             borderWidth: 2,
             fill: false,
-            tension: 0.4
+            tension: 0.4,
           },
           {
             label: 'Expired Subscriptions',
             data: subExpiredArray,
-            backgroundColor: 'rgba(220, 53, 69, 0.1)', // danger.bg
-            borderColor: '#DC3545',                    // danger.base
+            backgroundColor: this.chartService.getChartColors().danger.bg,
+            borderColor: this.chartService.getChartColors().danger.base,
             borderWidth: 2,
             fill: false,
-            tension: 0.4
+            tension: 0.4,
           },
           {
             label: 'Avg Duration (months)',
             data: avgDurationArray,
-            backgroundColor: 'rgba(66, 178, 255, 0.1)', // Exemple avec une couleur complémentaire
+            backgroundColor: 'rgba(66, 178, 255, 0.1)',
             borderColor: '#66B2FF',
             borderWidth: 2,
             fill: false,
-            tension: 0.4
-          }
-        ]
+            tension: 0.4,
+          },
+        ],
       };
     }
-
-    // *** BUSINESS UNIT CHART : "Risk by business unit" ***
     {
       const subscriptions = this.subscriptionStore.subscriptionsWithDetails();
-      const priceByType: Record<string, number> = {};
-      const premiumByType: Record<string, number> = {};
+      const activeSubscriptions = subscriptions.filter(
+        (sub) => sub.details.status === 'ACTIVE'
+      ).length;
+      const expiredSubscriptions = subscriptions.filter(
+        (sub) => sub.details.status === 'EXPIRED'
+      ).length;
 
-      subscriptions.forEach(sub => {
-        const type = sub.details.subscriptionType || 'Unknown';
-        priceByType[type] = (priceByType[type] || 0) + (sub.details.price || 0);
-        // Ici, on suppose que "premium" est une propriété numérique présente dans sub.details
-        // premiumByType[type] = (premiumByType[type] || 0) + (sub.details.subscriptionType. || 0);
-      });
+      const months = ['Nov', 'Dec', 'Jan', 'Feb'];
+      const activeData = months.map(() =>
+        Math.floor(
+          Math.random() *
+            (activeSubscriptions * 1.2 - activeSubscriptions * 0.8) +
+            activeSubscriptions * 0.8
+        )
+      );
+      const expiredData = months.map(() =>
+        Math.floor(
+          Math.random() *
+            (expiredSubscriptions * 1.2 - expiredSubscriptions * 0.8) +
+            expiredSubscriptions * 0.8
+        )
+      );
 
-      const labels = Object.keys(priceByType);
-      // Pour afficher des couleurs différentes, nous construisons des tableaux de couleurs à partir de notre service
-      const colors = this.chartService.getChartColors();
-      const totalPriceColors = labels.map(() => colors.success.base);
-      const totalPriceBg = labels.map(() => colors.success.bg);
-      const totalPremiumColors = labels.map(() => colors.warning.base);
-      const totalPremiumBg = labels.map(() => colors.warning.bg);
-
-      this.businessUnitData = {
-        labels,
+      this.miniChartData = {
+        labels: months,
         datasets: [
           {
-            label: 'Total Price',
-            data: labels.map(label => priceByType[label]),
-            backgroundColor: totalPriceBg,
-            borderColor: totalPriceColors,
+            label: 'Active',
+            data: activeData,
+            backgroundColor: this.chartService.getChartColors().success.bg,
+            borderColor: this.chartService.getChartColors().success.base,
             borderWidth: 2,
             fill: false,
-            tension: 0.4
+            tension: 0.4,
           },
           {
-            label: 'Total Premium',
-            data: labels.map(label => premiumByType[label]),
-            backgroundColor: totalPremiumBg,
-            borderColor: totalPremiumColors,
+            label: 'Expired',
+            data: expiredData,
+            backgroundColor: this.chartService.getChartColors().danger.bg,
+            borderColor: this.chartService.getChartColors().danger.base,
             borderWidth: 2,
             fill: false,
-            tension: 0.4
-          }
-        ]
+            tension: 0.4,
+          },
+        ],
       };
+
+      this.riskChartData = {
+        labels: months,
+        datasets: [
+          {
+            label: 'Risk',
+            data: months.map(() => Math.floor(Math.random() * 100)),
+            backgroundColor: this.chartService.getChartColors().warning.bg,
+            borderColor: this.chartService.getChartColors().warning.base,
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+          },
+        ],
+      };
+
+      this.coverageChartData = {
+        labels: months,
+        datasets: [
+          {
+            label: 'Coverage',
+            data: months.map(() => Math.floor(Math.random() * 100)),
+            backgroundColor: this.chartService.getChartColors().success.bg,
+            borderColor: this.chartService.getChartColors().success.base,
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+          },
+        ],
+      };
+
+      this.performanceChartData = {
+        labels: months,
+        datasets: [
+          {
+            label: 'Performance',
+            data: months.map(() => Math.floor(Math.random() * 100)),
+            backgroundColor: this.chartService.getChartColors().danger.bg,
+            borderColor: this.chartService.getChartColors().danger.base,
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+          },
+        ],
+      };
+
+      // Keep the total subscriptions calculation
+      if (this.miniChartData?.datasets?.[0]?.data?.length) {
+        this.totalSubscriptions = activeSubscriptions + expiredSubscriptions;
+      } else {
+        this.totalSubscriptions = 0;
+      }
     }
-
-    // *** MINI CHARTS ***
-    // Pour cet exemple, nous mettons à jour les signals (le calcul automatique pourrait être basé sur des données réelles)
-    this.relationshipsSignal.set({ count: 852, change: 11 });
-    this.averageRiskSignal.set({ value: 42, change: 0 });
-    this.coverageSignal.set({ value: 94, change: 0 });
-    this.performanceSignal.set({ value: 76, change: 0 });
-
-    // On crée des mini charts avec des données simulées (les valeurs affichées dans le texte seront issues des computed signals)
-    this.miniChartData = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-      datasets: [{
-        label: 'Relationships',
-        data: [852, 860, 855, 852],
-        backgroundColor: 'rgba(13, 110, 253, 0.1)',
-        borderColor: '#0D6EFD',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4
-      }]
-    };
-
-    this.riskChartData = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-      datasets: [{
-        label: 'Average Risk',
-        data: [42, 40, 43, 42],
-        backgroundColor: 'rgba(255, 193, 7, 0.1)',
-        borderColor: '#FFC107',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4
-      }]
-    };
-
-    this.coverageChartData = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-      datasets: [{
-        label: 'Coverage',
-        data: [94, 93, 95, 94],
-        backgroundColor: 'rgba(25, 135, 84, 0.1)',
-        borderColor: '#198754',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4
-      }]
-    };
-
-    this.performanceChartData = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-      datasets: [{
-        label: 'Performance',
-        data: [76, 77, 75, 76],
-        backgroundColor: 'rgba(220, 53, 69, 0.1)',
-        borderColor: '#DC3545',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4
-      }]
-    };
   }
 
   updateMainChart() {
     if (this.mainChartDataType === 'Risk by business unit') {
-      // Calcul spécifique pour Risk by business unit
-      const subscriptions = this.subscriptionStore.subscriptionsWithDetails();
-      const businessUnits = new Map<string, { totalRisk: number; count: number }>();
-      const colors = this.chartService.getChartColors();
-  
-      // Calculer la moyenne des risques par unité
-      subscriptions.forEach(sub => {
-        const unit = sub.details.timeUnit || 'Unknown';
-        const risk = sub.details.price || 0;
-        
-        if (!businessUnits.has(unit)) {
-          businessUnits.set(unit, { totalRisk: 0, count: 0 });
-        }
-        const data = businessUnits.get(unit)!;
-        data.totalRisk += risk;
-        data.count += 1;
-      });
-  
-      const labels = Array.from(businessUnits.keys());
-      const riskData = labels.map(unit => {
-        const data = businessUnits.get(unit)!;
-        return data.count > 0 ? Math.round(data.totalRisk / data.count) : 0;
-      });
-  
-      // Créer des tableaux de couleurs
-      const backgroundColors = labels.map((_, i) => 
-        Object.values(colors)[i % Object.keys(colors).length].bg
-      );
-      const borderColors = labels.map((_, i) => 
-        Object.values(colors)[i % Object.keys(colors).length].base
-      );
-  
-      this.mainChartData = {
-        labels,
-        datasets: [{
-          label: 'Average Risk Level',
-          data: riskData,
-          backgroundColor: backgroundColors,
-          borderColor: borderColors,
-          borderWidth: 2,
-          tension: 0.4
-        }]
-      };
-  
-      // Ajuster les options selon le type de graphique
-      this.mainChartOptions = {
-        ...this.chartOptions,
-        scales: (this.mainChartType === 'pie' || this.mainChartType === 'doughnut') 
-          ? undefined 
-          : this.chartOptions.scales,
-        plugins: {
-          ...this.chartOptions.plugins,
-          legend: {
-            display: true,
-            position: 'right',
-            labels: { color: '#ffffff' }
-          }
-        }
-      };
+      this.updateBusinessUnitChart();
     } else if (this.mainChartDataType === 'Average risk over time') {
       this.updateAllCharts();
     } else {
-      this.mainChartData = this.chartService.formatChartData(this.mainChartDataType, this.mainChartType);
-      // ...existing code for other chart types...
+      this.mainChartData = this.chartService.formatChartData(
+        this.mainChartDataType,
+        this.mainChartType
+      );
     }
   }
 
   updateBusinessUnitChart() {
     const subscriptions = this.subscriptionStore.subscriptionsWithDetails();
-    const businessUnits: Record<string, { revenue: number; count: number }> = {};
+    const businessUnits = new Map<
+      string,
+      { totalRisk: number; count: number }
+    >();
     const colors = this.chartService.getChartColors();
 
-    // Regrouper les données par unité
-    subscriptions.forEach(sub => {
-      const type = sub.details.subscriptionType || 'Unknown';
-      if (!businessUnits[type]) {
-        businessUnits[type] = { revenue: 0, count: 0 };
+    subscriptions.forEach((sub) => {
+      const unit = sub.details.timeUnit || 'Unknown';
+      const risk = sub.details.price || 0;
+      if (!businessUnits.has(unit)) {
+        businessUnits.set(unit, { totalRisk: 0, count: 0 });
       }
-      businessUnits[type].revenue += sub.details.price || 0;
-      businessUnits[type].count += 1;
+      const current = businessUnits.get(unit)!;
+      current.totalRisk += risk;
+      current.count += 1;
     });
 
-    const labels = Object.keys(businessUnits);
+    const labels = Array.from(businessUnits.keys());
+    const riskData = labels.map((unit) => {
+      const data = businessUnits.get(unit)!;
+      return data.count > 0 ? Math.round(data.totalRisk / data.count) : 0;
+    });
 
-    // Définir un ensemble fixe de couleurs
-    const colorScheme = [
-      { bg: 'rgba(13, 110, 253, 0.7)', border: '#0D6EFD' },  // primary
-      { bg: 'rgba(25, 135, 84, 0.7)', border: '#198754' },   // success
-      { bg: 'rgba(255, 193, 7, 0.7)', border: '#FFC107' },   // warning
-      { bg: 'rgba(220, 53, 69, 0.7)', border: '#DC3545' },   // danger
-      { bg: 'rgba(66, 178, 255, 0.7)', border: '#66B2FF' }   // info
-    ];
+    const backgroundColors = labels.map((_, i) => {
+      const themeColors = Object.values(colors);
+      return themeColors[i % themeColors.length].bg;
+    });
+    const borderColors = labels.map((_, i) => {
+      const themeColors = Object.values(colors);
+      return themeColors[i % themeColors.length].base;
+    });
 
     this.businessUnitData = {
       labels,
-      datasets: [{
-        data: labels.map(label => businessUnits[label].revenue),
-        backgroundColor: labels.map((_, i) => colorScheme[i % colorScheme.length].bg),
-        borderColor: labels.map((_, i) => colorScheme[i % colorScheme.length].border),
-        borderWidth: 2
-      }]
+      datasets: [
+        {
+          label: 'Average Risk Level',
+          data: riskData,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 2,
+          tension: 0.4,
+        },
+      ],
     };
 
-    // Mise à jour des options spécifiques pour le doughnut chart
     this.doughnutOptions = {
-      maintainAspectRatio: false,
-      // cutout: '60%',
+      responsive: true,
       plugins: {
         legend: {
           position: 'right',
           labels: {
-            color: '#ffffff',
-            font: { size: 12, family: 'shantellasans' },
+            font: { size: 14, family: 'shantellasans' },
             padding: 20,
             usePointStyle: true,
             generateLabels: (chart) => {
               const data = chart.data;
-              return data.labels?.map((label, i) => ({
-                text: `${label}: ${data.datasets?.[0]?.data[i]?.toLocaleString() ?? 0}€`,
-                fillStyle: colorScheme[i % colorScheme.length].bg,
-                strokeStyle: colorScheme[i % colorScheme.length].border,
-                lineWidth: 2,
-                hidden: false,
-                index: i
-              })) || [];
-            }
-          }
+              return (
+                data.labels?.map((label, i) => ({
+                  text: `${label}: ${
+                    data.datasets?.[0]?.data[i]?.toLocaleString() ?? 0
+                  } Ar`,
+                  fillStyle: backgroundColors[i],
+                  strokeStyle: borderColors[i],
+                  lineWidth: 2,
+                  hidden: false,
+                  index: i,
+                })) || []
+              );
+            },
+          },
+        },
+        title: {
+          display: true,
+          color: 'white',
+          font: { size: 16, family: 'shantellasans' },
         },
         tooltip: {
           backgroundColor: 'rgba(15, 23, 42, 0.9)',
+          titleColor: 'white',
+          bodyColor: 'white',
           titleFont: { size: 14, family: 'shantellasans' },
           bodyFont: { size: 12, family: 'shantellasans' },
           callbacks: {
             label: (context) => {
               const value = context.raw as number;
-              return ` ${context.label}: ${value.toLocaleString()}€`;
-            }
-          }
-        }
-      }
+              return ` ${context.label}: ${value.toLocaleString()} Ar`;
+            },
+          },
+        },
+      },
+      scales: undefined,
     };
-  }
-
-  isSelectedDate(date: Date): boolean {
-    return this.selectedDate?.toDateString() === date.toDateString();
   }
 
   isToday(date: Date): boolean {

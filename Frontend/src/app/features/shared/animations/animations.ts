@@ -66,6 +66,4 @@ export const fadeIn = trigger('slideInOut', [
     width: '0',
   })),
   transition('in <=> out', animate('200ms ease-in-out'))
-
 ]);
-

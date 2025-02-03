@@ -7,7 +7,10 @@ export const DashboardRouter: Routes = [
   {
     path: '',
     title: 'Dashboard',
-    loadComponent: () => import('../dashboard/components/dashboard-overview/dashboard-overview.component').then((m) => m.DashboardOverviewComponent),
+    loadComponent: () =>
+      import(
+        '../dashboard/components/dashboard-overview/dashboard-overview.component'
+      ).then((m) => m.DashboardOverviewComponent),
     canActivate: [authGuard],
     children: [
       {
@@ -18,16 +21,23 @@ export const DashboardRouter: Routes = [
       {
         path: 'overview',
         title: 'Dashboard Overview',
-        loadComponent: () => import('../dashboard/components/content-dashboard/content-dashboard.component').then((m) => m.ContentDashboardComponent),
+        loadComponent: () =>
+          import(
+            '../dashboard/components/content-dashboard/content-dashboard.component'
+          ).then((m) => m.ContentDashboardComponent),
       },
       {
-        path: "subscriptions",
-        loadChildren: () => import('../subscription/subscritpion.routes').then(m => m.SubscriptionRoutes)
+        path: 'subscriptions',
+        loadChildren: () =>
+          import('../subscription/subscritpion.routes').then(
+            (m) => m.SubscriptionRoutes
+          ),
       },
       {
-        path: "users",
-        loadChildren: () => import('../users/users.routes').then(m => m.UsersRoutes),
-        canActivate: [AdminGuard]
+        path: 'users',
+        loadChildren: () =>
+          import('../users/users.routes').then((m) => m.UsersRoutes),
+        canActivate: [AdminGuard],
       },
       {
         path: 'settings',
@@ -39,7 +49,10 @@ export const DashboardRouter: Routes = [
       },
       {
         path: '**',
-        component: NotFoundComponent,
+        loadComponent: () =>
+          import('../shared/pages/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent
+          ),
       },
     ],
   },

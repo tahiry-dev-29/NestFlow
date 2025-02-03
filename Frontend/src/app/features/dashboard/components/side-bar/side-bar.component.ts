@@ -6,7 +6,12 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, ActivatedRoute } from '@angular/router';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  ActivatedRoute,
+} from '@angular/router';
 import { sideLeftBarState } from '../../store/signal.store';
 import { AuthStore } from '../../../auth/store/auth.store';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
@@ -21,7 +26,7 @@ import { ImageUrl } from '../../../../../../public/images/constant.images';
 export class SideBarComponent {
   private readonly router = inject(Router);
   private readonly userStore = inject(AuthStore);
-  private readonly LOADING_DELAY = 1500;
+  private readonly LOADING_DELAY = 400;
   timer = signal<boolean>(false);
 
   ImageUrl = ImageUrl.logo_nest_flow;
@@ -52,7 +57,11 @@ export class SideBarComponent {
       link: 'subscriptions',
       icon: 'subscriptions',
       subItems: [
-        { label: 'List Subscriptions', link: 'subscriptions/list', icon: 'list' },
+        {
+          label: 'List Subscriptions',
+          link: 'subscriptions/list',
+          icon: 'list',
+        },
         { label: 'Add Subscription', link: 'subscriptions/add', icon: 'add' },
       ],
     },
@@ -66,7 +75,7 @@ export class SideBarComponent {
       ],
     },
   ];
-  
+
   toggleDropdownState(index: number) {
     this.activeDropdown.update((prev) => (prev === index ? null : index));
   }
@@ -74,24 +83,30 @@ export class SideBarComponent {
   isActive(route: string): boolean {
     return this.router.url.includes(route);
   }
-  
+
   readonly classes = computed(() => {
     return {
       menuIconClass: (route: string) =>
-        this.isActive(route) ? 'menu-icon-solid text' : 'menu-icon-outline text-gray-500',
-    
+        this.isActive(route)
+          ? 'menu-icon-solid text'
+          : 'menu-icon-outline text-gray-500',
+
       textClassList: (route: string) =>
         this.isActive(route) ? 'text' : 'font-light text-gray-300',
-    
+
       dropdownListClasses: (index: number) =>
-        this.activeDropdown() === index ? 'active-lists text-white' : 'text-gray-400',
-    
+        this.activeDropdown() === index
+          ? 'active-lists text-white'
+          : 'text-gray-400',
+
       dropdownIconClasses: (index: number) =>
         this.activeDropdown() === index ? 'text' : 'text-gray-500',
-    
+
       dropdownTextClasses: (index: number) =>
-        this.activeDropdown() === index ? 'text font-semibold' : 'text-gray-400 font-light',
-    
+        this.activeDropdown() === index
+          ? 'text font-semibold'
+          : 'text-gray-400 font-light',
+
       dropdownArrowClasses: (index: number) =>
         this.activeDropdown() === index
           ? 'rotate-90 text'
@@ -108,11 +123,11 @@ export class SideBarComponent {
         'text-gray-400': !isOpened,
       },
       iconClasses: {
-        'text': isOpened,
+        text: isOpened,
         'text-gray-500': !isOpened,
       },
       textClasses: {
-        'text': isOpened,
+        text: isOpened,
         'text-gray-500/85 font-light': !isOpened,
       },
       arrowClasses: {
@@ -122,7 +137,6 @@ export class SideBarComponent {
       },
     };
   });
-
 
   toggleDropdown() {
     this.sideRightbarState.set(!this.sideRightbarState());

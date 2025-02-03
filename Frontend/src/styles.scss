@@ -6,8 +6,8 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'shantellasans';
-  src: url('../public/fonts/ShantellSans-Regular.ttf');
+  font-family: "shantellasans";
+  src: url("../public/fonts/ShantellSans-Regular.ttf");
   font-weight: normal;
 }
 
@@ -77,7 +77,6 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .hover-dropdown-lists {
     @apply px-4 py-2 hover:bg-slate-700/13 hover:shadow cursor-pointer rounded-7;
   }
-
 }
 
 @layer components {
@@ -98,7 +97,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   }
 
   .title {
-    @apply text font-bold text-2xl
+    @apply text font-bold text-2xl;
   }
 
   .btn-gradient-bg:hover {
@@ -133,7 +132,7 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
 
 @layer components {
   .header-menu {
-        @apply fixed top-0 w-[-webkit-fill-available] w-[-moz-available] flex flex-wrap items-center h-20 justify-between mx-3 mt-2 rounded-2xl lg:flex-nowrap z-30 bg-slate-900/5 ;
+    @apply fixed top-0 w-[-webkit-fill-available] w-[-moz-available] flex flex-wrap items-center h-20 justify-between mx-3 mt-2 rounded-2xl lg:flex-nowrap z-30 bg-slate-900/5;
   }
 
   .content-style {
@@ -158,19 +157,22 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   --line: 1px;
   --color: rgba(255, 255, 255, 0.2);
 
-  background-image: linear-gradient(-90deg,
+  background-image: linear-gradient(
+      -90deg,
       transparent calc(var(--gap) - var(--line)),
       var(--color) calc(var(--gap) - var(--line) + 1px),
-      var(--color) var(--gap)),
-    linear-gradient(0deg,
+      var(--color) var(--gap)
+    ),
+    linear-gradient(
+      0deg,
       transparent calc(var(--gap) - var(--line)),
       var(--color) calc(var(--gap) - var(--line) + 1px),
-      var(--color) var(--gap));
+      var(--color) var(--gap)
+    );
   background-size: var(--gap) var(--gap);
 }
 
 @layer utilities {
-
   .custom-scrollbar::-webkit-scrollbar {
     width: 10px;
     scrollbar-width: 10px;
