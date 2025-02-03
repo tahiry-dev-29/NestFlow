@@ -1,10 +1,9 @@
-import { CanActivate, Router } from '@angular/router';
 import { inject, Injectable } from '@angular/core';
-import { AdminService } from '../services/admin.service';
+import { CanActivate, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { AuthService } from '../services/auth.service';
-import { IUsers, ROLE } from '../../users/models/users/users.module';
 import { map, Observable } from 'rxjs';
+import { ROLE } from '../../users/models/users/users.module';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +13,10 @@ export class AdminGuard implements CanActivate {
   readonly toastr = inject(ToastrService);
   private readonly router = inject(Router);
 
-  loadUserProfile(): Observable<IUsers | null> {
-    const token = this.authService.getToken();
-    return this.authService.getUserByToken(token || '');
-  }
-
   canActivate(): Observable<boolean> {
-    return this.loadUserProfile().pipe(
-      map(user => {
-        if (user?.role.toString() === 'ADMIN') {
+    return this.authService.getCurrentUserRole().pipe(
+      map(role => {
+        if (role === ROLE.ADMIN) {
           return true;
         } else {
           if (!this.toastr.currentlyActive) {

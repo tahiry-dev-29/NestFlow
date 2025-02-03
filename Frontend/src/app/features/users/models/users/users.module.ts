@@ -1,6 +1,6 @@
 export enum ROLE {
-    ADMIN,
-    USER
+    ADMIN = 'ADMIN',
+    USER = 'USER'
 }
 export interface UserState {
     users: IUsers[];

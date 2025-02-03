@@ -1,3 +1,4 @@
+import { tap } from 'rxjs';
 import { Component, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
 import { AuthService } from '../../../auth/services/auth.service';
