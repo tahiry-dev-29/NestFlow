@@ -1,5 +1,3 @@
-// src/app/subscription/services/subscription-chart.service.ts
-
 import { Injectable, inject } from '@angular/core';
 import { ChartOptions } from 'chart.js';
 import { UserStore } from '../../users/store/users.store';
@@ -13,24 +11,61 @@ export class SubscriptionChartService {
   private userStore = inject(UserStore);
   private subscriptionStore = inject(SubscriptionStore);
 
-  /** Liste des types de données pour les charts */
+  /** Retourne les couleurs du thème (celles définies dans votre SCSS) */
+  getChartColors() {
+    return {
+      primary: {
+        base: '#0D6EFD',
+        light: '#66B2FF',
+        dark: '#0B5ED7',
+        bg: 'rgba(13, 110, 253, 0.1)'
+      },
+      success: {
+        base: '#198754',
+        light: '#3DDC84',
+        dark: '#157347',
+        bg: 'rgba(25, 135, 84, 0.1)'
+      },
+      warning: {
+        base: '#FFC107',
+        light: '#FFCA2D',
+        dark: '#D39E00',
+        bg: 'rgba(255, 193, 7, 0.1)'
+      },
+      danger: {
+        base: '#DC3545',
+        light: '#FF6B6B',
+        dark: '#BB2D3B',
+        bg: 'rgba(220, 53, 69, 0.1)'
+      }
+    };
+  }
+
+  /** Liste des types de données disponibles */
   getDataTypes(): string[] {
     return [
       'User Data',
       'Business Unit',
       'Subscription Status',
       'User Status',
-      'Subscription Revenue'
+      'Subscription Revenue',
+      'Subscription Duration',
+      'Average risk over time',
+      'Risk by business unit'
     ];
   }
 
-  /** Retourne un tableau de statistiques en fonction du dataType */
+  /**
+   * Retourne les données en fonction du type demandé.
+   * Pour 'Subscription Duration', on calcule la durée (en mois) entre subscriptionStartDate et subscriptionEndDate.
+   * Pour les types composites ('Average risk over time' et 'Risk by business unit'), le traitement se fera directement dans le composant.
+   */
   getChartData(dataType: string): ChartDataSet[] {
     const subscriptions = this.subscriptionStore.subscriptionsWithDetails();
     const users = this.userStore.users();
-    
+
     if (!subscriptions.length || !users.length) {
-      console.warn('Data not yet loaded');
+      console.warn('Les données ne sont pas encore chargées');
       return [];
     }
 
@@ -75,45 +110,46 @@ export class SubscriptionChartService {
         ];
       }
 
+      case 'Subscription Duration': {
+        const differenceInMonths = (start: Date, end: Date): number => {
+          return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+        };
+
+        const durationsByMonth: { [month: string]: { totalDuration: number; count: number } } = {};
+        subscriptions.forEach(sub => {
+          const start = new Date(sub.details.subscriptionStartDate ?? new Date());
+          const end = new Date(sub.details.subscriptionEndDate ?? new Date());
+          if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+            const monthsDiff = differenceInMonths(start, end);
+            const monthKey = `${start.getFullYear()}-${('0' + (start.getMonth() + 1)).slice(-2)}`;
+            if (!durationsByMonth[monthKey]) {
+              durationsByMonth[monthKey] = { totalDuration: 0, count: 0 };
+            }
+            durationsByMonth[monthKey].totalDuration += monthsDiff;
+            durationsByMonth[monthKey].count += 1;
+          }
+        });
+        const sortedMonths = Object.keys(durationsByMonth).sort();
+        return sortedMonths.map(month => {
+          const { totalDuration, count } = durationsByMonth[month];
+          const averageDuration = count > 0 ? totalDuration / count : 0;
+          return { label: month, value: Number(averageDuration.toFixed(1)) };
+        });
+      }
+
       default:
         return [];
     }
   }
 
-  /** Définit les couleurs globales */
-  getChartColors() {
-    return {
-      primary: {
-        base: 'rgba(13, 110, 253, 0.8)',
-        light: 'rgba(102, 178, 255, 0.8)',
-        bg: 'rgba(13, 110, 253, 0.1)'
-      },
-      success: {
-        base: 'rgba(25, 135, 84, 0.8)',
-        light: 'rgba(61, 220, 132, 0.8)',
-        bg: 'rgba(25, 135, 84, 0.1)'
-      },
-      warning: {
-        base: 'rgba(255, 193, 7, 0.8)',
-        light: 'rgba(255, 202, 45, 0.8)',
-        bg: 'rgba(255, 193, 7, 0.1)'
-      },
-      danger: {
-        base: 'rgba(220, 53, 69, 0.8)',
-        light: 'rgba(255, 107, 107, 0.8)',
-        bg: 'rgba(220, 53, 69, 0.1)'
-      }
-    };
-  }
-
   /**
-   * Retourne une configuration de chart formatée en fonction du type de données et du type de chart.
+   * Formate la configuration du graphique pour Chart.js en fonction du type de données et du type de chart.
+   * Pour les types composites, le traitement se fait directement dans le composant.
    */
   formatChartData(dataType: string, chartType: string): ChartDataConfig {
     const data = this.getChartData(dataType);
     const colors = this.getChartColors();
 
-    // Dictionnaire pour associer chaque dataType aux couleurs souhaitées
     const colorMapping: Record<string, { backgroundColor: string | string[]; borderColor: string | string[] }> = {
       'User Data': {
         backgroundColor: [colors.primary.bg, colors.success.bg],
@@ -134,11 +170,17 @@ export class SubscriptionChartService {
       'Subscription Revenue': {
         backgroundColor: [colors.success.bg, colors.primary.bg],
         borderColor: [colors.success.base, colors.primary.base]
+      },
+      'Subscription Duration': {
+        backgroundColor: [colors.warning.bg, colors.danger.bg],
+        borderColor: [colors.warning.base, colors.danger.base]
       }
     };
 
-    // Valeurs par défaut si le dataType n'est pas défini dans le mapping
-    const { backgroundColor, borderColor } = colorMapping[dataType] || { backgroundColor: colors.primary.bg, borderColor: colors.primary.base };
+    const { backgroundColor, borderColor } = colorMapping[dataType] || { 
+      backgroundColor: colors.primary.bg, 
+      borderColor: colors.primary.base 
+    };
 
     const chartConfig: ChartDataConfig = {
       labels: data.map(item => item.label),
@@ -147,7 +189,7 @@ export class SubscriptionChartService {
         data: data.map(item => item.value),
         backgroundColor,
         borderColor,
-        borderWidth: chartType === 'pie' || chartType === 'doughnut' ? 1 : 2,
+        borderWidth: (chartType === 'pie' || chartType === 'doughnut') ? 1 : 2,
         fill: chartType === 'line',
         tension: chartType === 'line' ? 0.4 : undefined
       }]
@@ -156,7 +198,7 @@ export class SubscriptionChartService {
     return chartConfig;
   }
 
-  /** Options générales pour les charts */
+  /** Options générales pour Chart.js */
   getChartOptions(): ChartOptions {
     return {
       responsive: true,
@@ -166,10 +208,8 @@ export class SubscriptionChartService {
           display: true,
           position: 'top',
           labels: { 
-            color: 'white',
-            font: {
-              family: 'shantellasans'
-            }
+            color: '#ffffff',
+            font: { family: 'shantellasans' }
           }
         },
         tooltip: {
@@ -182,17 +222,11 @@ export class SubscriptionChartService {
         y: {
           beginAtZero: true,
           grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          ticks: { 
-            color: 'white',
-            font: { family: 'shantellasans' }
-          }
+          ticks: { color: '#ffffff', font: { family: 'shantellasans' } }
         },
         x: {
           grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          ticks: { 
-            color: 'white',
-            font: { family: 'shantellasans' }
-          }
+          ticks: { color: '#ffffff', font: { family: 'shantellasans' } }
         }
       }
     };
@@ -208,7 +242,7 @@ export class SubscriptionChartService {
           display: true,
           position: 'bottom',
           labels: {
-            color: 'white',
+            color: '#ffffff',
             font: { family: 'shantellasans' },
             padding: 20
           }
@@ -221,7 +255,6 @@ export class SubscriptionChartService {
           callbacks: {
             label: (context) => {
               const value = context.raw as number;
-              // Personnalisation en fonction de l'indice de donnée
               switch (context.dataIndex) {
                 case 0:
                   return `Revenue: ${value.toLocaleString()} €`;

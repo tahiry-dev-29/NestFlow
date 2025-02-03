@@ -8,22 +8,17 @@ import { BaseChartDirective } from 'ng2-charts';
   imports: [BaseChartDirective],
   template: `
     <div class="chart-wrapper">
-    <canvas baseChart
-            [type]="chartType"
-            [data]="data"
-            [options]="options">
-    </canvas>
-  </div>
+      <canvas baseChart [type]="chartType" [data]="data" [options]="options"></canvas>
+    </div>
   `,
-  styles: `
+  styles: [`
     :host {
       display: block;
     }
-  .chart-wrapper {
-    height: 100px;
-  }
-
-  `,
+    .chart-wrapper {
+      height: 100px;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MiniChartComponentComponent {

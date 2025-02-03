@@ -8,8 +8,7 @@ import { BaseChartDirective } from 'ng2-charts';
   imports: [BaseChartDirective],
   template: `
     <div class="chart-body">
-      <canvas baseChart [type]="chartType" [data]="data" [options]="options">
-      </canvas>
+      <canvas baseChart [type]="chartType" [data]="data" [options]="options"></canvas>
     </div>
   `,
   styles: [`
@@ -21,5 +20,5 @@ import { BaseChartDirective } from 'ng2-charts';
 export class MainChartComponent {
   @Input() data: any;
   @Input() options: ChartOptions = {};
-  @Input() chartType: 'bar' | 'line' | 'scatter' | 'pie' | 'doughnut' | 'radar' = 'bar';
+  @Input() chartType: 'bar' | 'line' | 'scatter' | 'pie' | 'doughnut' = 'bar';
 }
