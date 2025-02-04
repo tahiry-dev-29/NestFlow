@@ -7,7 +7,7 @@ import { BaseChartDirective } from 'ng2-charts';
   standalone: true,
   imports: [BaseChartDirective],
   template: `
-    <div class="chart-body">
+    <div class="chart-container">
       <canvas
         baseChart
         [type]="chartType"
@@ -18,16 +18,16 @@ import { BaseChartDirective } from 'ng2-charts';
     </div>
   `,
   styles: `
-    .chart-body {
-      height: 250px;
-    }
-  `,
+  :host{display: block}
+`,
 })
 export class RightChartComponent {
   @Input() data: any;
   @Input() set options(value: ChartOptions) {
     this.chartOptions = {
       ...value,
+      responsive: true,
+      maintainAspectRatio: true,
       plugins: {
         ...value.plugins,
         legend: {
@@ -45,6 +45,8 @@ export class RightChartComponent {
   @Input() chartType: ChartType = 'doughnut';
 
   chartOptions: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         labels: {

@@ -12,7 +12,6 @@ import {
   SimpleChanges,
   viewChild,
 } from '@angular/core';
-import { ROLE } from '../../models/users/users.module';
 import {
   FormBuilder,
   FormGroup,
@@ -20,118 +19,19 @@ import {
   Validators,
 } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { Subscription, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
-import { AuthStore } from '../../../auth/store/auth.store';
+import { AuthService } from '../../../auth/services/auth.service';
 import { slideInOut } from '../../../shared/animations/animations';
-import { IUsers } from '../../models/users/users.module';
+import { IUsers, ROLE } from '../../models/users/users.module';
 import { UserStore } from '../../store/users.store';
 import { ViewUserComponent } from '../view-user/view-user.component';
-import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-edit-user',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ViewUserComponent],
-  template: `
-    <section class="flex justify-around gap-5">
-      <app-view-user [user]="previewUser" [isPreview]="true"></app-view-user>
-      <main class="mt-0 transition-all duration-200 ease-in-out">
-        <div class="flex flex-col items-center">
-          <div class="w-full max-w-md px-3 mx-auto">
-            <div
-              class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl"
-            >
-              <div class="flex-auto p-6 mt-6">
-                <form
-                  [formGroup]="userForm"
-                  (ngSubmit)="onSubmit()"
-                  role="form text-left"
-                  class="flex flex-col"
-                >
-                  <div class="mb-4">
-                    <input
-                      type="text"
-                      formControlName="name"
-                      class="input-theme w-full"
-                      placeholder="Name"
-                    />
-                    <div
-                      *ngIf="
-                        userForm.get('name')?.invalid &&
-                        userForm.get('name')?.touched
-                      "
-                      class="error"
-                    >
-                      {{ getErrorMessage('name') }}
-                    </div>
-                  </div>
-                  <div class="mb-4">
-                    <input
-                      type="text"
-                      formControlName="firstName"
-                      class="input-theme w-full"
-                      placeholder="First Name"
-                    />
-                    <div
-                      *ngIf="
-                        userForm.get('firstName')?.invalid &&
-                        userForm.get('firstName')?.touched
-                      "
-                      class="error"
-                    >
-                      {{ getErrorMessage('firstName') }}
-                    </div>
-                  </div>
-                  <div class="mb-4">
-                    <input
-                      type="email"
-                      formControlName="mail"
-                      class="input-theme w-full"
-                      placeholder="Email"
-                    />
-                    <div
-                      *ngIf="
-                        userForm.get('mail')?.invalid &&
-                        userForm.get('mail')?.touched
-                      "
-                      class="error"
-                    >
-                      {{ getErrorMessage('mail') }}
-                    </div>
-                  </div>
-                  <div class="mb-4">
-  <select 
-    formControlName="role" 
-    class="input-theme w-full"
-    [attr.disabled]="currentUserRole() === ROLE.USER"
-  >
-    <option [value]="ROLE.USER">USER</option>
-    <option [value]="ROLE.ADMIN">ADMIN</option>
-  </select>
-</div>
-
-                  <div class="flex justify-center">
-                    <button
-                      type="submit"
-                      [disabled]="userForm.invalid"
-                      class="w-3/4"
-                      [ngClass]="{
-                        'btn-desactived-bg': !userForm.valid,
-                        'btn-gradient-bg': userForm.valid
-                      }"
-                    >
-                      Update {{ user()?.firstName }}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </section>
-  `,
+  templateUrl: './edit-user.component.html',
   styleUrl: './edit-user.component.scss',
   animations: [slideInOut],
 })
@@ -140,7 +40,7 @@ export class EditUserComponent implements OnInit, OnChanges {
   fileInput = viewChild<ElementRef>('fileInput');
   user = input<IUsers | null>(null);
   userEdited = output<void>();
-  
+
   userForm!: FormGroup;
   previewUser: any;
 
@@ -159,23 +59,23 @@ export class EditUserComponent implements OnInit, OnChanges {
   }
 
   currentUser = signal<IUsers | null>(null);
-currentUserRole = computed(() => this.currentUser()?.role || null);
+  currentUserRole = computed(() => this.currentUser()?.role || null);
 
-loadUserRole(): void {
-  const token = this.authService.getToken();
-  this.authService.getUserByToken(token || '').subscribe({
-    next: (user) => {
-      this.currentUser.set(user);
-      if (user?.role === ROLE.USER) {
-        this.userForm.get('role')?.disable();
-      }
-    },
-    error: (error) => {
-      this.toastr.error('Error loading user role');
-      console.error('Error:', error);
-    }
-  });
-}
+  loadUserRole(): void {
+    const token = this.authService.getToken();
+    this.authService.getUserByToken(token || '').subscribe({
+      next: (user) => {
+        this.currentUser.set(user);
+        if (user?.role === ROLE.USER) {
+          this.userForm.get('role')?.disable();
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Error loading user role');
+        console.error('Error:', error);
+      },
+    });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['user'] && !changes['user'].firstChange) {
@@ -195,12 +95,15 @@ loadUserRole(): void {
         [Validators.required, Validators.minLength(2)],
       ],
       mail: [this.user()?.mail || '', [Validators.required, Validators.email]],
-      role: [{ 
-        value: this.user()?.role || ROLE.USER,
-        disabled: this.currentUserRole() === ROLE.USER
-      }, Validators.required],
+      role: [
+        {
+          value: this.user()?.role || ROLE.USER,
+          disabled: this.currentUserRole() === ROLE.USER,
+        },
+        Validators.required,
+      ],
     });
-  
+
     this.userForm.valueChanges.subscribe((values) => {
       this.updatePreview(values);
     });

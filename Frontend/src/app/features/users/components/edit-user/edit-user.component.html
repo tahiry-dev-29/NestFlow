@@ -1,0 +1,70 @@
+<section class="flex justify-around gap-5">
+  <app-view-user [user]="previewUser" [isPreview]="true"></app-view-user>
+  <main class="mt-0 transition-all duration-200 ease-in-out">
+    <div class="flex flex-col items-center">
+      <div class="w-full max-w-md px-3 mx-auto">
+        <div
+          class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
+          <div class="flex-auto p-6 mt-6">
+            <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left" class="flex flex-col">
+              <div class="mb-4">
+                <input type="text" formControlName="name" class="input-theme w-full" placeholder="Name" />
+                <div *ngIf="
+                    userForm.get('name')?.invalid &&
+                    userForm.get('name')?.touched
+                  " class="error">
+                  {{ getErrorMessage("name") }}
+                </div>
+              </div>
+              <div class="mb-4">
+                <input type="text" formControlName="firstName" class="input-theme w-full" placeholder="First Name" />
+                <div *ngIf="
+                    userForm.get('firstName')?.invalid &&
+                    userForm.get('firstName')?.touched
+                  " class="error">
+                  {{ getErrorMessage("firstName") }}
+                </div>
+              </div>
+              <div class="mb-4">
+                <input type="email" formControlName="mail" class="input-theme w-full" placeholder="Email" />
+                <div *ngIf="
+                    userForm.get('mail')?.invalid &&
+                    userForm.get('mail')?.touched
+                  " class="error">
+                  {{ getErrorMessage("mail") }}
+                </div>
+              </div>
+              <div class="mb-4">
+                <button type="button" class="clickInput">Upload</button>
+                <input #clickInput type="file" formControlName="imageUrl" class="input-theme w-full"
+                  placeholder="Upload" readonly />
+                <div *ngIf="
+                    userForm.get('imageUrl')?.invalid &&
+                    userForm.get('imageUrl')?.touched
+                  " class="error">
+                  {{ getErrorMessage("imageUrl") }}
+                </div>
+              </div>
+              <div class="mb-4">
+                <select formControlName="role" class="input-theme w-full"
+                  [attr.disabled]="currentUserRole() === ROLE.USER">
+                  <option [value]="ROLE.USER">USER</option>
+                  <option [value]="ROLE.ADMIN">ADMIN</option>
+                </select>
+              </div>
+
+              <div class="flex justify-center">
+                <button type="submit" [disabled]="userForm.invalid" class="w-3/4" [ngClass]="{
+                    'btn-desactived-bg': !userForm.valid,
+                    'btn-gradient-bg': userForm.valid
+                  }">
+                  Update {{ user()?.firstName }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</section>

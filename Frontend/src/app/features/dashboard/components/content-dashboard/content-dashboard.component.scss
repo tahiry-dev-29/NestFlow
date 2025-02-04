@@ -1,12 +1,12 @@
-@import '../../../../styles/theme';
+@import "../../../../styles/theme";
 
 @font-face {
-  font-family: 'shantellasans';
-  src: url('../../../../../../public/fonts/ShantellSans-Regular.ttf');
+  font-family: "shantellasans";
+  src: url("../../../../../../public/fonts/ShantellSans-Regular.ttf");
   font-weight: normal;
 }
 * {
-  font-family: 'shantellasans';
+  font-family: "shantellasans";
 }
 
 @tailwind base;
@@ -51,10 +51,18 @@
   .metric-card {
     @include card-base;
     @apply p-6;
-    &--primary { @apply border-neon-primary; }
-    &--success { @apply border-neon-success; }
-    &--warning { @apply border-neon-warning; }
-    &--danger { @apply border-neon-danger; }
+    &--primary {
+      @apply border-neon-primary;
+    }
+    &--success {
+      @apply border-neon-success;
+    }
+    &--warning {
+      @apply border-neon-warning;
+    }
+    &--danger {
+      @apply border-neon-danger;
+    }
     .metric-value {
       @apply text-2xl font-bold;
     }
@@ -147,7 +155,8 @@
 }
 
 .chart-controls {
-  select, button {
+  select,
+  button {
     @apply bg-slate-850 text-white p-2 rounded-lg text-sm transition-all duration-200 ease-in-out;
     &:hover {
       @apply bg-slate-900 border border-neon-primary border-opacity-50;

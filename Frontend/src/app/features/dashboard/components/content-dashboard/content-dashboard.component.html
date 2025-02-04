@@ -142,21 +142,27 @@
     </div>
 
     <div
-      class="metric-card metric-card--primary lg:col-span-1 md:col-span-2 col-span-1"
+      class="metric-card metric-card--primary lg:col-span-1 md:col-span-2 col-span-1 w-full"
     >
-      <div class="chart-header">
-        <h3 class="text-neon-primary mb-5">Risk by Business Unit</h3>
+      <div
+        class="chart-header flex flex-col sm:flex-row justify-between items-center gap-4"
+      >
+        <h3 class="text-neon-primary mb-2 sm:mb-5 text-center sm:text-left">
+          Risk by Business Unit
+        </h3>
         <select
           [(ngModel)]="businessUnitChartType"
           (change)="updateBusinessUnitChart()"
-          class="select-control"
+          class="select-control w-full sm:w-auto"
         >
           <option *ngFor="let type of pieChartTypes" [value]="type">
             {{ type }}
           </option>
         </select>
       </div>
-      <div class="chart-body">
+      <div
+        class="chart-body min-h-[300px] flex items-center justify-center min-w-auto"
+      >
         <app-right-chart
           [data]="businessUnitData"
           [options]="doughnutOptions"
