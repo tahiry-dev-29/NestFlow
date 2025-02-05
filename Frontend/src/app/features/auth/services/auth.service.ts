@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { ERROR_MESSAGES, SERVER_ERROR_MESSAGES } from '../../../../constantes';
 import { environment } from '../../../../environments/environment';
 import { IUsers, ROLE } from '../../users/models/users/users.module';
+import { Cacheable } from 'ts-cacheable';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,7 @@ export class AuthService {
   private readonly router = inject(Router);
 
   // Auth methods
+  @Cacheable()
   login(credentials: {
     mail: string;
     password: string;
@@ -39,14 +41,18 @@ export class AuthService {
       );
   }
 
+  @Cacheable()
   logout(userId?: string): Observable<any> {
-    const logoutUrl = userId ? `${this.API_URL}/logout/${userId}` : `${this.API_URL}/logout`;
+    const logoutUrl = userId
+      ? `${this.API_URL}/logout/${userId}`
+      : `${this.API_URL}/logout`;
     return this.http.post<{ message: string }>(logoutUrl, null).pipe(
       tap(() => this.clearUserSession()),
       catchError(this.handleError.bind(this))
     );
   }
 
+  @Cacheable()
   signup(formData: FormData): Observable<any> {
     return this.http
       .post(`${this.API_URL}/create`, formData)
@@ -75,7 +81,6 @@ export class AuthService {
     try {
       return this.cookieService.get(this.TOKEN_KEY) || null;
     } catch (error) {
-      console.error('Token retrieval failed:', error);
       return null;
     }
   }
@@ -87,12 +92,11 @@ export class AuthService {
         '/',
         this.COOKIE_OPTIONS.domain
       );
-    } catch (error) {
-      console.error('Token deletion failed:', error);
-    }
+    } catch (error) {}
   }
 
   // User management
+  @Cacheable()
   getCurrentUser(): Observable<IUsers | null> {
     return this.http
       .get<IUsers>(`${this.API_URL}/me`)

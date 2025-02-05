@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, output, signal } from '@angular/core';
-import { SearchBarComponent } from "../../../shared/components/search-bar/search-bar.component";
+import { SearchBarComponent } from '../../../shared/components/search-bar/search-bar.component';
 import { Router } from '@angular/router';
 import { SubscriptionStore } from '../../store/store';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-menu-subscription',
@@ -17,7 +18,16 @@ export class MenuComponent {
   activeMenu = signal<number>(0);
 
   private readonly router = inject(Router);
-  store = inject(SubscriptionStore);
+  readonly store = inject(SubscriptionStore);
+  private readonly toasters = inject(ToastrService);
+  refreshData() {
+    this.store.LoadSubscriptionWithDetails(
+      this.store.subscriptionsWithDetails()
+    ),
+      this.toasters.success(
+        `<span class="font-semibold">Data is already updated...</span>`
+      );
+  }
 
   menuItems = signal([
     { label: 'All', icon: 'apps', filter: 'all' },
@@ -35,6 +45,6 @@ export class MenuComponent {
   }
 
   onAddUser() {
-    this.router.navigate(['dashboard','subscriptions', 'add']);
+    this.router.navigate(['dashboard', 'subscriptions', 'add']);
   }
 }

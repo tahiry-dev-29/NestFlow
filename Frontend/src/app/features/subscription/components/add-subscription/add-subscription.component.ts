@@ -138,7 +138,6 @@ export class AddSubscriptionComponent implements OnInit {
       };
 
       this.store.addSubscription(subscription);
-      console.log(subscription);
 
       this.toastr.success(
         `<span class="msg-class">${subscription.fullname}</span> subscription added successfully!`

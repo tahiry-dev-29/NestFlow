@@ -6,11 +6,10 @@ import { appConfig } from './app/app.config';
 
 class GlobalErrorHandler implements ErrorHandler {
   handleError(error: any) {
-    // Ignore les erreurs de connexion spécifiques
     if (error.message?.includes('Could not establish connection')) {
       return;
     }
-    console.error('An error occurred:', error);
+    return;
   }
 }
 
@@ -20,9 +19,8 @@ bootstrapApplication(AppComponent, {
     ...appConfig.providers,
     {
       provide: ErrorHandler,
-      useClass: GlobalErrorHandler
+      useClass: GlobalErrorHandler,
     },
-    provideHttpClient()
-  ]
-}).catch(err => console.error(err));
-
+    provideHttpClient(),
+  ],
+}).catch((err) => console.error(err));

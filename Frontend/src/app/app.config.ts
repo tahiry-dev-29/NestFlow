@@ -9,9 +9,7 @@ import { authInterceptor } from './features/auth/intercepteurs/authentifiction.i
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(
-      withInterceptors([authInterceptor]),
-    ),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimations(),
     provideToastr({
       timeOut: 2000,
@@ -20,8 +18,8 @@ export const appConfig: ApplicationConfig = {
       positionClass: 'toast-bottom-right',
       tapToDismiss: true,
       enableHtml: true,
-      preventDuplicates: false,
+      preventDuplicates: true,
+      resetTimeoutOnDuplicate: true,
     }),
-  ]
+  ],
 };
-

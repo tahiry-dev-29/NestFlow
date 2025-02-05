@@ -107,8 +107,8 @@ export class ContentDashboardComponent implements OnInit {
 
   private loadInitialData() {
     Promise.all([
-      this.subscriptionStore.LoadSubscriptionWithDetails([]),
-      this.userStore.loadUsers([]),
+      this.subscriptionStore.LoadSubscriptionWithDetails([]).unsubscribe(),
+      this.userStore.loadUsers([]).unsubscribe(),
     ])
       .then(() => {
         setTimeout(() => {
@@ -422,5 +422,8 @@ export class ContentDashboardComponent implements OnInit {
   refreshData() {
     this.lastUpdate = new Date();
     this.loadInitialData();
+    this.toaster.success(
+      `<span class="font-semibold">Data is already updated...</span>`
+    );
   }
 }

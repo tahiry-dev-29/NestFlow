@@ -138,8 +138,6 @@ export class DetailListsComponent implements OnInit {
   }
 
   handleRenewSubmit(data: RenewSubscriptionData): void {
-    console.log('Renewal data:', data);
-    // Implémentez ici la logique de renouvellement
     this.closeRenewPopup();
   }
 

@@ -102,6 +102,7 @@ export class EditUserComponent implements OnInit, OnChanges {
         },
         Validators.required,
       ],
+      imageUrl: [this.user()?.imageUrl || ''],
     });
 
     this.userForm.valueChanges.subscribe((values) => {
@@ -129,6 +130,7 @@ export class EditUserComponent implements OnInit, OnChanges {
       formData.append('firstName', userData.firstName);
       formData.append('mail', userData.mail);
       formData.append('role', userData.role);
+      this.selectedFileName = null;
 
       const user = this.user();
       if (user) {
@@ -141,7 +143,7 @@ export class EditUserComponent implements OnInit, OnChanges {
                 `<span class="msg-class">${userData.firstName}</span> updated successfully`
               );
               this.userEdited.emit();
-              this.userStore.loadUsers(this.userStore.users());
+              this.userStore.loadUsers(this.userStore.users()).unsubscribe();
             })
           )
           .subscribe();
@@ -174,6 +176,21 @@ export class EditUserComponent implements OnInit, OnChanges {
   // Trigger file input
   triggerFileInput(): void {
     this.fileInput()?.nativeElement.click();
+  }
+
+  selectedFileName: string | null = null;
+
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      this.selectedFileName = file.name;
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const imageUrl = e.target?.result as string;
+        this.userForm.patchValue({ image: imageUrl });
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   // Get error message

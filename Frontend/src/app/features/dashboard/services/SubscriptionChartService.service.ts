@@ -42,7 +42,6 @@ export class SubscriptionChartService {
     const users = this.userStore.users();
 
     if (!subscriptions.length || !users.length) {
-      console.warn('Les données ne sont pas encore chargées');
       return [];
     }
 

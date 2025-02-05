@@ -1,10 +1,12 @@
-<div class="relative grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 py-4 sm:px-6 md:px-6 lg:px-10 overflow-hidden break-words border-0 content-style rounded-2xl bg-clip-border">
+<div
+  class="relative grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 py-4 sm:px-6 md:px-6 lg:px-10 overflow-hidden break-words border-0 content-style rounded-2xl bg-clip-border">
   <div class="col-span-1 lg:col-span-3 flex flex-wrap justify-between gap-y-5 items-center px-3 mb-4 sm:mb-0">
 
     <!-- Menu -->
     <div class="w-full sm:w-auto mb-2 sm:mb-0">
       <div class="relative flex flex-col rounded-lg shadow-md">
-        <ul class="flex sm:gap-6 p-2 rounded-xl justify-center sm:justify-start min-w-max shadow-dark-xl" role="tablist">
+        <ul class="flex sm:gap-6 p-2 rounded-xl justify-center sm:justify-start min-w-max shadow-dark-xl"
+          role="tablist">
           @for (menuItem of menuItems(); let i = $index; track i) {
           <li class="relative text-center cursor-pointer w-full sm:w-auto" (click)="setActiveMenu(i, menuItem.filter)">
             <a class="flex items-center justify-center w-full px-5 sm:h-10 py-2 transition-all ease-in-out border-none"
@@ -18,7 +20,8 @@
           </li>
           }
 
-          <span class="absolute bottom-2 left-0 h-1 bg-[#a855f7] rounded-lg transition-transform duration-300 ease-in-out"
+          <span
+            class="absolute bottom-2 left-0 h-1 bg-[#a855f7] rounded-lg transition-transform duration-300 ease-in-out"
             [style.width.%]="100 / menuItems().length"
             [style.transform]="'translateX(' + activeMenu() * 100 + '%)'"></span>
         </ul>
@@ -30,10 +33,14 @@
 
     <div class="w-full sm:w-auto mb-2 sm:mb-0">
       <div class="card shadow-card flex gap-3 justify-around items-center flex-wrap">
-        <button class="w-10 h-10 flex items-center justify-center rounded-full text-gray-200 p-2 hover:bg-slate-300/10 transition group ml-auto" (click)="onAddUser()" type="button">
+        <button
+          class="w-10 h-10 flex items-center justify-center rounded-full text-gray-200 p-2 hover:bg-slate-300/10 transition group ml-auto"
+          (click)="onAddUser()" type="button">
           <i class="material-icons group-hover:text">add</i>
         </button>
-        <button class="w-10 h-10 flex items-center justify-center rounded-full text-gray-200 p-2 hover:bg-slate-300/10 transition group ml-auto" (click)="store.LoadSubscriptionWithDetails(store.subscriptionsWithDetails())">
+        <button
+          class="w-10 h-10 flex items-center justify-center rounded-full text-gray-200 p-2 hover:bg-slate-300/10 transition group ml-auto"
+          (click)="refreshData()">
           <span class="material-icons text-gray-50 group-hover:text">refresh</span>
         </button>
       </div>
