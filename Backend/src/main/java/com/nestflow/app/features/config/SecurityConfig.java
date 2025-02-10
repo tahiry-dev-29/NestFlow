@@ -32,7 +32,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/", // Add this line
+            "/",
             "/api/auth/create",
             "/api/auth/login",
             "/v3/api-docs/**",
