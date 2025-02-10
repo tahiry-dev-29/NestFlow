@@ -3,27 +3,35 @@
     <main class="mt-0 transition-all duration-200 ease-in-out">
         <div class="flex flex-col items-center">
             <div class="w-85 max-w-md px-3 mx-auto">
-                <div class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
-                    <button type="button" (click)="restForm()" class="text-gray-300 hover:text-white flex flex-row-reverse items-center pt-4 pr-4 transition">
+                <div class="relative z-0 flex flex-col min-w-0 break-words bg-simple border-0 animate-shadow-pulse">
+                    <button type="button" (click)="restForm()"
+                        class="text-gray-300 hover:text-white flex flex-row-reverse items-center pt-4 pr-4 transition">
                         <i class="material-icons text-gray-50 hover:text">refresh</i>
                     </button>
                     <div class="flex-auto p-6">
-                        <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left" class="flex flex-col">
+                        <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left"
+                            class="flex flex-col">
                             <div class="mb-4">
-                                <input type="text" formControlName="name" class="input-theme w-full" placeholder="Name" />
-                                <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched" class="error">
+                                <input type="text" formControlName="name" class="input-theme w-full"
+                                    placeholder="Name" />
+                                <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched"
+                                    class="error">
                                     {{ getErrorMessage('name') }}
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <input type="text" formControlName="firstName" class="input-theme w-full" placeholder="First Name" />
-                                <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched" class="error">
+                                <input type="text" formControlName="firstName" class="input-theme w-full"
+                                    placeholder="First Name" />
+                                <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched"
+                                    class="error">
                                     {{ getErrorMessage('firstName') }}
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <input type="email" formControlName="mail" class="input-theme w-full" placeholder="Email" />
-                                <div *ngIf="userForm.get('mail')?.invalid && userForm.get('mail')?.touched" class="error">
+                                <input type="email" formControlName="mail" class="input-theme w-full"
+                                    placeholder="Email" />
+                                <div *ngIf="userForm.get('mail')?.invalid && userForm.get('mail')?.touched"
+                                    class="error">
                                     {{ getErrorMessage('mail') }}
                                 </div>
                             </div>
@@ -34,19 +42,22 @@
                                 </select>
                             </div>
                             <div class="mb-4">
-                                <input type="password" formControlName="password" class="input-theme w-full" placeholder="Mot de passe" />
+                                <input type="password" formControlName="password" class="input-theme w-full"
+                                    placeholder="Mot de passe" />
                                 <div *ngIf="userForm.get('password')?.touched" class="error">
                                     {{ getErrorMessage('password') }}
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <input type="password" formControlName="confirmPassword" class="input-theme w-full" placeholder="Confirmer le mot de passe" />
+                                <input type="password" formControlName="confirmPassword" class="input-theme w-full"
+                                    placeholder="Confirmer le mot de passe" />
                                 <div *ngIf="userForm.get('confirmPassword')?.touched" class="error">
                                     {{ getErrorMessage('confirmPassword') }}
                                 </div>
                             </div>
                             <div class="flex justify-center">
-                                <button type="submit" [disabled]="userForm.invalid" class="w-3/4" [ngClass]="{'btn-desactived-bg': !userForm.valid, 'btn-gradient-bg': userForm.valid}">
+                                <button type="submit" [disabled]="userForm.invalid" class="w-3/4"
+                                    [ngClass]="{'btn-desactived-bg': !userForm.valid, 'btn-gradient-bg': userForm.valid}">
                                     Ajouter
                                 </button>
                             </div>

@@ -142,11 +142,11 @@ export class AddSubscriptionComponent implements OnInit {
       this.toastr.success(
         `<span class="msg-class">${subscription.fullname}</span> subscription added successfully!`
       );
+      this.store.LoadSubscriptionWithDetails(
+        this.store.subscriptionsWithDetails()
+      );
       setTimeout(
         () => {
-          this.store.LoadSubscriptionWithDetails(
-            this.store.subscriptionsWithDetails()
-          );
           this.subscriptionForm.reset({
             subscriptionType: SubscriptionType.BASIC,
             duration: 1,
@@ -154,7 +154,7 @@ export class AddSubscriptionComponent implements OnInit {
             price: SUBSCRIPTION_CONFIG.BASIC.basePrice,
           });
         },
-        this.store.loading() === false ? 1000 : 0
+        this.store.loading() === false ? 1500 : 0
       );
     } else {
       this.toastr.error('The form is invalid.');

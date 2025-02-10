@@ -23,7 +23,7 @@ import { AuthStore } from '../../store/auth.store';
                 <h5 class="title">Login</h5>
               </div>
               <div class="flex-auto p-6">
-                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" role="form text-left">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="on">
                   <div class="mb-4">
                     <input type="mail" formControlName="mail" class="input-theme" placeholder="email" />
                     <div *ngIf="loginForm.get('mail')?.invalid && loginForm.get('mail')?.touched" class="text-red-500">
@@ -47,12 +47,12 @@ import { AuthStore } from '../../store/auth.store';
                       <span *ngIf="!store.loading()">Login</span>
                         <span *ngIf="store.loading()" class="flex justify-center items-center gap-3">
                           <span class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></span>
-                          <span class="ml-2 text-white animate-pulse duration-75">Chargement...</span>
+                          <span class="ml-2 text-white animate-pulse duration-75">Loading...</span>
                         </span>
                     </button>
                   </div>
                 </form>
-                
+
                 <div *ngIf="store.error()" class="error flex justify-center">{{ store.error() }}</div>
               </div>
             </div>

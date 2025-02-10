@@ -118,10 +118,6 @@ export const subscriptionActionsFeature = signalStoreFeature(
               });
             }),
             catchError((error) => {
-              console.error(
-                "Erreur lors de la suppression de l'abonnement :",
-                error
-              );
               patchState(store, {
                 error: error.message || 'Erreur lors de la suppression',
                 loading: false,

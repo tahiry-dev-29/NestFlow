@@ -23,10 +23,11 @@ export class MenuComponent {
   refreshData() {
     this.store.LoadSubscriptionWithDetails(
       this.store.subscriptionsWithDetails()
-    ),
-      this.toasters.success(
-        `<span class="font-semibold">Data is already updated...</span>`
-      );
+    );
+
+    this.toasters.success(
+      `<span class="font-semibold">Data is already updated...</span>`
+    );
   }
 
   menuItems = signal([

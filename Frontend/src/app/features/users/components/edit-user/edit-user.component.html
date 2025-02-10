@@ -6,7 +6,7 @@
         <div
           class="relative z-0 flex flex-col min-w-0 break-words bg-slate-850/80 border-0 animate-shadow-pulse rounded-2xl">
           <div class="flex-auto p-6 mt-6">
-            <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="form text-left" class="flex flex-col">
+            <form [formGroup]="userForm" (ngSubmit)="onSubmit()" role="none" class="flex flex-col">
               <div class="mb-4">
                 <input type="text" formControlName="name" class="input-theme w-full" placeholder="Name" />
                 <div *ngIf="
@@ -44,7 +44,8 @@
                   </svg>
                   {{ selectedFileName || 'Upload your profile Picture (optional)' }}
                 </button>
-                <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden">
+                <input #fileInput type="file" (change)="onFileSelected($event)" formControlName="imageUrl"
+                  accept="image/*" class="hidden">
               </div>
               <div class="mb-4">
                 <select formControlName="role" class="input-theme w-full"

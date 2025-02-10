@@ -72,7 +72,6 @@ export class EditUserComponent implements OnInit, OnChanges {
       },
       error: (error) => {
         this.toastr.error('Error loading user role');
-        console.error('Error:', error);
       },
     });
   }
@@ -117,6 +116,7 @@ export class EditUserComponent implements OnInit, OnChanges {
         firstName: this.user()!.firstName || '',
         mail: this.user()!.mail || '',
         role: this.user()!.role || 'USER',
+        imageUrl: this.user()!.imageUrl || null,
       });
     }
   }
@@ -130,11 +130,12 @@ export class EditUserComponent implements OnInit, OnChanges {
       formData.append('firstName', userData.firstName);
       formData.append('mail', userData.mail);
       formData.append('role', userData.role);
-      this.selectedFileName = null;
+      formData.append('imageUrl', userData.imageUrl);
 
       const user = this.user();
       if (user) {
         const userId = user.id;
+
         this.userStore
           .updateUser(userId, userData)
           .pipe(
@@ -143,6 +144,7 @@ export class EditUserComponent implements OnInit, OnChanges {
                 `<span class="msg-class">${userData.firstName}</span> updated successfully`
               );
               this.userEdited.emit();
+
               this.userStore.loadUsers(this.userStore.users()).unsubscribe();
             })
           )

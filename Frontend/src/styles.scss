@@ -138,6 +138,9 @@ $bg-gradient: linear-gradient(to right, #a855f7, #ec4899);
   .content-style {
     @apply rounded-2xl bg-slate-900/5 backdrop-blur-sm shadow-dark-blur;
   }
+  .bg-simple {
+    @apply shadow-lg bg-slate-850/50 rounded-2xl;
+  }
 
   .bg-section {
     @apply bg-slate-900/5 backdrop-blur shadow-dark-section;

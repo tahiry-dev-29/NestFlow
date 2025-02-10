@@ -13,7 +13,6 @@ export class UsersService {
   private readonly http = inject(HttpClient);
 
   // Get users
-  @Cacheable()
   getUsers(): Observable<IUsers[]> {
     return this.http.get<IUsers[]>(`${this.apiUrl}/lists`);
   }

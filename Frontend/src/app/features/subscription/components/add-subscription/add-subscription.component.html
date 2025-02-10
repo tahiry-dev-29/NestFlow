@@ -1,86 +1,101 @@
 <main class="mt-0 transition-all duration-200 ease-in-out min-h-screen">
-  <div class="flex flex-wrap">
-      <div class="w-full bg-content max-w-full px-3 mx-auto md:flex-0 shrink-0">
-          <div class="h-16 my-5 mx-3 flex items-center justify-center mb-0 text-center content-style font-bold text-lg border-b-0 rounded-t-2xl">
-              <h5 class="title animate-pulse">Ajouter un abonnement</h5>
-          </div>
-          <div class="flex-auto p-6">
-              <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()" role="form text-left">
-                  <section class="grid grid-cols-2 gap-4">
-                      <div class="col-span-1">
-                          <div class="mb-4">
-                              <input type="text" formControlName="fullname" class="input-theme" placeholder="Nom complet" />
-                              <div *ngIf="subscriptionForm.get('fullname')?.invalid && subscriptionForm.get('fullname')?.touched" class="error">
-                                  <small *ngFor="let error of getErrors('fullname')">{{ error }}</small>
-                              </div>
-                          </div>
-                          <div class="mb-4">
-                              <input type="email" formControlName="email" class="input-theme" placeholder="Email" />
-                              <div *ngIf="subscriptionForm.get('email')?.invalid && subscriptionForm.get('email')?.touched" class="error">
-                                  <small *ngFor="let error of getErrors('email')">{{ error }}</small>
-                              </div>
-                          </div>
-                          <div class="mb-4">
-                              <input type="tel" formControlName="tel" class="input-theme" placeholder="Téléphone" />
-                              <div *ngIf="subscriptionForm.get('tel')?.invalid && subscriptionForm.get('tel')?.touched" class="error">
-                                  <small *ngFor="let error of getErrors('tel')">{{ error }}</small>
-                              </div>
-                          </div>
-                          <div class="mb-4">
-                              <input type="password" formControlName="code" class="input-theme" placeholder="Mot de passe" />
-                              <div *ngIf="subscriptionForm.get('code')?.invalid && subscriptionForm.get('code')?.touched" class="error">
-                                  <small *ngFor="let error of getErrors('code')">{{ error }}</small>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-span-1">
-                          <div class="mb-4">
-                              <textarea formControlName="adresse" class="input-theme min-h-[100px]" placeholder="Adresse"></textarea>
-                              <div *ngIf="subscriptionForm.get('adresse')?.invalid && subscriptionForm.get('adresse')?.touched" class="error">
-                                  <small *ngFor="let error of getErrors('adresse')">{{ error }}</small>
-                              </div>
-                          </div>
-                          <div class="mb-4">
-                              <select formControlName="subscriptionType" class="input-theme">
-                                  <option [value]="SubscriptionType.BASIC">Basique</option>
-                                  <option [value]="SubscriptionType.CLASSIC">Classique</option>
-                              </select>
-                              <div *ngIf="subscriptionForm.get('subscriptionType')?.invalid && subscriptionForm.get('subscriptionType')?.touched" class="error">
-                                  <small *ngFor="let error of getErrors('subscriptionType')">{{ error }}</small>
-                              </div>
-                          </div>
-                          <div class="mb-4 grid grid-cols-2 gap-3">
-                              <input type="number" formControlName="duration" class="input-theme" min="1" placeholder="Duration" />
-                              <select formControlName="timeUnit" class="input-theme">
-                                  <option [value]="TimeUnit.DAYS">Days</option>
-                                  <option [value]="TimeUnit.WEEKS">Weeks</option>
-                                  <option [value]="TimeUnit.MONTHS">Months</option>
-                                  <option [value]="TimeUnit.YEARS">Years</option>
-                              </select>
-                              <div *ngIf="(subscriptionForm.get('duration')?.invalid && subscriptionForm.get('duration')?.touched) || (subscriptionForm.get('timeUnit')?.invalid && subscriptionForm.get('timeUnit')?.touched)" class="error">
-                                  <small *ngFor="let error of getErrors('duration')">{{ error }}</small>
-                                  <small *ngFor="let error of getErrors('timeUnit')">{{ error }}</small>
-                              </div>
-                          </div>
-                          <div class="mb-4">
-                              <div class="flex justify-between items-center gap-3">
-                                  <input type="text" formControlName="channelCount" [value]="displayedChannelCount" class="input-theme bg-gray-700/50" placeholder="Channel Count" readonly />
+    <div class="flex flex-wrap">
+        <div class="w-full bg-simple max-w-full px-3 mx-auto md:flex-0 shrink-0">
+            <div
+                class="h-16 my-5 mx-3 flex items-center justify-center mb-0 text-center content-style font-bold text-lg border-b-0 rounded-t-2xl">
+                <h5 class="title animate-pulse">Ajouter un abonnement</h5>
+            </div>
+            <div class="flex-auto p-6">
+                <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()" role="form text-left">
+                    <section class="grid grid-cols-2 gap-4">
+                        <div class="col-span-1">
+                            <div class="mb-4">
+                                <input type="text" formControlName="fullname" class="input-theme"
+                                    placeholder="Nom complet" />
+                                <div *ngIf="subscriptionForm.get('fullname')?.invalid && subscriptionForm.get('fullname')?.touched"
+                                    class="error">
+                                    <small *ngFor="let error of getErrors('fullname')">{{ error }}</small>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <input type="email" formControlName="email" class="input-theme" placeholder="Email" />
+                                <div *ngIf="subscriptionForm.get('email')?.invalid && subscriptionForm.get('email')?.touched"
+                                    class="error">
+                                    <small *ngFor="let error of getErrors('email')">{{ error }}</small>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <input type="tel" formControlName="tel" class="input-theme" placeholder="Téléphone" />
+                                <div *ngIf="subscriptionForm.get('tel')?.invalid && subscriptionForm.get('tel')?.touched"
+                                    class="error">
+                                    <small *ngFor="let error of getErrors('tel')">{{ error }}</small>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <input type="password" formControlName="code" class="input-theme"
+                                    placeholder="Mot de passe" />
+                                <div *ngIf="subscriptionForm.get('code')?.invalid && subscriptionForm.get('code')?.touched"
+                                    class="error">
+                                    <small *ngFor="let error of getErrors('code')">{{ error }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-1">
+                            <div class="mb-4">
+                                <textarea formControlName="adresse" class="input-theme min-h-[100px]"
+                                    placeholder="Adresse"></textarea>
+                                <div *ngIf="subscriptionForm.get('adresse')?.invalid && subscriptionForm.get('adresse')?.touched"
+                                    class="error">
+                                    <small *ngFor="let error of getErrors('adresse')">{{ error }}</small>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <select formControlName="subscriptionType" class="input-theme">
+                                    <option [value]="SubscriptionType.BASIC">Basique</option>
+                                    <option [value]="SubscriptionType.CLASSIC">Classique</option>
+                                </select>
+                                <div *ngIf="subscriptionForm.get('subscriptionType')?.invalid && subscriptionForm.get('subscriptionType')?.touched"
+                                    class="error">
+                                    <small *ngFor="let error of getErrors('subscriptionType')">{{ error }}</small>
+                                </div>
+                            </div>
+                            <div class="mb-4 grid grid-cols-2 gap-3">
+                                <input type="number" formControlName="duration" class="input-theme" min="1"
+                                    placeholder="Duration" />
+                                <select formControlName="timeUnit" class="input-theme">
+                                    <option [value]="TimeUnit.DAYS">Days</option>
+                                    <option [value]="TimeUnit.WEEKS">Weeks</option>
+                                    <option [value]="TimeUnit.MONTHS">Months</option>
+                                    <option [value]="TimeUnit.YEARS">Years</option>
+                                </select>
+                                <div *ngIf="(subscriptionForm.get('duration')?.invalid && subscriptionForm.get('duration')?.touched) || (subscriptionForm.get('timeUnit')?.invalid && subscriptionForm.get('timeUnit')?.touched)"
+                                    class="error">
+                                    <small *ngFor="let error of getErrors('duration')">{{ error }}</small>
+                                    <small *ngFor="let error of getErrors('timeUnit')">{{ error }}</small>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex justify-between items-center gap-3">
+                                    <input type="text" formControlName="channelCount" [value]="displayedChannelCount"
+                                        class="input-theme bg-gray-700/50" placeholder="Channel Count" readonly />
 
-                                  <input type="text" formControlName="price" [value]="displayedPrice" class="input-theme bg-gray-700/50" placeholder="Price" readonly />
-                              </div>
-                          </div>
-                          <div class="text-gray-400 text-sm mt-1">
-                              Calculated price for {{ subscriptionForm.get('duration')?.value || 0 }}
-                              {{ getTimeUnitLabel(subscriptionForm.get('timeUnit')?.value || TimeUnit.MONTHS) }}
-                          </div>
-                      </div>
-                  </section>
-                  <div class="text-center flex justify-end gap-5 mt-4">
-                      <button type="button" class="cancel-btn" (click)="redirectToList()">Annuler</button>
-                      <button type="submit" [disabled]="subscriptionForm.invalid" class="w-24" [ngClass]="{'btn-desactived-bg': subscriptionForm.invalid, 'btn-gradient-bg': subscriptionForm.valid}">Ajouter</button>
-                  </div>
-              </form>
-          </div>
-      </div>
-  </div>
+                                    <input type="text" formControlName="price" [value]="displayedPrice"
+                                        class="input-theme bg-gray-700/50" placeholder="Price" readonly />
+                                </div>
+                            </div>
+                            <div class="text-gray-400 text-sm mt-1">
+                                Calculated price for {{ subscriptionForm.get('duration')?.value || 0 }}
+                                {{ getTimeUnitLabel(subscriptionForm.get('timeUnit')?.value || TimeUnit.MONTHS) }}
+                            </div>
+                        </div>
+                    </section>
+                    <div class="text-center flex justify-end gap-5 mt-4">
+                        <button type="button" class="cancel-btn" (click)="redirectToList()">Annuler</button>
+                        <button type="submit" [disabled]="subscriptionForm.invalid" class="w-24"
+                            [ngClass]="{'btn-desactived-bg': subscriptionForm.invalid, 'btn-gradient-bg': subscriptionForm.valid}">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </main>

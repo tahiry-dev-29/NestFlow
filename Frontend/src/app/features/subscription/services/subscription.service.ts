@@ -25,7 +25,6 @@ export class SubscriptionService {
   }
 
   // Get Status Subscriptions
-  @Cacheable()
   getStatusSubscriptions(): Observable<SubscriptionWithDetails[]> {
     return this.http.get<SubscriptionWithDetails[]>(
       `${this.baseUrl}/getAll/withDetails`

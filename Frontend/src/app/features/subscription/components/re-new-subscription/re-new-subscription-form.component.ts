@@ -229,7 +229,7 @@ export class RenewSubscriptionFormComponent {
       this.store.reNewSubscription(submitData);
       setTimeout(() => {
         this.store.LoadSubscriptionWithDetails([]).unsubscribe;
-      }, 1200);
+      }, 200);
       this.toast.success(
         `<span class="msg-class">${submitData.unit}</span> Subscription renewed successfully`
       );
