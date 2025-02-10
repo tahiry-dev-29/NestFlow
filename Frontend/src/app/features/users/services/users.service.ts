@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { IUsers } from '../models/users/users.module';
 import { Cacheable } from 'ts-cacheable';
+import { environment } from '../../../../environments/environment';
+import { IUsers, UserUpdateDetails } from '../models/users/users.module';
 
 @Injectable({
   providedIn: 'root',
@@ -23,10 +23,20 @@ export class UsersService {
     return this.http.get<IUsers>(`${this.apiUrl}/${id}`);
   }
 
-  // Update user
+  // Update user details
   @Cacheable()
-  updateUser(id: string, user: Partial<IUsers>): Observable<IUsers> {
+  editUserDetails(id: string, user: UserUpdateDetails): Observable<IUsers> {
     return this.http.patch<IUsers>(`${this.apiUrl}/update/${id}`, user);
+  }
+  // Update pic user
+  @Cacheable()
+  editUserImages(id: string, imageFile: File): Observable<IUsers> {
+    const formData = new FormData();
+    formData.append('imageFile', imageFile);
+    return this.http.patch<IUsers>(
+      `${this.apiUrl}/update/${id}/images`,
+      formData
+    );
   }
 
   // Delete user

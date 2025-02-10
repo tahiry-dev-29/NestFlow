@@ -18,7 +18,7 @@ import {
   mergeMap,
   pipe,
   switchMap,
-  tap
+  tap,
 } from 'rxjs';
 import {
   ERROR_MESSAGES,
@@ -98,16 +98,23 @@ export const AuthStore = signalStore(
 
         checkUserRole: rxMethod<void>(
           pipe(
-            concatMap(() => authService.getCurrentUserRole().pipe(
-              tap(role => {
-                if (store.currentUser()) {
-                  patchState(store, {
-                    currentUser: { ...store.currentUser()!, role: role || ROLE.USER }
-                  });
-                }
-              }),
-              catchError((error: ErrorResponse) => handleHttpError(store, error))
-            ))
+            concatMap(() =>
+              authService.getCurrentUserRole().pipe(
+                tap((role) => {
+                  if (store.currentUser()) {
+                    patchState(store, {
+                      currentUser: {
+                        ...store.currentUser()!,
+                        role: role || ROLE.USER,
+                      },
+                    });
+                  }
+                }),
+                catchError((error: ErrorResponse) =>
+                  handleHttpError(store, error)
+                )
+              )
+            )
           )
         ),
 
@@ -130,7 +137,7 @@ export const AuthStore = signalStore(
             tap(() => patchState(store, { loading: true, error: null })),
             switchMap((credentials) =>
               authService.login(credentials).pipe(
-                mergeMap((token) => {
+                switchMap((token) => {
                   if (!token) {
                     patchState(store, {
                       error: ERROR_MESSAGES.INVALID_CREDENTIALS,

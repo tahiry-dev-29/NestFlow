@@ -16,7 +16,12 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { IUsers, UserState } from '../models/users/users.module';
+import {
+  IUsers,
+  UserState,
+  UserUpdateDetails,
+  UserUpdateImage,
+} from '../models/users/users.module';
 import { UsersService } from '../services/users.service';
 
 const getInitialState = (): UserState => ({
@@ -86,12 +91,15 @@ export const UserStore = signalStore(
       )
     ),
 
-    updateUser(userId: string, updates: Partial<IUsers>): Observable<IUsers> {
+    updateUserDetails(
+      userId: string,
+      updates: UserUpdateDetails
+    ): Observable<IUsers> {
       patchState(store, { loading: true, error: null });
 
-      return usersService.updateUser(userId, updates).pipe(
+      return usersService.editUserDetails(userId, updates).pipe(
         switchMap(() => {
-          return usersService.updateUser(userId, updates).pipe(
+          return usersService.editUserDetails(userId, updates).pipe(
             tap((updatedUser) => {
               patchState(store, {
                 users: store
@@ -101,6 +109,25 @@ export const UserStore = signalStore(
               });
             })
           );
+        }),
+        catchError((error) => {
+          patchState(store, { error: error.message, loading: false });
+          return of(error);
+        })
+      );
+    },
+
+    updateUserImages(userId: string, imageFile: File): Observable<IUsers> {
+      patchState(store, { loading: true, error: null });
+
+      return usersService.editUserImages(userId, imageFile).pipe(
+        tap((updatedUser) => {
+          patchState(store, {
+            users: store
+              .users()
+              .map((user) => (user.id === userId ? updatedUser : user)),
+            loading: false,
+          });
         }),
         catchError((error) => {
           patchState(store, { error: error.message, loading: false });

@@ -22,18 +22,21 @@ export interface IUsers {
   online: boolean;
 }
 
-export interface UserUpdateRequest {
+export interface UserUpdateDetails {
   name: string;
   firstName: string;
   mail: string;
-  imageUrl: string;
   role: ROLE;
+}
+export interface UserUpdateImage {
+  imageFile: 'string';
 }
 
 export interface IUserUpdateRequest {
   userId: string;
   updates: Partial<IUsers>;
 }
+
 export interface IUserUpdateResponse {
   success: boolean;
   message: string;

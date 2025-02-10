@@ -1,3 +1,4 @@
+import { ImageUrl } from './../../../../../../public/images/constant.images';
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -20,7 +21,6 @@ import {
 } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { tap } from 'rxjs';
-import { ImageUrl } from '../../../../../../public/images/constant.images';
 import { AuthService } from '../../../auth/services/auth.service';
 import { slideInOut } from '../../../shared/animations/animations';
 import { IUsers, ROLE } from '../../models/users/users.module';
@@ -44,6 +44,9 @@ export class EditUserComponent implements OnInit, OnChanges {
   userForm!: FormGroup;
   previewUser: any;
 
+  private _previewImageUrl = signal<string | null>(null);
+  readonly previewImageUrl = computed(() => this._previewImageUrl());
+
   // Inject services
   private readonly fb = inject(FormBuilder);
   readonly userStore = inject(UserStore);
@@ -51,6 +54,10 @@ export class EditUserComponent implements OnInit, OnChanges {
   readonly authService = inject(AuthService);
 
   isUserRole = computed(() => this.currentUserRole() === ROLE.USER);
+
+  activeTab = signal<'details' | 'image'>('details');
+  detailsForm!: FormGroup;
+  imageForm!: FormGroup;
 
   ngOnInit(): void {
     this.initForm();
@@ -67,10 +74,10 @@ export class EditUserComponent implements OnInit, OnChanges {
       next: (user) => {
         this.currentUser.set(user);
         if (user?.role === ROLE.USER) {
-          this.userForm.get('role')?.disable();
+          this.detailsForm.get('role')?.disable();
         }
       },
-      error: (error) => {
+      error: () => {
         this.toastr.error('Error loading user role');
       },
     });
@@ -84,7 +91,7 @@ export class EditUserComponent implements OnInit, OnChanges {
   }
 
   private initForm(): void {
-    this.userForm = this.fb.group({
+    this.detailsForm = this.fb.group({
       name: [
         this.user()?.name || '',
         [Validators.required, Validators.minLength(2)],
@@ -101,86 +108,131 @@ export class EditUserComponent implements OnInit, OnChanges {
         },
         Validators.required,
       ],
-      imageUrl: [this.user()?.imageUrl || ''],
     });
 
-    this.userForm.valueChanges.subscribe((values) => {
-      this.updatePreview(values);
+    this.imageForm = this.fb.group({
+      imageFile: [''],
+    });
+
+    this.detailsForm.valueChanges.subscribe((values) => {
+      this.updatePreview({ ...values, imageFile: this.previewUser.imageFile });
     });
   }
 
   private patchForm(): void {
-    if (this.userForm && this.user()) {
-      this.userForm.patchValue({
+    if (this.detailsForm && this.user()) {
+      this.detailsForm.patchValue({
         name: this.user()!.name || '',
         firstName: this.user()!.firstName || '',
         mail: this.user()!.mail || '',
         role: this.user()!.role || 'USER',
-        imageUrl: this.user()!.imageUrl || null,
       });
     }
   }
 
-  onSubmit(): void {
-    if (this.userForm.valid && this.user) {
-      const formData = new FormData();
-      const userData = this.userForm.value;
+  onSubmitDetails(): void {
+    if (this.detailsForm.valid && this.user) {
+      const userData = this.detailsForm.value;
+      const userId = this.user()?.id;
+      if (!userId) return;
 
-      formData.append('name', userData.name);
-      formData.append('firstName', userData.firstName);
-      formData.append('mail', userData.mail);
-      formData.append('role', userData.role);
-      formData.append('imageUrl', userData.imageUrl);
+      this.userStore
+        .updateUserDetails(userId, userData)
+        .pipe(
+          tap(() => {
+            this.toastr.success(
+              `<span class="msg-class">${userData.firstName}</span> updated successfully`
+            );
+            this.userEdited.emit();
 
-      const user = this.user();
-      if (user) {
-        const userId = user.id;
+            setTimeout(() => {
+              this.userStore.loadUsers(this.userStore.users()).unsubscribe();
+            }, 200);
+          })
+        )
+        .subscribe();
+    }
+  }
 
+  onSubmitImage(): void {
+    if (this.selectedFileName && this.user()) {
+      const fileInput = this.fileInput()?.nativeElement;
+      if (fileInput && fileInput.files?.[0]) {
+        const userId = this.user()!.id;
         this.userStore
-          .updateUser(userId, userData)
+          .updateUserImages(userId, fileInput.files[0])
           .pipe(
             tap(() => {
-              this.toastr.success(
-                `<span class="msg-class">${userData.firstName}</span> updated successfully`
-              );
+              this.toastr.success('Profile picture updated successfully');
               this.userEdited.emit();
-
-              this.userStore.loadUsers(this.userStore.users()).unsubscribe();
+              this.selectedFileName = null;
+              setTimeout(() => {
+                this.userStore.loadUsers(this.userStore.users()).unsubscribe();
+              }, 200);
             })
           )
           .subscribe();
-      } else {
-        this.toastr.error('User not found');
       }
     }
   }
 
   // Init preview
   private initPreview(): void {
+    const currentImageUrl = this.user()?.imageUrl;
+
+    let imageUrl: string;
+    if (this._previewImageUrl()) {
+      imageUrl = this._previewImageUrl()!;
+    } else if (currentImageUrl) {
+      imageUrl = `${currentImageUrl}`;
+    } else {
+      imageUrl = ImageUrl.defaultImages;
+    }
+
     this.previewUser = {
       ...this.user(),
-      imageUrl: this.user()?.imageUrl
-        ? `${this.user()?.imageUrl}`
-        : ImageUrl.defaultImages,
+      imageUrl: imageUrl,
     };
+
+    // Log pour déboguer
+    console.log('Preview User initialized:', this.previewUser);
   }
 
   // Update preview
   private updatePreview(values: any): void {
+    const currentImageUrl =
+      this.previewUser?.imageUrl || ImageUrl.defaultImages;
+
     this.previewUser = {
       ...this.previewUser,
       name: values.name,
       firstName: values.firstName,
       mail: values.mail,
       role: values.role,
+      imageUrl: this._previewImageUrl() || currentImageUrl,
     };
   }
+
   // Trigger file input
   triggerFileInput(): void {
     this.fileInput()?.nativeElement.click();
   }
 
   selectedFileName: string | null = null;
+
+  get displayedFileName(): string {
+    if (!this.selectedFileName) {
+      return 'Upload your profile Picture';
+    }
+
+    const maxLength = 100;
+
+    if (this.selectedFileName.length > maxLength) {
+      return this.selectedFileName.substring(0, maxLength) + '...';
+    } else {
+      return this.selectedFileName;
+    }
+  }
 
   onFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -189,15 +241,26 @@ export class EditUserComponent implements OnInit, OnChanges {
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
         const imageUrl = e.target?.result as string;
-        this.userForm.patchValue({ image: imageUrl });
+        this._previewImageUrl.set(imageUrl);
+        this.imageForm.patchValue({ imageFile: file });
+
+        this.previewUser = {
+          ...this.previewUser,
+          imageUrl: imageUrl,
+        };
       };
       reader.readAsDataURL(file);
     }
   }
 
+  setActiveTab(tab: 'details' | 'image'): void {
+    this.activeTab.set(tab);
+  }
+
   // Get error message
-  getErrorMessage(field: string): string {
-    const control = this.userForm.get(field);
+  getErrorMessage(field: string, formType: 'details' | 'image'): string {
+    const form = formType === 'details' ? this.detailsForm : this.imageForm;
+    const control = form.get(field);
     if (!control?.errors || !control.touched) return '';
 
     const errors = control.errors;

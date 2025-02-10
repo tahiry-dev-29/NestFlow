@@ -1,11 +1,18 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "java.debug.settings.onBuildFailureProceed": true,
-    "chat.editor.wordWrap": "on",
-    "angular-schematics.schematicsDefaultOptions": {
-        "angular-*": {
-            "inlineStyle": true
-        }
-    }
+   "java.compile.nullAnalysis.mode": "automatic",
+   "java.configuration.updateBuildConfiguration": "automatic",
+   "java.debug.settings.onBuildFailureProceed": true,
+   "chat.editor.wordWrap": "on",
+   "angular-schematics.schematicsDefaultOptions": {
+      "angular-*": {
+         "inlineStyle": true,
+         "style": "scss"
+      },
+      "angular-component": {
+         "skipChangeDetectionOnPush": true
+      },
+      "angular-page": {
+         "skipChangeDetectionOnPush": true
+      }
+   }
 }

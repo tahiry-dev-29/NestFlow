@@ -34,4 +34,4 @@ build/
 
 ### project ###
 ### Upload Folder ###
-/src/main/resources/static/upload/
+/uploads
