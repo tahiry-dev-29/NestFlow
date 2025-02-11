@@ -193,9 +193,6 @@ export class EditUserComponent implements OnInit, OnChanges {
       ...this.user(),
       imageUrl: imageUrl,
     };
-
-    // Log pour déboguer
-    console.log('Preview User initialized:', this.previewUser);
   }
 
   // Update preview

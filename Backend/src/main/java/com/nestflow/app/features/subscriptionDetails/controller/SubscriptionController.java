@@ -1,10 +1,8 @@
 package com.nestflow.app.features.subscriptionDetails.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -96,7 +94,7 @@ public class SubscriptionController {
                 return ResponseEntity.noContent().build();
         }
 
-        @GetMapping("/getAll/withDetails") // Nouvelle route
+        @GetMapping("/getAll/withDetails")
         @Operation(summary = "Obtenir tous les abonnements avec les détails et le statut", security = @SecurityRequirement(name = "bearerAuth"))
         @PreAuthorize("hasRole('ADMIN')")
         @ApiResponses(value = {
@@ -117,28 +115,26 @@ public class SubscriptionController {
         }
 
         @PatchMapping("/set/{id}/renew")
-    @Operation(summary = "Renouveler un abonnement", security = @SecurityRequirement(name = "bearerAuth"))
-    @PreAuthorize("hasRole('ADMIN')")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Abonnement renouvelé avec succès", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SubscriptionDetailsEntity.class))),
-            @ApiResponse(responseCode = "400", description = "Requête incorrecte"),
-            @ApiResponse(responseCode = "404", description = "Abonnement non trouvé")
-    })
-    public ResponseEntity<SubscriptionDetailsEntity> renewSubscription(
-            @PathVariable String id,
-            @Valid @RequestBody RenewalRequest renewalRequest,
-            BindingResult bindingResult) {
+        @Operation(summary = "Renouveler un abonnement", security = @SecurityRequirement(name = "bearerAuth"))
+        @PreAuthorize("hasRole('ADMIN')")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Abonnement renouvelé avec succès", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SubscriptionDetailsEntity.class))),
+                        @ApiResponse(responseCode = "400", description = "Requête incorrecte"),
+                        @ApiResponse(responseCode = "404", description = "Abonnement non trouvé")
+        })
+        public ResponseEntity<SubscriptionDetailsEntity> renewSubscription(
+                        @PathVariable String id,
+                        @Valid @RequestBody RenewalRequest renewalRequest,
+                        BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors().stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.toList());
-            return ResponseEntity.badRequest().body(null); // Ou renvoyer les erreurs plus proprement
-        }
-        try {
-                SubscriptionDetailsEntity renewedSubscription = subscriptionService.renewSubscription(id, renewalRequest); // Appel CORRECT
-                return ResponseEntity.ok(renewedSubscription);
-            } catch (ResponseStatusException e) {
+                if (bindingResult.hasErrors()) {
+                        return ResponseEntity.badRequest().body(null);
+                }
+                try {
+                        SubscriptionDetailsEntity renewedSubscription = subscriptionService.renewSubscription(id,
+                                        renewalRequest);
+                        return ResponseEntity.ok(renewedSubscription);
+                } catch (ResponseStatusException e) {
                         return ResponseEntity.status(e.getStatusCode()).body(null);
                 }
         }
