@@ -27,7 +27,6 @@ export class AuthService {
   private readonly router = inject(Router);
 
   // Auth methods
-  @Cacheable()
   login(credentials: {
     mail: string;
     password: string;
@@ -41,7 +40,6 @@ export class AuthService {
       );
   }
 
-  @Cacheable()
   logout(userId?: string): Observable<any> {
     const logoutUrl = userId
       ? `${this.API_URL}/logout/${userId}`
@@ -52,7 +50,6 @@ export class AuthService {
     );
   }
 
-  @Cacheable()
   signup(formData: FormData): Observable<any> {
     return this.http
       .post(`${this.API_URL}/create`, formData)
@@ -96,7 +93,6 @@ export class AuthService {
   }
 
   // User management
-  @Cacheable()
   getCurrentUser(): Observable<IUsers | null> {
     return this.http
       .get<IUsers>(`${this.API_URL}/me`)

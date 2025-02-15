@@ -9,7 +9,6 @@ import {
   SubscriptionWithDetails,
 } from '../interfaces/subscription.interface';
 import { SubscriptionDetails } from '../models/subscription.model';
-import { Cacheable } from 'ts-cacheable';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +18,6 @@ export class SubscriptionService {
   private readonly http = inject(HttpClient);
 
   // Get All Subscriptions
-  @Cacheable()
   getListsSubscriptions(): Observable<SubscriptionDetails[]> {
     return this.http.get<SubscriptionDetails[]>(`${this.baseUrl}/lists`);
   }
@@ -32,13 +30,11 @@ export class SubscriptionService {
   }
 
   // Delete Subscription
-  @Cacheable()
   DeleteSubscription(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/delete/${id}`);
   }
 
   // Edit Subscription
-  @Cacheable()
   EditSubscription(
     id: string,
     subscription: EditSubscription
@@ -50,7 +46,6 @@ export class SubscriptionService {
   }
 
   // Add Subscription
-  @Cacheable()
   AddSubscription(
     subscription: AddSubscription
   ): Observable<SubscriptionDetails> {
@@ -61,7 +56,6 @@ export class SubscriptionService {
   }
 
   // Re New Subscription
-  @Cacheable()
   ReNewSubscription(
     id: string,
     subscription: RenewSubscriptionData
