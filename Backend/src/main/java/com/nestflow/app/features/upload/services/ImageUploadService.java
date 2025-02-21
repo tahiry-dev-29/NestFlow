@@ -1,5 +1,6 @@
 package com.nestflow.app.features.upload.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,8 @@ import jakarta.annotation.PostConstruct;
 @Service
 @RequiredArgsConstructor
 public class ImageUploadService {
-    private final String uploadDir = "uploads";
+    @Value("${upload.directory}")
+    private String uploadDir;
 
     @PostConstruct
     public void init() {

@@ -3,6 +3,7 @@ package com.nestflow.app.features.upload.controllers;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -18,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class ImageController {
 
-	private final String uploadDir = "uploads";
+	@Value("${upload.directory}")
+	private String uploadDir;
 
 	@GetMapping("/upload/{filename}")
 	public ResponseEntity<Resource> getImage(@PathVariable String filename) {
@@ -28,8 +30,8 @@ public class ImageController {
 
 			if (resource.exists() && resource.isReadable()) {
 				return ResponseEntity.ok()
-					.contentType(MediaType.IMAGE_JPEG)
-					.body(resource);
+						.contentType(MediaType.IMAGE_JPEG)
+						.body(resource);
 			}
 			return ResponseEntity.notFound().build();
 		} catch (Exception e) {

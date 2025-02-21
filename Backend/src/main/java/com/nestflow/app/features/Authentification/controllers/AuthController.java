@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Créer un nouvel utilisateur")
@@ -76,7 +76,6 @@ public class AuthController {
         return authService.signup(user, imageFile);
     }
 
-    
     @PostMapping(value = "/login")
     @Operation(summary = "Obtenir un jeton d'authentification")
     @ApiResponses(value = {
@@ -123,17 +122,21 @@ public class AuthController {
         return authService.logout(id, request, response);
     }
 
+    @Value("${upload.directory}")
+    private String uploadDir;
+
     @GetMapping("/api/users/images/upload/{filename}")
     @PreAuthorize("permitAll()")
     public ResponseEntity<Resource> serveImage(@PathVariable String filename) {
         try {
-            Path imagePath = Paths.get("uploads").resolve(filename);
+
+            Path imagePath = Paths.get(uploadDir).resolve(filename);
             Resource resource = new UrlResource(imagePath.toUri());
-            
+
             if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(resource);
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
             } else {
                 return ResponseEntity.notFound().build();
             }

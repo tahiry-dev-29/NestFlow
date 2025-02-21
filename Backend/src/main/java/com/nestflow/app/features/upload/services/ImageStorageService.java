@@ -1,5 +1,6 @@
 package com.nestflow.app.features.upload.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +9,8 @@ import java.nio.file.Paths;
 
 @Service
 public class ImageStorageService {
-	private final String uploadDir = "C:/Users/RandevTeam/Desktop/tahiry/projects/NestFlow/Backend/src/main/resources/static/upload/";
+	@Value("${upload.directory}")
+	private String uploadDir;
 
 	public String storeImage(byte[] imageData) throws IOException {
 		String imageId = generateImageId();
