@@ -13,10 +13,9 @@
 
 -  **📦 Framework**: Angular 18 (Standalone Components)
 -  **🌊 State Management**: NgRx Signal Store
--  **🎨 UI**: TailwindCSS + Angular Material
--  **🚀 Performance**: Angular Signals (`signal()`, `computed()`, `effect()`)
--  **📡 API Calls**: HTTP requests using Signals
--  **🖥️ SSR**: Server-Side Rendering (SSR)
+-  **🎨 UI**: TailwindCSS
+-  **🚀 Performance**: Angular Signals (`signal()`, `computed()`)
+-  **📡 API Calls**: HTTP requests
 
 ### 🔹 Backend (Spring Boot)
 
@@ -99,15 +98,7 @@ mvn spring-boot:run
 ✅ **Interactive dashboard** using **NgRx Signal Store**  
 ✅ **Optimized Angular with signals (`signal()`, `computed()`)**  
 ✅ **User & role management**  
-✅ **Automated email notifications**
 
----
-
-## 🔥 Future Enhancements
-
--  [ ] **WebSocket integration** for real-time notifications 🔔
--  [ ] **Dark/light mode** with TailwindCSS 🎨
--  [ ] **Advanced role-based access control** 👥
 
 ---
 
@@ -125,7 +116,7 @@ git push origin feature-new-feature
 
 ## 👨‍💻 Author
 
-**Tahiry Dev** 🚀  
+**TANNER Tahiry** 🚀  
 🔗 [GitHub](https://github.com/tahiry-dev-29)
 
 ---
