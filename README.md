@@ -39,7 +39,7 @@ src/
 │   │   ├── subscription/   # Subscription management
 │   │   ├── users/          # User management
 │   ├── shared/             # Reusable components and directives
-│   ├── store/              # Global Store (NgRx Signal Store)
+│  
 │── tailwind.config.js      # TailwindCSS configuration
 │── angular.json            # Angular configuration
 │── package.json            # Project dependencies
