@@ -1,7 +1,8 @@
-# 🚀 Nest Flow  
+# 🚀 Nest Flow
 
-## 📖 Introduction  
-**Nest Flow** is a modern subscription management application built with **Angular 18** and **Spring Boot**, optimized for **SSR** and **NgRx Signal Store**.
+## 📖 Introduction
+
+**Nest Flow** is a modern subscription management application built with **Angular 18** and **Spring Boot**, **NgRx Signal Store**.
 
 ---
 
@@ -95,8 +96,7 @@ mvn spring-boot:run
 ✅ **Subscription management** with reminders & notifications  
 ✅ **Interactive dashboard** using **NgRx Signal Store**  
 ✅ **Optimized Angular with signals (`signal()`, `computed()`)**  
-✅ **User & role management**  
-
+✅ **User & role management**
 
 ---
 
