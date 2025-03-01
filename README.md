@@ -9,25 +9,25 @@
 
 ### 🔹 Frontend (Angular 18)
 
--  **📦 Framework**: Angular 18 (Standalone Components)
--  **🌊 State Management**: NgRx Signal Store
--  **🎨 UI**: TailwindCSS
--  **🚀 Performance**: Angular Signals (`signal()`, `computed()`)
--  **📡 API Calls**: HTTP requests
+-  ** Framework**: Angular 18 (Standalone Components)
+-  ** State Management**: NgRx Signal Store
+-  ** UI**: TailwindCSS
+-  ** Performance**: Angular Signals (`signal()`, `computed()`)
+-  ** API Calls**: HTTP requests
 
 ### 🔹 Backend (Spring Boot)
 
--  **🔐 Security**: Spring Security & JWT
--  **📦 Database**: MongoDB
--  **📨 Notifications**: Email sending & subscription management
--  **📡 REST API**: Modular RESTful architecture
--  **☕ Java Version**: Java 21
+-  ** Security**: Spring Security & JWT
+-  ** Database**: MongoDB
+-  ** Notifications**: Email sending & subscription management
+-  ** REST API**: Modular RESTful architecture
+-  ** Java Version**: Java 21
 
 ---
 
 ## 📂 Project Structure
 
-### 🏗️ Frontend (`nestflow-client`)
+### Frontend (`nestflow-client`)
 
 ```bash
 src/
@@ -45,11 +45,11 @@ src/
 │── package.json            # Project dependencies
 ```
 
-### 🏗️ Backend (`nestflow-api`)
+### Backend (`nestflow-api`)
 
 ```bash
 src/
-│── main/java/com/nestflow/
+│── main/java/com/nestflow/features/
 │   ├── authentication/      # Authentication & JWT
 │   ├── users/               # User management
 │   ├── subscription/        # Subscription management
@@ -61,7 +61,7 @@ src/
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### 🔹 Prerequisites
 
