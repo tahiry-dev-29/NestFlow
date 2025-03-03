@@ -6,15 +6,10 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import {
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  ActivatedRoute,
-} from '@angular/router';
-import { sideLeftBarState } from '../../store/signal.store';
-import { AuthStore } from '../../../auth/store/auth.store';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ImageUrl } from '../../../../../../public/images/constant.images';
+import { AuthStore } from '../../../auth/store/auth.store';
+import { sideLeftBarState } from '../../store/signal.store';
 
 @Component({
   selector: 'app-side-bar',
