@@ -10,19 +10,19 @@
 
 ### 🔹 Frontend (Angular 18)
 
--  ** Framework**: Angular 18 (Standalone Components)
--  ** State Management**: NgRx Signal Store
--  ** UI**: TailwindCSS
--  ** Performance**: Angular Signals (`signal()`, `computed()`)
--  ** API Calls**: HTTP requests
+-  **Framework**: Angular 18 (Standalone Components)
+-  **State Management**: NgRx Signal Store
+-  **UI**: TailwindCSS
+-  **Performance**: Angular Signals (`signal()`, `computed()`)
+-  **API Calls**: HTTP requests
 
 ### 🔹 Backend (Spring Boot)
 
--  ** Security**: Spring Security & JWT
--  ** Database**: MongoDB
--  ** Notifications**: Email sending & subscription management
--  ** REST API**: Modular RESTful architecture
--  ** Java Version**: Java 21
+-  **Security**: Spring Security & JWT
+-  **Database**: MongoDB
+-  **Notifications**: Email sending & subscription management
+-  **REST API**: Modular RESTful architecture
+-  **Java Version**: Java 21
 
 ---
 
@@ -55,9 +55,9 @@ src/
 │   ├── users/               # User management
 │   ├── subscription/        # Subscription management
 │   ├── email/               # Email sending service
-│   ├── common/              # Exception handling & utilities
+│
 │── resources/
-│   ├── application.yml      # Project configuration (MongoDB, security)
+│   ├── application.properties      # Project configuration (MongoDB, security)
 ```
 
 ---
